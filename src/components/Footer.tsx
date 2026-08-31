@@ -1,63 +1,48 @@
 import { useStore } from "../lib/store";
-import { AsteriskMark, IconLock, IconPhone, IconSend } from "./icons";
-
-const WORDS = [
-  { w: "ТЕЛО", c: "text-peach" },
-  { w: "ЧУВСТВА", c: "text-mint" },
-  { w: "РАЗУМ", c: "text-sky" },
-  { w: "ДУХ", c: "text-gold" },
-];
+import { IconLock, IconMax, IconPhone, IconSend, IconVk, YinYang } from "./icons";
 
 export default function Footer() {
   const { db } = useStore();
   const c = db.content.contacts;
 
   return (
-    <footer className="relative overflow-hidden bg-ink text-paper">
-      <div className="pointer-events-none absolute -top-20 left-1/4 h-72 w-72 rounded-full bg-peach-deep/15 blur-3xl" />
-      <div className="pointer-events-none absolute -bottom-24 right-1/5 h-72 w-72 rounded-full bg-lav-deep/15 blur-3xl" />
+    <footer className="relative overflow-hidden bg-ink text-card">
+      <div className="pointer-events-none absolute -top-24 right-1/4 h-72 w-72 rounded-full bg-gold/10 blur-3xl" />
 
-      <div className="relative mx-auto max-w-7xl px-5 sm:px-8 pt-16 pb-10">
-        {/* Слоган */}
-        <p className="font-display font-black leading-tight text-[clamp(22px,4.2vw,52px)] tracking-tight" aria-label="Тело, чувства, разум, дух — к целостности и ясности">
-          {WORDS.map((wd, i) => (
-            <span key={wd.w}>
-              <span className={wd.c}>{wd.w}</span>
-              {i < WORDS.length - 1 && <span className="text-paper/35"> ✳ </span>}
-            </span>
-          ))}
-          <span className="mt-2 block font-serif italic font-medium text-paper/70 text-[clamp(18px,2.4vw,30px)]">
-            — к целостности и ясности
-          </span>
+      <div className="relative mx-auto max-w-7xl px-5 pb-10 pt-16 sm:px-8">
+        {/* Слоган — деликатно, полупрозрачно */}
+        <p className="word-outline font-display font-medium uppercase leading-tight tracking-[0.12em] text-card/45 text-[clamp(26px,5vw,58px)]" aria-label="Тело, чувства, разум, дух — к балансу и ясности">
+          Тело • Чувства • Разум • Дух
         </p>
+        <p className="mt-3 font-display text-[clamp(18px,2.4vw,26px)] italic text-card/60">— к балансу и ясности</p>
 
-        <div className="mt-14 grid gap-10 border-t border-paper/12 pt-10 md:grid-cols-3">
+        <div className="mt-14 grid gap-10 border-t border-card/12 pt-10 md:grid-cols-3">
           <div>
-            <div className="flex items-center gap-3">
-              <span className="grid h-10 w-10 place-items-center rounded-full bg-peach text-ink">
-                <AsteriskMark className="h-4.5 w-4.5" style={{ height: 18, width: 18 }} strokeWidth={2.4} />
-              </span>
-              <p className="font-display text-lg font-bold">Валерия Никифорова</p>
+            <div className="flex items-center gap-3.5">
+              <YinYang className="h-11 w-11" />
+              <div className="leading-tight">
+                <p className="font-display text-[20px] font-semibold">Валерия</p>
+                <p className="text-[10.5px] font-extrabold tracking-[0.2em] uppercase text-gold">Про|Баланс</p>
+              </div>
             </div>
-            <p className="mt-4 max-w-xs text-[13.5px] leading-relaxed text-paper/65">
-              Психолог-консультант. Гештальт-практик (МИГИП), магистрант МГППУ
-              «Мультикультурное психологическое консультирование», инструктор
-              интегративной кундалини-йоги.
+            <p className="mt-4 max-w-xs text-[13px] leading-relaxed text-card/60">
+              Психолог-консультант, гештальт-практик (МИГИП), магистрант-этнопсихолог (МГППУ),
+              инструктор интегративной кундалини-йоги, тренер ДАО-практик.
             </p>
           </div>
 
           <div>
-            <p className="text-[12px] font-extrabold tracking-[0.2em] uppercase text-paper/50">Навигация</p>
+            <p className="text-[11px] font-extrabold tracking-[0.24em] uppercase text-card/45">Навигация</p>
             <ul className="mt-4 space-y-2.5">
               {[
                 ["#services", "Услуги и цены"],
                 ["#approach", "Подход"],
                 ["#about", "Обо мне"],
-                ["#process", "Как проходит"],
+                ["#schedule", "Расписание"],
                 ["#faq", "Частые вопросы"],
               ].map(([href, label]) => (
                 <li key={href}>
-                  <a href={href} className="text-[14px] font-semibold text-paper/75 transition-colors hover:text-peach">
+                  <a href={href} className="link-grow text-[13.5px] font-semibold text-card/70 transition-colors hover:text-gold">
                     {label}
                   </a>
                 </li>
@@ -66,32 +51,43 @@ export default function Footer() {
           </div>
 
           <div>
-            <p className="text-[12px] font-extrabold tracking-[0.2em] uppercase text-paper/50">Контакты</p>
+            <p className="text-[11px] font-extrabold tracking-[0.24em] uppercase text-card/45">Контакты</p>
             <ul className="mt-4 space-y-3">
               <li>
-                <a href={c.phoneHref} className="group flex items-center gap-3 text-[15px] font-bold text-paper/85 transition-colors hover:text-peach">
-                  <IconPhone className="h-4.5 w-4.5 text-paper/45 transition-colors group-hover:text-peach" style={{ height: 18, width: 18 }} />
+                <a href={c.phoneHref} className="group flex items-center gap-3 text-[14px] font-bold text-card/80 transition-colors hover:text-gold">
+                  <IconPhone className="h-[17px] w-[17px] text-card/40 transition-colors group-hover:text-gold" />
                   {c.phoneDisplay}
                 </a>
               </li>
               <li>
-                <a href={c.telegramHref} target="_blank" rel="noopener noreferrer" className="group flex items-center gap-3 text-[15px] font-bold text-paper/85 transition-colors hover:text-peach">
-                  <IconSend className="h-4.5 w-4.5 text-paper/45 transition-colors group-hover:text-peach" style={{ height: 18, width: 18 }} />
+                <a href={c.telegramHref} target="_blank" rel="noopener noreferrer" className="group flex items-center gap-3 text-[14px] font-bold text-card/80 transition-colors hover:text-gold">
+                  <IconSend className="h-[17px] w-[17px] text-card/40 transition-colors group-hover:text-gold" />
                   Telegram {c.telegram}
                 </a>
               </li>
+              <li>
+                <a href={c.vkHref} target="_blank" rel="noopener noreferrer" className="group flex items-center gap-3 text-[14px] font-bold text-card/80 transition-colors hover:text-gold">
+                  <IconVk className="h-[17px] w-[17px] text-card/40 transition-colors group-hover:text-gold" />
+                  ВКонтакте · {c.vk}
+                </a>
+              </li>
+              <li>
+                <a href={c.maxHref} target="_blank" rel="noopener noreferrer" className="group flex items-center gap-3 text-[14px] font-bold text-card/80 transition-colors hover:text-gold">
+                  <IconMax className="h-[17px] w-[17px] text-card/40 transition-colors group-hover:text-gold" />
+                  МАХ · {c.max}
+                </a>
+              </li>
             </ul>
-            <p className="mt-4 text-[12.5px] font-medium text-paper/50">{c.note}</p>
           </div>
         </div>
 
-        <div className="mt-12 flex flex-wrap items-center justify-between gap-4 border-t border-paper/12 pt-7">
-          <p className="text-[12.5px] font-medium text-paper/45">
-            © {new Date().getFullYear()} Валерия Никифорова · Консультации не являются медицинской помощью
+        <div className="mt-12 flex flex-wrap items-center justify-between gap-4 border-t border-card/12 pt-7">
+          <p className="text-[12px] font-medium text-card/40">
+            © {new Date().getFullYear()} Валерия · ПРО|БАЛАНС · Консультации не являются медицинской помощью
           </p>
           <a
             href="#/admin"
-            className="inline-flex items-center gap-2 rounded-full border border-paper/20 px-4 py-2 text-[12px] font-bold text-paper/60 transition-all hover:border-peach hover:text-peach"
+            className="inline-flex items-center gap-2 rounded-full border border-card/20 px-4 py-2 text-[11.5px] font-bold text-card/55 transition-all hover:border-gold hover:text-gold"
           >
             <IconLock className="h-3.5 w-3.5" />
             Для администратора

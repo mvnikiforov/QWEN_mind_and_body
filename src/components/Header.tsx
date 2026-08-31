@@ -1,12 +1,12 @@
 import { useEffect, useState } from "react";
-import { AsteriskMark } from "./icons";
+import { IconArrow } from "./icons";
 
-const NAV = [
+const LINKS = [
   { href: "#services", label: "Услуги и цены" },
   { href: "#approach", label: "Подход" },
   { href: "#about", label: "Обо мне" },
-  { href: "#process", label: "Как проходит" },
-  { href: "#contacts", label: "Контакты" },
+  { href: "#schedule", label: "Расписание" },
+  { href: "#contact", label: "Контакты" },
 ];
 
 export default function Header() {
@@ -22,84 +22,73 @@ export default function Header() {
 
   return (
     <header
-      className={`fixed inset-x-0 top-0 z-50 transition-all duration-500 ${
-        scrolled
-          ? "bg-paper/85 backdrop-blur-md shadow-[0_10px_40px_-18px_rgba(51,46,61,0.25)] border-b border-ink/8"
-          : "bg-transparent"
+      className={`fixed inset-x-0 top-0 z-40 transition-all duration-500 ${
+        scrolled ? "bg-paper/85 shadow-[0_1px_0_0_var(--color-line)] backdrop-blur-md" : "bg-transparent"
       }`}
     >
-      <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-5 sm:px-8 py-3.5">
+      <div className={`mx-auto flex max-w-7xl items-center justify-between px-5 sm:px-8 transition-all duration-500 ${scrolled ? "py-3" : "py-5"}`}>
         {/* Логотип */}
-        <a href="#top" className="group flex items-center gap-3 min-w-0">
-          <span className="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-ink text-peach transition-transform duration-500 group-hover:rotate-90">
-            <AsteriskMark className="h-5 w-5" strokeWidth={2.2} />
+        <a href="#top" className="group leading-none">
+          <span className="flex items-baseline gap-2">
+            <span className="font-display text-[26px] font-semibold tracking-tight">Валерия</span>
+            <span className="text-[11px] font-extrabold tracking-[0.18em] text-gold-deep uppercase">Про|Баланс</span>
           </span>
-          <span className="min-w-0 leading-tight">
-            <span className="block font-display text-[17px] font-bold tracking-tight">Валерия</span>
-            <span className="block truncate text-[11px] font-medium text-ink-soft">
-              Гештальт-практик · Магистрант-этнопсихолог · Инструктор интегративной кундалини-йоги
-            </span>
+          <span className="mt-0.5 block text-[9.5px] font-semibold tracking-[0.34em] text-ink-faint uppercase opacity-80 transition-opacity group-hover:opacity-100">
+            тело • чувства • разум • дух
           </span>
         </a>
 
-        {/* Навигация */}
-        <nav className="hidden lg:flex items-center gap-7">
-          {NAV.map((n) => (
-            <a
-              key={n.href}
-              href={n.href}
-              className="relative text-[14.5px] font-semibold text-ink-soft transition-colors hover:text-ink after:absolute after:-bottom-1.5 after:left-0 after:h-[2px] after:w-0 after:bg-peach-deep after:transition-all after:duration-300 hover:after:w-full"
-            >
-              {n.label}
+        {/* Меню */}
+        <nav className="hidden items-center gap-7 lg:flex">
+          {LINKS.map((l) => (
+            <a key={l.href} href={l.href} className="link-grow text-[12.5px] font-bold tracking-[0.14em] uppercase text-ink-soft transition-colors hover:text-ink">
+              {l.label}
             </a>
           ))}
-        </nav>
-
-        <div className="flex items-center gap-3">
           <a
-            href="#contacts"
-            className="hidden sm:inline-flex items-center gap-2 rounded-full bg-peach-deep px-5 py-2.5 text-sm font-bold text-paper shadow-[0_10px_30px_-10px_rgba(224,138,92,0.8)] transition-all duration-300 hover:-translate-y-0.5 hover:bg-ink hover:shadow-[0_14px_34px_-12px_rgba(51,46,61,0.7)]"
+            href="#contact"
+            className="group inline-flex items-center gap-2.5 rounded-full bg-ink px-6 py-3 text-[12.5px] font-bold tracking-[0.1em] uppercase text-card transition-all duration-300 hover:-translate-y-0.5 hover:bg-gold-deep hover:shadow-[0_16px_34px_-14px_rgba(138,109,60,0.8)]"
           >
             Записаться
+            <IconArrow className="h-3.5 w-3.5 transition-transform duration-300 group-hover:translate-x-1" />
           </a>
-          {/* Бургер */}
-          <button
-            onClick={() => setOpen((v) => !v)}
-            className="lg:hidden grid h-11 w-11 place-items-center rounded-full border border-ink/15 bg-paper/70 text-ink"
-            aria-label="Меню"
-          >
-            <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round">
-              {open ? <path d="M6 6l12 12M18 6 6 18" /> : <path d="M4 7.5h16M4 12h16M4 16.5h10" />}
-            </svg>
-          </button>
-        </div>
+        </nav>
+
+        {/* Мобильная кнопка */}
+        <button
+          aria-label="Меню"
+          onClick={() => setOpen(!open)}
+          className="relative z-50 grid h-11 w-11 place-items-center rounded-full border border-ink/15 lg:hidden"
+        >
+          <span className={`absolute h-px w-5 bg-ink transition-all duration-300 ${open ? "rotate-45" : "-translate-y-[5px]"}`} />
+          <span className={`absolute h-px w-5 bg-ink transition-all duration-300 ${open ? "-rotate-45" : "translate-y-[5px]"}`} />
+        </button>
       </div>
 
       {/* Мобильное меню */}
-      <div
-        className={`lg:hidden overflow-hidden transition-all duration-500 ${
-          open ? "max-h-96 border-b border-ink/8 bg-paper/95 backdrop-blur-md" : "max-h-0"
-        }`}
-      >
-        <nav className="flex flex-col px-6 py-4 gap-1">
-          {NAV.map((n) => (
+      <div className={`acc-body lg:hidden ${open ? "open" : ""}`}>
+        <div className="acc-inner">
+          <nav className="mx-5 mb-4 flex flex-col gap-1 rounded-[22px] border border-line bg-card p-5 shadow-[0_30px_60px_-30px_rgba(35,33,29,0.35)]">
+            {LINKS.map((l) => (
+              <a
+                key={l.href}
+                href={l.href}
+                onClick={() => setOpen(false)}
+                className="rounded-[12px] px-4 py-3 font-display text-[19px] font-medium transition-colors hover:bg-stone/70"
+              >
+                {l.label}
+              </a>
+            ))}
             <a
-              key={n.href}
-              href={n.href}
+              href="#contact"
               onClick={() => setOpen(false)}
-              className="rounded-xl px-3 py-2.5 text-[15px] font-semibold text-ink-soft transition-colors hover:bg-cream hover:text-ink"
+              className="mt-3 inline-flex items-center justify-center gap-2 rounded-full bg-ink px-6 py-3.5 text-[12.5px] font-bold tracking-[0.12em] uppercase text-card"
             >
-              {n.label}
+              Записаться
+              <IconArrow className="h-3.5 w-3.5" />
             </a>
-          ))}
-          <a
-            href="#contacts"
-            onClick={() => setOpen(false)}
-            className="mt-2 rounded-full bg-peach-deep px-5 py-2.5 text-center text-sm font-bold text-paper"
-          >
-            Записаться
-          </a>
-        </nav>
+          </nav>
+        </div>
       </div>
     </header>
   );

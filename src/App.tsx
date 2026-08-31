@@ -5,7 +5,9 @@ import Hero from "./components/Hero";
 import Showcase from "./components/Showcase";
 import Approach from "./components/Approach";
 import About from "./components/About";
+import Schedule from "./components/Schedule";
 import Journey from "./components/Journey";
+import ChannelFeed from "./components/ChannelFeed";
 import { ContactSection, FaqSection } from "./components/Contact";
 import Footer from "./components/Footer";
 import AdminApp from "./admin/AdminApp";
@@ -30,7 +32,9 @@ function Site() {
         <Showcase />
         <Approach />
         <About />
+        <Schedule />
         <Journey />
+        <ChannelFeed />
         <ContactSection />
         <FaqSection />
       </main>

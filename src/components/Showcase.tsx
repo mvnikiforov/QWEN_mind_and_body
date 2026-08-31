@@ -1,191 +1,162 @@
 import { useState } from "react";
 import { useStore } from "../lib/store";
 import { fmtPrice, type Service } from "../lib/db";
-import { Reveal, SectionHead } from "./ui";
-import { IconArrow, IconCart, IconClock, IconSeed, IconSpirit, IconStill, IconUsers, IconWave } from "./icons";
+import { IconArrow, IconCheck } from "./icons";
+import { prefillService, Reveal, SectionHead } from "./ui";
 
-export function chooseService(id: string) {
-  window.dispatchEvent(new CustomEvent("valeria:choose-service", { detail: id }));
-}
-
-const KIND_ICON: Record<Service["kind"], typeof IconSeed> = {
-  free: IconSeed,
-  single: IconSpirit,
-  package: IconCart,
-  masterclass: IconStill,
-  group: IconUsers,
-};
-
-const TINTS = ["bg-sky/55", "bg-mint/55", "bg-lav/60", "bg-peach/45", "bg-cream"];
-const ICON_TINTS = ["bg-sky text-sky-deep", "bg-mint text-mint-deep", "bg-lav text-lav-deep", "bg-peach text-peach-deep", "bg-cream text-gold"];
-
-function ServiceCard({ s, subscriber, index }: { s: Service; subscriber: boolean; index: number }) {
-  const Icon = KIND_ICON[s.kind];
-  const isSingle = s.kind === "single";
-  const price = isSingle && subscriber && s.subscriberPrice != null ? s.subscriberPrice : s.price;
-  const tint = TINTS[index % TINTS.length];
-  const iconTint = ICON_TINTS[index % ICON_TINTS.length];
+function ServiceCard({ s, delay }: { s: Service; delay: number }) {
+  const [open, setOpen] = useState(false);
+  const priceStr = fmtPrice(s.price);
+  const altTitle = s.ctaAlt?.toLowerCase().includes("абонемент") && s.subscription
+    ? `${s.title} — абонемент`
+    : s.title;
 
   return (
-    <Reveal delay={(index % 3) * 110} className="h-full">
+    <Reveal delay={delay} className="h-full">
       <article
-        className={`group relative flex h-full flex-col rounded-[26px] border p-7 transition-all duration-500 hover:-translate-y-2 hover:shadow-[0_34px_70px_-28px_rgba(51,46,61,0.4)] ${tint} ${
-          s.featured ? "border-peach-deep/45 shadow-[0_24px_60px_-30px_rgba(224,138,92,0.55)]" : "border-ink/10 hover:border-ink/25"
+        className={`group flex h-full flex-col overflow-hidden rounded-[26px] border bg-card transition-all duration-500 ${
+          open ? "border-gold shadow-[0_36px_70px_-34px_rgba(35,33,29,0.45)]" : "border-line hover:-translate-y-1.5 hover:border-ink/30 hover:shadow-[0_30px_60px_-34px_rgba(35,33,29,0.4)]"
         }`}
       >
-        {s.badge && (
-          <span className="absolute -top-3.5 right-6 rotate-2 rounded-full bg-gold px-3.5 py-1.5 text-[11.5px] font-extrabold tracking-wide text-ink shadow-md">
-            {s.badge}
-          </span>
-        )}
-        {isSingle && subscriber && (
-          <span className="absolute -top-3.5 left-6 -rotate-2 rounded-full bg-mint-deep px-3.5 py-1.5 text-[11.5px] font-extrabold tracking-wide text-paper shadow-md">
-            цена подписчика
-          </span>
-        )}
-
-        {s.image && (
+        {/* Фото */}
+        <button
+          className="relative block h-44 w-full overflow-hidden text-left md:h-48"
+          onClick={() => setOpen(!open)}
+          aria-expanded={open}
+          aria-label={`${s.title} — подробности`}
+        >
           <img
             src={s.image}
             alt={s.title}
-            className="mb-5 h-36 w-full rounded-[18px] border border-ink/10 object-cover"
             loading="lazy"
+            className="h-full w-full object-cover transition-transform duration-[1.4s] ease-out group-hover:scale-[1.06]"
           />
-        )}
-
-        <div className="flex items-start justify-between gap-3">
-          <span className={`grid h-13 w-13 shrink-0 place-items-center rounded-2xl ${iconTint} transition-transform duration-500 group-hover:rotate-6 group-hover:scale-105`} style={{ height: 52, width: 52 }}>
-            <Icon className="h-6.5 w-6.5" style={{ height: 26, width: 26 }} />
-          </span>
-          <span className="inline-flex items-center gap-1.5 rounded-full border border-ink/12 bg-paper/75 px-3 py-1.5 text-[12px] font-bold text-ink-soft">
-            <IconClock className="h-3.5 w-3.5" />
-            {s.duration}
-          </span>
-        </div>
-
-        <h3 className="mt-5 font-display text-[17px] leading-snug font-bold">{s.title}</h3>
-
-        <div className="mt-4 flex items-baseline gap-2.5" aria-live="polite">
-          {price === 0 ? (
-            <span key={String(price)} className="price-flip font-display text-[26px] font-bold text-mint-deep">
-              Бесплатно
+          <span className="absolute inset-0 bg-gradient-to-t from-ink/25 via-transparent to-transparent opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
+          {s.badge && (
+            <span className="absolute left-4 top-4 -rotate-2 rounded-full bg-gold px-3.5 py-1.5 text-[10.5px] font-extrabold tracking-[0.1em] uppercase text-card shadow-md">
+              {s.badge}
             </span>
-          ) : (
-            <>
-              <span key={`${price}-${subscriber}`} className="price-flip font-display text-[26px] font-bold text-ink">
-                {fmtPrice(price)}
-              </span>
-              {isSingle && subscriber && s.subscriberPrice != null && (
-                <span className="price-flip text-[15px] font-semibold text-ink-faint line-through">
-                  {fmtPrice(s.price)}
-                </span>
-              )}
-              {s.priceUnit && <span className="text-[13px] font-semibold text-ink-soft">{s.priceUnit}</span>}
-            </>
           )}
-        </div>
-
-        <p className="mt-3.5 text-[14px] leading-relaxed text-ink-soft">{s.description}</p>
-
-        {s.note && (
-          <p className="mt-4 border-l-[3px] border-gold/70 pl-3 text-[12.5px] font-semibold leading-snug text-ink-soft">
-            {s.note}
-          </p>
-        )}
-
-        <button
-          onClick={() => chooseService(s.id)}
-          className={`mt-auto pt-6 text-left`}
-        >
-          <span
-            className={`inline-flex w-full items-center justify-center gap-2.5 rounded-full px-5 py-3.5 text-[14.5px] font-bold transition-all duration-300 ${
-              s.featured
-                ? "bg-ink text-paper group-hover:bg-peach-deep"
-                : "border-2 border-ink/15 text-ink hover:border-ink hover:bg-ink hover:text-paper"
-            }`}
-          >
-            {s.cta}
-            <IconArrow className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" />
+          <span className="absolute bottom-3 right-3 grid h-8 w-8 place-items-center rounded-full bg-card/90 text-ink backdrop-blur transition-all duration-300 md:hidden">
+            <svg viewBox="0 0 24 24" className={`h-4 w-4 transition-transform duration-300 ${open ? "rotate-180" : ""}`} fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+              <path d="m6 9.5 6 6 6-6" />
+            </svg>
           </span>
         </button>
+
+        <div className="flex grow flex-col p-6">
+          <h3 className="font-display text-[22px] font-semibold leading-tight">{s.title}</h3>
+          <p className="mt-1.5 text-[12px] font-bold tracking-[0.06em] uppercase text-ink-faint">{s.duration}</p>
+
+          {/* Цена */}
+          <p className="mt-4 font-display text-[30px] font-medium leading-none">
+            {priceStr}
+            {s.priceUnit && <span className="ml-2 text-[13px] font-body font-semibold text-ink-soft">{s.priceUnit}</span>}
+          </p>
+
+          {/* Подробности: на десктопе всегда, на мобильном — по тапу */}
+          <div className={`acc-body md:!grid-rows-[1fr] ${open ? "open" : ""}`}>
+            <div className="acc-inner">
+              <div className="rounded-[16px] bg-card/85 backdrop-blur-sm md:bg-transparent md:p-0">
+                {s.subscription && (
+                  <p className="mt-4 flex items-start gap-2 rounded-[14px] border border-gold/35 bg-gold/8 px-3.5 py-2.5 text-[12.5px] font-semibold leading-snug text-gold-deep">
+                    <IconCheck className="mt-0.5 h-3.5 w-3.5 shrink-0" />
+                    {s.subscription}
+                  </p>
+                )}
+                <p className="mt-4 text-[13.5px] leading-relaxed text-ink-soft">{s.description}</p>
+              </div>
+            </div>
+          </div>
+
+          {/* Кнопки */}
+          <div className="mt-auto flex flex-wrap gap-2.5 pt-5">
+            <button
+              onClick={() =>
+                s.cta.toLowerCase().includes("подробнее")
+                  ? document.getElementById("faq")?.scrollIntoView({ behavior: "smooth" })
+                  : prefillService(s.title, priceStr + (s.priceUnit ? ` ${s.priceUnit}` : ""))
+              }
+              className="inline-flex grow items-center justify-center gap-2 rounded-full bg-ink px-5 py-3 text-[12px] font-bold tracking-[0.08em] uppercase text-card transition-all duration-300 hover:bg-gold-deep"
+            >
+              {s.cta}
+              <IconArrow className="h-3.5 w-3.5" />
+            </button>
+            {s.ctaAlt && (
+              <button
+                onClick={() => prefillService(altTitle, s.subscription ?? priceStr)}
+                className="inline-flex items-center justify-center rounded-full border border-ink/25 px-5 py-3 text-[12px] font-bold tracking-[0.08em] uppercase text-ink transition-all duration-300 hover:border-ink hover:bg-stone"
+              >
+                {s.ctaAlt}
+              </button>
+            )}
+          </div>
+        </div>
       </article>
     </Reveal>
   );
 }
 
+function GroupBlock({
+  roman,
+  title,
+  note,
+  items,
+}: {
+  roman: string;
+  title: string;
+  note: string;
+  items: Service[];
+}) {
+  return (
+    <div className="mt-16 first:mt-12">
+      <Reveal>
+        <div className="flex flex-wrap items-baseline gap-x-5 gap-y-2 border-b border-line pb-5">
+          <span className="font-display text-[44px] font-light leading-none text-gold/70">{roman}</span>
+          <h3 className="font-display text-[26px] sm:text-[30px] font-semibold">{title}</h3>
+          <p className="ml-auto text-[12.5px] font-semibold text-ink-faint">{note}</p>
+        </div>
+      </Reveal>
+
+      {/* Мобайл: горизонтальный скролл · планшет: 2 · десктоп: 3 */}
+      <div className="no-scrollbar -mx-5 mt-7 flex snap-x snap-mandatory gap-5 overflow-x-auto px-5 pb-3 sm:-mx-8 sm:px-8 md:mx-0 md:grid md:grid-cols-2 md:overflow-visible md:px-0 lg:grid-cols-3">
+        {items.map((s, i) => (
+          <div key={s.id} className="w-[82vw] shrink-0 snap-center sm:w-[58vw] md:w-auto">
+            <ServiceCard s={s} delay={i * 90} />
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 export default function Showcase() {
   const { db } = useStore();
-  const [subscriber, setSubscriber] = useState(false);
+  const individual = db.services.filter((s) => s.group === "individual");
+  const group = db.services.filter((s) => s.group === "group");
 
   return (
     <section id="services" className="relative py-20 sm:py-28">
-      <div className="pointer-events-none absolute top-24 right-0 h-80 w-80 rounded-full bg-mint/50 blur-3xl" />
       <div className="mx-auto max-w-7xl px-5 sm:px-8">
-        <div className="flex flex-wrap items-end justify-between gap-8">
+        <div className="flex flex-wrap items-end justify-between gap-6">
           <SectionHead
-            kicker="Витрина услуг"
-            title={<>Форматы работы <span className="font-serif italic font-semibold text-peach-deep">и цены</span></>}
-            sub="Выберите формат, который откликается. Цены переключаются — для подписчиков моей группы действует особая цена на индивидуальные консультации."
+            kicker="Витрина"
+            title={
+              <>
+                Форматы работы <span className="italic text-gold-deep">и цены</span>
+              </>
+            }
+            sub="Все цены фиксированные и честные. Выберите свой формат — от разовой практики до длительной терапевтической работы."
           />
-
-          {/* Переключатель цен */}
-          <Reveal delay={200}>
-            <div className="flex items-center gap-3">
-              <div className="relative flex rounded-full border border-ink/12 bg-cream p-1.5 shadow-inner">
-                <span
-                  className={`absolute top-1.5 bottom-1.5 rounded-full bg-ink transition-all duration-400 ease-out ${
-                    subscriber ? "left-[50%] right-1.5" : "left-1.5 right-[50%]"
-                  }`}
-                  style={{ transitionDuration: "400ms" }}
-                />
-                {["Обычная цена", "Для подписчиков"].map((label, i) => {
-                  const active = subscriber === (i === 1);
-                  return (
-                    <button
-                      key={label}
-                      onClick={() => setSubscriber(i === 1)}
-                      className={`relative z-10 rounded-full px-4 sm:px-5 py-2.5 text-[13px] font-bold transition-colors duration-300 ${
-                        active ? "text-paper" : "text-ink-soft hover:text-ink"
-                      }`}
-                    >
-                      {label}
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
-            <p className="mt-3 max-w-[300px] text-[12px] font-medium leading-snug text-ink-faint">
-              Особая цена действует на индивидуальную консультацию:{" "}
-              <b className="text-ink-soft">2 500 ₽ вместо 3 000 ₽</b>
+          <Reveal delay={220}>
+            <p className="hidden max-w-[220px] text-right text-[12px] font-semibold leading-relaxed text-ink-faint lg:block">
+              На мобильном листайте карточки вправо, тап по фото — подробности
             </p>
           </Reveal>
         </div>
 
-        <div className="mt-14 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-          {db.services.map((s, i) => (
-            <ServiceCard key={s.id} s={s} subscriber={subscriber} index={i} />
-          ))}
-
-          {/* Шестая ячейка — мягкий призыв */}
-          <Reveal delay={220} className="h-full">
-            <div className="flex h-full min-h-[280px] flex-col items-start justify-center rounded-[26px] border-2 border-dashed border-ink/15 p-7 transition-colors duration-500 hover:border-peach-deep/50">
-              <IconWave className="h-9 w-9 text-peach-deep" />
-              <p className="mt-4 font-display text-[16px] font-bold leading-snug">
-                Не знаете, с чего начать?
-              </p>
-              <p className="mt-2.5 text-[14px] leading-relaxed text-ink-soft">
-                Приходите на бесплатную встречу-знакомство — за 20 минут спокойно определим запрос и формат.
-              </p>
-              <button
-                onClick={() => chooseService("intro")}
-                className="mt-5 inline-flex items-center gap-2 text-[14px] font-extrabold text-peach-deep transition-colors hover:text-ink"
-              >
-                Выбрать бесплатную встречу
-                <IconArrow className="h-4 w-4" />
-              </button>
-            </div>
-          </Reveal>
-        </div>
+        <GroupBlock roman="I" title="Индивидуальные форматы" note="лично для вас · онлайн и очно" items={individual} />
+        <GroupBlock roman="II" title="Групповые форматы" note="в кругу бережных людей" items={group} />
       </div>
     </section>
   );
