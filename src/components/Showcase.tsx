@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useStore } from "../lib/store";
 import { fmtPrice, type Service } from "../lib/db";
 import { IconArrow } from "./icons";
@@ -11,6 +11,16 @@ function ServiceCard({ s, delay }: { s: Service; delay: number }) {
   const v = s.variants.find((x) => x.mode === mode) ?? s.variants[0];
   const idx = Math.max(0, s.variants.findIndex((x) => x.mode === v.mode));
 
+  /* категории под Hero могут переключить формат карточки при переходе */
+  useEffect(() => {
+    const on = (e: Event) => {
+      const d = (e as CustomEvent<{ serviceId: string; mode: "individual" | "group" }>).detail;
+      if (d.serviceId === s.id) setMode(d.mode);
+    };
+    window.addEventListener("showcase-format", on);
+    return () => window.removeEventListener("showcase-format", on);
+  }, [s.id]);
+
   const book = () =>
     prefillService(
       `${s.id}:${v.id}`,
@@ -19,7 +29,7 @@ function ServiceCard({ s, delay }: { s: Service; delay: number }) {
 
   return (
     <Reveal delay={delay} className="h-full">
-      <article className="group/card flex h-full flex-col overflow-hidden rounded-[32px] border border-line bg-card transition-all duration-500 hover:-translate-y-1.5 hover:border-gold/60 hover:shadow-[0_44px_88px_-44px_rgba(35,33,29,0.55)]">
+      <article id={`card-${s.id}`} className="group/card flex h-full scroll-mt-28 flex-col overflow-hidden rounded-[32px] border border-line bg-card transition-all duration-500 hover:-translate-y-1.5 hover:border-gold/60 hover:shadow-[0_44px_88px_-44px_rgba(35,33,29,0.55)]">
         {/* Фото с кроссфейдом между форматами */}
         <div className="relative h-60 overflow-hidden sm:h-64">
           {s.variants.map((vv) => (

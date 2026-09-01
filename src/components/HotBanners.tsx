@@ -80,7 +80,7 @@ export default function HotBanners() {
 
           {/* Баннер 3 — глубокая бронза */}
           <Reveal delay={220}>
-            <div className="group relative flex h-full flex-col overflow-hidden rounded-[34px] bg-gold-deep px-8 py-9 text-card transition-transform duration-500 hover:-translate-y-1 sm:px-10 sm:py-10">
+            <div id="corp-course" className="group relative flex h-full scroll-mt-28 flex-col overflow-hidden rounded-[34px] bg-gold-deep px-8 py-9 text-card transition-transform duration-500 hover:-translate-y-1 sm:px-10 sm:py-10">
               <span className="pointer-events-none absolute -right-6 -top-10 select-none font-display text-[200px] font-light italic leading-none text-card/10 transition-transform duration-[1.4s] ease-out group-hover:-rotate-6">
                 10
               </span>
