@@ -32,22 +32,52 @@ npm run build   # production-сборка в папку dist
 **Резервное копирование:** «Настройки» → Экспорт базы → сохранить JSON.
 Восстановление — Импорт базы (например, на новом устройстве).
 
-## Перенос на хостинг / VDS
+## Деплой (перенос на хостинг / VDS)
 
-1. `npm run build` → скопировать содержимое `dist/` в корень сайта.
-2. **Статический хостинг** (Netlify/Vercel/GitHub Pages/обычная панель) — просто загрузить `dist`.
-3. **VDS + nginx:**
-   ```nginx
-   server {
-     listen 80;
-     server_name vash-domen.ru;
-     root /var/www/probalance;
-     index index.html;
-     location / { try_files $uri /index.html; }
-   }
-   ```
-4. HTTPS: `sudo certbot --nginx -d vash-domen.ru`.
-5. Перенос данных: экспорт базы на старом устройстве → импорт в админке на новом.
+Сайт — чистая статика: `npm run build` собирает всё в папку `dist/`, дальше её можно
+разместить где угодно. Готовые файлы — в папке [`deploy/`](deploy/).
+
+### Вариант 1 — статический хостинг (быстрее всего, ~5 минут)
+
+1. `npm run build`
+2. **Netlify:** [app.netlify.com/drop](https://app.netlify.com/drop) → перетащите папку `dist`.
+   **Vercel:** `npm i -g vercel && vercel --prod` (из корня проекта).
+   **GitHub Pages / обычная панель хостинга (cPanel, FTP):** загрузите *содержимое* `dist/` в корень сайта.
+3. Готово. HTTPS включится автоматически.
+
+### Вариант 2 — VDS + nginx
+
+1. `npm run build` → скопируйте содержимое `dist/` на сервер:
+   `rsync -avz dist/ user@сервер:/var/www/probalance/`
+   (или воспользуйтесь скриптом: `bash deploy/deploy.sh user@сервер`)
+2. Установите nginx: `sudo apt install nginx`
+3. `sudo mkdir -p /var/www/probalance && sudo chown -R www-data:www-data /var/www/probalance`
+4. Скопируйте конфиг (замените домен внутри):
+   `sudo cp deploy/nginx.conf /etc/nginx/sites-available/probalance`
+   `sudo ln -s /etc/nginx/sites-available/probalance /etc/nginx/sites-enabled/`
+   `sudo nginx -t && sudo systemctl reload nginx`
+5. HTTPS: `sudo apt install certbot python3-certbot-nginx && sudo certbot --nginx -d vash-domen.ru`
+
+### Вариант 3 — Docker
+
+```bash
+docker compose -f deploy/docker-compose.yml up -d --build
+```
+
+Сайт будет доступен на порту 8080 (меняется в `deploy/docker-compose.yml`).
+
+### Перенос данных (заказы, отредактированные тексты)
+
+База сайта хранится в localStorage браузера администратора. Чтобы перенести её на новое
+устройство: админка → «Настройки» → **Экспорт базы** (скачается JSON) → на новом устройстве
+войти в админку → «Настройки» → **Импорт базы** → выбрать файл.
+
+### Обновление сайта после правок
+
+1. `npm run build`
+2. Статический хостинг — загрузить новую `dist/` (Netlify/Vercel из Git-репозитория делают это сами при пуше).
+3. VDS — `bash deploy/deploy.sh user@сервер`.
+4. Docker — `docker compose -f deploy/docker-compose.yml up -d --build`.
 
 ## Интеграция с каналом МАХ
 
