@@ -1,36 +1,69 @@
-import { useEffect, useRef } from "react";
-import { ABSTRACT_URL } from "../lib/db";
-import { IconArrow } from "./icons";
+import { useEffect, useRef, useState } from "react";
+import { IMG } from "../lib/db";
+import { Enso, IconArrow, YinYang } from "./icons";
 
-const WORDS: { w: string; c: string }[] = [
-  { w: "ТЕЛО", c: "text-peach-deep" },
-  { w: "ЧУВСТВА", c: "text-mint-deep" },
-  { w: "РАЗУМ", c: "text-sky-deep" },
-  { w: "ДУХ", c: "text-gold" },
-];
+const STRIP = "тело • чувства • разум • дух • тишина • опора • ясность • ";
 
-function MarqueeRow({ reverse, outline }: { reverse?: boolean; outline?: boolean }) {
-  const items = [...WORDS, ...WORDS, ...WORDS, ...WORDS, ...WORDS, ...WORDS];
+/* Медитативное кольцо вокруг фото: тонкие концентрические линии
+   вращаются с разной скоростью, а четыре слова поочерёдно
+   «всплывают» в четырёх точках окружности. */
+const ORBIT = ["тело", "чувства", "разум", "дух"];
+
+function OrbitWords() {
+  const [active, setActive] = useState(0);
+  const [staticAll, setStaticAll] = useState(false);
+
+  useEffect(() => {
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      setStaticAll(true);
+      return;
+    }
+    const t = window.setInterval(() => setActive((a) => (a + 1) % ORBIT.length), 3400);
+    return () => window.clearInterval(t);
+  }, []);
+
   return (
-    <div className="relative flex overflow-hidden py-1 select-none" aria-hidden>
-      <div
-        className={`flex shrink-0 items-center gap-[4vw] pr-[4vw] whitespace-nowrap ${
-          reverse ? "marquee-track-r" : "marquee-track-l"
-        }`}
-      >
-        {items.map((it, i) => (
-          <span key={i} className="flex items-center gap-[4vw]">
-            <span
-              className={`font-display font-black text-[clamp(44px,8.5vw,110px)] leading-none tracking-tight ${
-                outline ? `word-outline ${it.c}` : it.c
-              }`}
-            >
-              {it.w}
-            </span>
-            <span className="text-peach-deep text-[clamp(28px,4.5vw,58px)] leading-none">✳</span>
-          </span>
-        ))}
+    <div
+      className="pointer-events-none absolute -inset-[5%] sm:-inset-[7%]"
+      role="img"
+      aria-label="Тело, чувства, разум, дух"
+    >
+      {/* пунктирное кольцо — полный оборот за 28 секунд */}
+      <svg className="orbit-spin absolute inset-0 h-full w-full text-ink/40" viewBox="0 0 100 100" fill="none" aria-hidden>
+        <circle cx="50" cy="50" r="49.3" stroke="currentColor" strokeWidth="0.28" strokeDasharray="0.1 2.2" strokeLinecap="round" />
+        {ORBIT.map((_, i) => {
+          const a = ((45 + i * 90) * Math.PI) / 180;
+          return <circle key={i} cx={50 + 49.3 * Math.sin(a)} cy={50 - 49.3 * Math.cos(a)} r="0.5" fill="#a08149" fillOpacity="0.8" />;
+        })}
+      </svg>
+
+      {/* золотая дуга — вращается в противоположную сторону, 46 секунд */}
+      <div className="orbit-spin-rev absolute inset-[2.6%]" aria-hidden>
+        <svg viewBox="0 0 100 100" className="h-full w-full" fill="none">
+          <circle cx="50" cy="50" r="48.6" stroke="#a08149" strokeOpacity="0.5" strokeWidth="0.55" strokeLinecap="round" strokeDasharray="24 281" />
+        </svg>
       </div>
+
+      {/* слова на окружности */}
+      {ORBIT.map((w, i) => {
+        const a = 45 + i * 90;
+        const on = staticAll || active === i;
+        return (
+          <div key={w} className="absolute inset-0" style={{ transform: `rotate(${a}deg)` }} aria-hidden>
+            <span
+              className={`absolute left-1/2 top-0 flex items-center gap-2 whitespace-nowrap font-display italic tracking-[0.08em] transition-all duration-1000 ease-[cubic-bezier(0.22,1,0.36,1)] text-[13.5px] sm:text-[16.5px] ${
+                on
+                  ? "opacity-100 text-ink/90 [text-shadow:0_1px_14px_rgba(244,241,234,0.95)]"
+                  : "opacity-0"
+              }`}
+              style={{ transform: `translate(-50%, calc(-50% + ${on ? "-7px" : "9px"})) rotate(${-a}deg)` }}
+            >
+              <i className={`h-1.5 w-1.5 rounded-full bg-gold transition-transform duration-1000 ${on ? "scale-100" : "scale-0"}`} />
+              {w}
+            </span>
+          </div>
+        );
+      })}
     </div>
   );
 }
@@ -38,163 +71,158 @@ function MarqueeRow({ reverse, outline }: { reverse?: boolean; outline?: boolean
 export default function Hero() {
   const ref = useRef<HTMLElement>(null);
 
-  /* лёгкий параллакс от мыши (отключается при reduced motion) */
+  /* лёгкий параллакс от мыши */
   useEffect(() => {
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
     const el = ref.current;
     if (!el) return;
     const onMove = (e: MouseEvent) => {
       const r = el.getBoundingClientRect();
-      const x = (e.clientX - r.left) / r.width - 0.5;
-      const y = (e.clientY - r.top) / r.height - 0.5;
-      el.style.setProperty("--px", String(x));
-      el.style.setProperty("--py", String(y));
+      el.style.setProperty("--px", String((e.clientX - r.left) / r.width - 0.5));
+      el.style.setProperty("--py", String((e.clientY - r.top) / r.height - 0.5));
     };
     el.addEventListener("mousemove", onMove);
     return () => el.removeEventListener("mousemove", onMove);
   }, []);
 
   return (
-    <section id="top" ref={ref} className="relative overflow-hidden pt-28 sm:pt-32">
-      {/* фоновые пятна */}
-      <div className="pointer-events-none absolute -top-24 -left-32 h-[480px] w-[480px] rounded-full bg-sky/60 blur-3xl" />
-      <div className="pointer-events-none absolute top-40 -right-40 h-[520px] w-[520px] rounded-full bg-peach/50 blur-3xl" />
-      <div className="pointer-events-none absolute bottom-10 left-1/3 h-[380px] w-[380px] rounded-full bg-lav/60 blur-3xl" />
+    <section id="top" ref={ref} className="relative overflow-hidden pt-32 sm:pt-36">
+      {/* фоновые тона */}
+      <div className="pointer-events-none absolute -top-32 right-[-10%] h-[560px] w-[560px] rounded-full bg-stone blur-3xl" />
+      <div className="pointer-events-none absolute top-1/2 -left-40 h-[420px] w-[420px] rounded-full bg-[#e7e3d8] blur-3xl" />
 
       <div className="relative mx-auto max-w-7xl px-5 sm:px-8">
-        <div className="grid items-center gap-14 lg:grid-cols-12">
+        <div className="grid items-center gap-16 lg:grid-cols-12">
           {/* Текст */}
           <div className="lg:col-span-7">
-            <div className="fadeup flex flex-wrap gap-2.5">
-              {["Онлайн и очно", "Доступные цены", "Безопасное пространство"].map((b) => (
-                <span
-                  key={b}
-                  className="inline-flex items-center gap-1.5 rounded-full border border-ink/10 bg-paper/80 px-3.5 py-1.5 text-[12.5px] font-bold text-ink-soft shadow-sm"
-                >
-                  <span className="h-1.5 w-1.5 rounded-full bg-peach-deep" />
+            <div className="fadeup flex flex-wrap items-center gap-x-3 gap-y-2 text-[11.5px] font-bold tracking-[0.2em] uppercase text-ink-soft">
+              {["Онлайн и очно", "Доступные цены", "Пространство баланса"].map((b, i) => (
+                <span key={b} className="flex items-center gap-3">
+                  {i > 0 && <span className="h-1 w-1 rounded-full bg-gold" />}
                   {b}
                 </span>
               ))}
             </div>
 
-            <h1 className="fadeup mt-7 font-display text-[clamp(30px,4.6vw,58px)] font-bold leading-[1.08] tracking-tight" style={{ animationDelay: "80ms" }}>
-              Распаковка
-              <br />
-              психо-эмоциональных{" "}
-              <span className="relative inline-block text-peach-deep">
-                зажимов
-                <svg viewBox="0 0 120 12" className="absolute -bottom-2 left-0 w-full text-gold" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" aria-hidden>
-                  <path d="M3 9c30-6 60-6 114-3" />
-                </svg>
-              </span>
+            <h1
+              className="fadeup mt-8 font-display font-medium text-[clamp(34px,5vw,64px)] leading-[1.05] tracking-[-0.015em]"
+              style={{ animationDelay: "100ms" }}
+            >
+              Провожу сквозь лабиринты ума&nbsp;и&nbsp;тела&nbsp;—{" "}
+              <span className="italic text-gold-deep">к тишине, опоре</span> и&nbsp;созидательной силе
             </h1>
 
-            <p className="fadeup mt-6 font-serif italic text-[clamp(22px,2.6vw,32px)] leading-snug text-ink-soft" style={{ animationDelay: "160ms" }}>
-              Раскрытие внутренних ресурсов —{" "}
-              <span className="text-ink">для полноты и яркости жизни</span>
+            <p className="fadeup mt-7 max-w-xl text-[16px] sm:text-[17px] font-medium leading-relaxed text-ink" style={{ animationDelay: "200ms" }}>
+              Распаковка психо-эмоциональных зажимов. Раскрытие внутренних ресурсов — для полноты и яркости жизни.
             </p>
 
-            <p className="fadeup mt-6 max-w-xl text-[15.5px] sm:text-base leading-relaxed text-ink-soft" style={{ animationDelay: "240ms" }}>
-              Интегративный подход: гештальт-терапия, телесно-ориентированные практики,
-              mindfulness. Более <b className="text-ink">20 лет личной практики</b> трансперсональных
-              методов, около <b className="text-ink">5 лет работы с клиентами</b>. Бережность к вашему
-              культурному коду.
+            {/* ТЕЛО • ЧУВСТВА • РАЗУМ • ДУХ — единый графитовый тон */}
+            <div className="fadeup mt-9 border-y border-line py-4" style={{ animationDelay: "280ms" }}>
+              <p className="flex flex-wrap items-baseline gap-y-1 font-display text-[clamp(17px,2.2vw,24px)] font-semibold uppercase tracking-[0.22em] text-ink/90">
+                {["Тело", "Чувства", "Разум", "Дух"].map((w, i) => (
+                  <span key={w} className="flex items-baseline">
+                    {i > 0 && <span className="mx-4 text-[0.55em] leading-none text-ink/35">•</span>}
+                    {w}
+                  </span>
+                ))}
+              </p>
+            </div>
+
+            <p className="fadeup mt-7 max-w-xl text-[14px] leading-relaxed text-ink-soft" style={{ animationDelay: "340ms" }}>
+              Интегративный подход: гештальт-терапия, телесно-ориентированные практики, mindfulness,
+              кундалини-йога, ДАО-практики. Более <b className="font-semibold text-ink">20 лет личной практики</b>.
+              Бережность к вашему культурному коду.
             </p>
 
-            <div className="fadeup mt-9 flex flex-wrap items-center gap-4" style={{ animationDelay: "320ms" }}>
+            <div className="fadeup mt-10 flex flex-wrap items-center gap-5" style={{ animationDelay: "420ms" }}>
               <a
                 href="#services"
-                className="group inline-flex items-center gap-3 rounded-full bg-ink px-7 py-4 text-[15px] font-bold text-paper transition-all duration-300 hover:-translate-y-1 hover:bg-peach-deep hover:shadow-[0_20px_45px_-14px_rgba(224,138,92,0.9)]"
+                className="group inline-flex items-center gap-3 rounded-full bg-ink px-8 py-4 text-[13px] font-bold tracking-[0.14em] uppercase text-card transition-all duration-300 hover:-translate-y-1 hover:bg-gold-deep hover:shadow-[0_22px_44px_-16px_rgba(138,109,60,0.85)]"
               >
-                Выбрать формат поддержки
-                <IconArrow className="h-4.5 w-4.5 transition-transform duration-300 group-hover:translate-x-1.5" />
+                Выбрать формат
+                <IconArrow className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1.5" />
               </a>
-              <a
-                href="#approach"
-                className="inline-flex items-center gap-2 rounded-full border-2 border-ink/15 px-6 py-3.5 text-[15px] font-bold text-ink transition-all duration-300 hover:border-ink hover:bg-ink hover:text-paper"
-              >
-                Как я работаю
+              <a href="#schedule" className="link-grow text-[13px] font-bold tracking-[0.14em] uppercase text-ink-soft transition-colors hover:text-ink">
+                Афиша встреч ↓
               </a>
             </div>
 
             {/* Статы */}
-            <dl className="fadeup mt-12 grid max-w-xl grid-cols-3 gap-4 border-t border-ink/10 pt-7" style={{ animationDelay: "400ms" }}>
+            <dl className="fadeup mt-14 grid max-w-xl grid-cols-3 gap-6" style={{ animationDelay: "500ms" }}>
               {[
                 { n: "20+", t: "лет личной практики трансперсональных методов" },
-                { n: "~5", t: "лет бережной работы с клиентами" },
-                { n: "2", t: "образования: МИГИП и МГППУ (обучаюсь)" },
+                { n: "≈5", t: "лет бережной работы с клиентами" },
+                { n: "4", t: "уровня работы: тело, чувства, разум, дух" },
               ].map((s) => (
-                <div key={s.n}>
-                  <dt className="font-display text-2xl sm:text-3xl font-bold text-ink">{s.n}</dt>
-                  <dd className="mt-1.5 text-[12px] leading-snug font-medium text-ink-soft">{s.t}</dd>
+                <div key={s.n} className="border-l border-line pl-4">
+                  <dt className="font-display text-[34px] font-medium leading-none">{s.n}</dt>
+                  <dd className="mt-2 text-[11.5px] leading-snug font-medium text-ink-soft">{s.t}</dd>
                 </div>
               ))}
             </dl>
           </div>
 
-          {/* Визуал */}
-          <div className="relative lg:col-span-5">
+          {/* Визуал — круг целостности */}
+          <div className="lg:col-span-5">
             <div
-              className="relative mx-auto aspect-[10/11] max-w-[440px] transition-transform duration-300 ease-out"
-              style={{
-                transform:
-                  "translate(calc(var(--px, 0) * 14px), calc(var(--py, 0) * 14px))",
-              }}
+              className="relative mx-auto aspect-square max-w-[460px] transition-transform duration-500 ease-out"
+              style={{ transform: "translate(calc(var(--px, 0) * 16px), calc(var(--py, 0) * 16px))" }}
             >
-              {/* дышащий круг */}
-              <div className="breathe absolute inset-[-9%] rounded-full bg-[radial-gradient(circle_at_35%_30%,#f7d9c3_0%,#e7e1f2_48%,#dde8f1_100%)] opacity-80" />
-              {/* вращающееся пунктирное кольцо */}
-              <svg className="spin-slow absolute inset-[-15%] text-ink/25" viewBox="0 0 100 100" fill="none" aria-hidden>
-                <circle cx="50" cy="50" r="48.5" stroke="currentColor" strokeWidth="0.5" strokeDasharray="1.5 4" />
-              </svg>
-              {/* блоб с абстракцией */}
-              <div className="blob absolute inset-0 overflow-hidden border border-ink/10 shadow-[0_40px_80px_-30px_rgba(51,46,61,0.35)]">
+              <div className="breathe absolute inset-[-7%] rounded-full bg-[radial-gradient(circle_at_38%_30%,#e9e4d9_0%,#ddd7ca_60%,#d3ccbd_100%)]" />
+              <Enso className="spin-slow absolute inset-[-13%] text-ink/30" strokeWidth={1} />
+              <div className="absolute inset-0 overflow-hidden rounded-full border border-ink/15 shadow-[0_50px_90px_-40px_rgba(35,33,29,0.45)]">
                 <img
-                  src={ABSTRACT_URL}
-                  alt="Мягкая абстракция: плавные линии пастельных тонов — метафора внутреннего движения"
+                  src={IMG.hero}
+                  alt="Инструктор в белом, видна со спины, волосы собраны в пучок — в светлой студии"
                   className="h-full w-full object-cover"
                   loading="eager"
                 />
               </div>
 
-              {/* плавающие чипы */}
-              <div className="floaty absolute -left-6 top-[16%] rounded-full bg-paper px-4 py-2 text-[12.5px] font-bold text-ink shadow-[0_14px_34px_-14px_rgba(51,46,61,0.4)] border border-ink/8">
-                <span className="text-mint-deep">✳</span> телесные практики
-              </div>
-              <div className="floaty-slow absolute -right-4 top-[38%] rounded-full bg-ink px-4 py-2 text-[12.5px] font-bold text-paper shadow-lg">
-                гештальт-терапия <span className="text-peach">✳</span>
-              </div>
-              <div className="floaty absolute -left-2 bottom-[14%] rounded-full bg-paper px-4 py-2 text-[12.5px] font-bold text-ink shadow-[0_14px_34px_-14px_rgba(51,46,61,0.4)] border border-ink/8" style={{ animationDelay: "1.2s" }}>
-                <span className="text-sky-deep">✳</span> mindfulness
+              {/* вращающееся кольцо со словами */}
+              <OrbitWords />
+
+              {/* инь-ян на границе круга */}
+              <div className="floaty absolute -top-5 left-[6%]">
+                <YinYang className="h-12 w-12 drop-shadow-[0_12px_24px_rgba(35,33,29,0.25)]" />
               </div>
 
-              {/* мини-карточка оффера */}
+              {/* подписи */}
+              <div className="floaty absolute -right-2 top-[30%] rounded-full border border-line bg-card/90 px-4 py-2 text-[11.5px] font-bold tracking-[0.08em] uppercase text-ink-soft shadow-sm backdrop-blur" style={{ animationDelay: "1.4s" }}>
+                кундалини-йога
+              </div>
+              <div className="floaty absolute -left-6 top-[58%] rounded-full border border-line bg-card/90 px-4 py-2 text-[11.5px] font-bold tracking-[0.08em] uppercase text-ink-soft shadow-sm backdrop-blur" style={{ animationDelay: "0.7s" }}>
+                ДАО-практики
+              </div>
+
+              {/* мини-оффер */}
               <a
-                href="#services"
-                className="floaty-slow group absolute -bottom-7 right-0 flex items-center gap-3 rounded-2xl border border-ink/10 bg-paper/95 px-4.5 py-3.5 shadow-[0_24px_50px_-20px_rgba(51,46,61,0.45)] backdrop-blur transition-colors hover:border-peach-deep/50"
-                style={{ animationDelay: "0.6s" }}
+                href="#contact"
+                className="group absolute -bottom-5 left-1/2 flex w-[86%] -translate-x-1/2 items-center gap-3.5 rounded-full border border-line bg-card/95 py-3 pl-4 pr-5 shadow-[0_28px_56px_-24px_rgba(35,33,29,0.5)] backdrop-blur transition-all duration-300 hover:border-gold"
               >
-                <span className="grid h-10 w-10 place-items-center rounded-full bg-mint text-mint-deep">
-                  <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round">
-                    <circle cx="12" cy="12" r="8.2" />
-                    <path d="M12 7.5V12l3.2 2.4" />
-                  </svg>
-                </span>
+                <span className="ink-pulse h-2 w-2 shrink-0 rounded-full bg-moss" />
                 <span className="leading-tight">
-                  <span className="block text-[13px] font-extrabold">Первая встреча — бесплатно</span>
-                  <span className="block text-[11.5px] font-medium text-ink-soft">20 минут · знакомство и запрос</span>
+                  <span className="block text-[12.5px] font-extrabold">Первая встреча — знакомство</span>
+                  <span className="block text-[11px] font-medium text-ink-soft">провожу сквозь лабиринты — бережно и без спешки</span>
                 </span>
-                <IconArrow className="h-4 w-4 text-ink-faint transition-all duration-300 group-hover:translate-x-1 group-hover:text-peach-deep" />
+                <IconArrow className="ml-auto h-4 w-4 shrink-0 text-ink-faint transition-all duration-300 group-hover:translate-x-1 group-hover:text-gold-deep" />
               </a>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Огромные слова */}
-      <div className="relative mt-16 sm:mt-20 border-y border-ink/8 bg-paper/60 py-4 backdrop-blur-sm">
-        <MarqueeRow />
-        <MarqueeRow reverse outline />
+      {/* медленная строка-мантра */}
+      <div className="relative mt-20 border-t border-line py-5 sm:mt-24" aria-hidden>
+        <div className="flex overflow-hidden">
+          <div className="marquee-track-l flex shrink-0 whitespace-nowrap">
+            {[0, 1].map((k) => (
+              <span key={k} className="word-outline pr-8 font-display text-[clamp(30px,5vw,60px)] font-medium uppercase tracking-[0.14em] text-ink/25">
+                {STRIP.repeat(3)}
+              </span>
+            ))}
+          </div>
+        </div>
       </div>
     </section>
   );

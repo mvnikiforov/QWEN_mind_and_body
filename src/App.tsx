@@ -2,10 +2,14 @@ import { useEffect, useState } from "react";
 import { StoreProvider } from "./lib/store";
 import Header from "./components/Header";
 import Hero from "./components/Hero";
+import Categories from "./components/Categories";
 import Showcase from "./components/Showcase";
+import HotBanners from "./components/HotBanners";
 import Approach from "./components/Approach";
 import About from "./components/About";
+import Schedule from "./components/Schedule";
 import Journey from "./components/Journey";
+import ChannelFeed from "./components/ChannelFeed";
 import { ContactSection, FaqSection } from "./components/Contact";
 import Footer from "./components/Footer";
 import AdminApp from "./admin/AdminApp";
@@ -27,10 +31,14 @@ function Site() {
       <Header />
       <main>
         <Hero />
+        <Categories />
         <Showcase />
+        <HotBanners />
         <Approach />
         <About />
+        <Schedule />
         <Journey />
+        <ChannelFeed />
         <ContactSection />
         <FaqSection />
       </main>

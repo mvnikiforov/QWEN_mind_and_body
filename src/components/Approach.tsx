@@ -1,32 +1,29 @@
 import { useStore } from "../lib/store";
+import { Enso, YinYang } from "./icons";
 import { Reveal, SectionHead } from "./ui";
-import { IconBody, IconCare, IconFeel, IconGestalt, IconMind, IconSpirit, IconStill, IconWave } from "./icons";
 
 const LEVELS = [
-  { word: "ТЕЛО", Icon: IconBody, tint: "bg-peach/60", accent: "text-peach-deep", text: "Напряжение, зажимы, энергия и опора — то, что можно почувствовать напрямую." },
-  { word: "ЧУВСТВА", Icon: IconFeel, tint: "bg-mint/70", accent: "text-mint-deep", text: "Право чувствовать, проживать и выражать — без оценок и запретов." },
-  { word: "РАЗУМ", Icon: IconMind, tint: "bg-sky/70", accent: "text-sky-deep", text: "Ясность мыслей, понимание своих сценариев и способность выбирать." },
-  { word: "ДУХ", Icon: IconSpirit, tint: "bg-lav/70", accent: "text-lav-deep", text: "Смыслы, ценности и связь с чем-то большим, чем повседневность." },
+  { n: "I", w: "Тело", d: "Зажимы, напряжение, усталость. Возвращаем телу лёгкость и текучесть." },
+  { n: "II", w: "Чувства", d: "Право чувствовать. Бережный контакт с тем, что долго откладывалось." },
+  { n: "III", w: "Разум", d: "Ясность вместо лабиринта. Наблюдение без осуждения и спешки." },
+  { n: "IV", w: "Дух", d: "Опора и смысл. Связь с собственной природной мудростью." },
 ];
 
 const METHODS = [
   {
-    Icon: IconGestalt,
-    title: "Гештальт-терапия",
-    tint: "bg-peach text-peach-deep",
-    text: "Помогает осознать и завершить незавершённые ситуации, восстановить контакт с собой и миром. Бережный метод, возвращающий чувствам право на существование и строящий здоровые отношения.",
+    n: "01",
+    t: "Гештальт-терапия",
+    d: "Помогает осознать и завершить незавершённые ситуации, восстановить контакт с собой и миром. Бережный метод, возвращающий чувствам право на существование и строящий здоровые отношения.",
   },
   {
-    Icon: IconWave,
-    title: "Телесно-ориентированные практики",
-    tint: "bg-mint text-mint-deep",
-    text: "Освобождают психоэмоциональные зажимы, накопленные в теле. Через движение, дыхание и внимание снимаем хроническое напряжение и открываем доступ к жизненной энергии.",
+    n: "02",
+    t: "Телесно-ориентированные практики",
+    d: "Освобождают психоэмоциональные зажимы, накопленные в теле. Через движение, дыхание и внимание снимаем хроническое напряжение и открываем доступ к жизненной энергии.",
   },
   {
-    Icon: IconStill,
-    title: "Mindfulness и медитация",
-    tint: "bg-sky text-sky-deep",
-    text: "Развивают навык присутствия и безоценочного наблюдения. Снижают тревогу, улучшают концентрацию, позволяют видеть ситуации яснее.",
+    n: "03",
+    t: "Mindfulness и медитация",
+    d: "Развивают навык присутствия и безоценочного наблюдения. Снижают тревогу, улучшают концентрацию, позволяют видеть ситуации яснее.",
   },
 ];
 
@@ -34,92 +31,102 @@ export default function Approach() {
   const { db } = useStore();
 
   return (
-    <section id="approach" className="relative overflow-hidden bg-cream/60 py-20 sm:py-28">
-      <div className="pointer-events-none absolute -left-24 bottom-0 h-96 w-96 rounded-full bg-lav/60 blur-3xl" />
+    <section id="approach" className="relative bg-stone/45 py-20 sm:py-28">
       <div className="mx-auto max-w-7xl px-5 sm:px-8">
         <SectionHead
           kicker="Подход"
-          title={<>Четыре уровня <span className="font-serif italic font-semibold text-peach-deep">целостности</span></>}
-          sub="Человек — многомерное существо. Мы работаем на уровнях тела, чувств, разума и духа. Дисбаланс в одном отражается на остальных."
+          title={
+            <>
+              Четыре уровня <span className="italic text-gold-deep">целостности</span>
+            </>
+          }
+          sub="Человек многомерен. Работа ведётся на всех уровнях: тело, чувства, разум, дух. Дисбаланс в одном отражается на остальных."
         />
 
-        {/* Уровни */}
-        <div className="relative mt-14 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
-          <div className="pointer-events-none absolute left-0 right-0 top-1/2 hidden border-t-2 border-dashed border-ink/15 lg:block" aria-hidden />
+        {/* Четыре уровня */}
+        <div className="mt-14 grid gap-px overflow-hidden rounded-[28px] border border-line bg-line sm:grid-cols-2 lg:grid-cols-4">
           {LEVELS.map((l, i) => (
-            <Reveal key={l.word} delay={i * 110}>
-              <div
-                className={`group relative h-full rounded-[26px] border border-ink/10 ${l.tint} p-6 transition-all duration-500 hover:-translate-y-2 hover:shadow-[0_30px_60px_-28px_rgba(51,46,61,0.35)]`}
-              >
-                <div className="flex items-center justify-between">
-                  <span className={`grid h-12 w-12 place-items-center rounded-full bg-paper/80 ${l.accent} shadow-sm transition-transform duration-500 group-hover:scale-110 group-hover:-rotate-6`}>
-                    <l.Icon className="h-6 w-6" />
-                  </span>
-                  <span className="font-display text-[13px] font-bold text-ink/35">0{i + 1}</span>
-                </div>
-                <p className={`mt-5 font-display text-[19px] font-black tracking-wide ${l.accent}`}>{l.word}</p>
-                <p className="mt-2.5 text-[13.5px] leading-relaxed text-ink-soft">{l.text}</p>
+            <Reveal key={l.n} delay={i * 100} className="h-full">
+              <div className="group h-full bg-card p-7 transition-colors duration-500 hover:bg-ink">
+                <p className="font-display text-[46px] font-light leading-none text-gold/60 transition-colors duration-500 group-hover:text-gold">
+                  {l.n}
+                </p>
+                <h3 className="mt-5 font-display text-[24px] font-semibold">{l.w}</h3>
+                <p className="mt-2.5 text-[13.5px] leading-relaxed text-ink-soft transition-colors duration-500 group-hover:text-card/70">
+                  {l.d}
+                </p>
               </div>
             </Reveal>
           ))}
         </div>
 
-        {/* Три метода */}
-        <div className="mt-20 flex flex-wrap items-end justify-between gap-6">
-          <Reveal>
-            <h3 className="font-display text-2xl sm:text-3xl font-bold">
-              Три метода — <span className="font-serif italic font-semibold text-peach-deep">одна цель</span>
-            </h3>
-          </Reveal>
-          <Reveal delay={120}>
-            <p className="max-w-md text-[14.5px] font-medium text-ink-soft">
-              Методы дополняют друг друга: разговор и осознание, тело и дыхание, тишина и присутствие. Пропорции подбираются под ваш запрос.
-            </p>
-          </Reveal>
-        </div>
-
-        <div className="mt-10 grid gap-6 md:grid-cols-3">
-          {METHODS.map((m, i) => (
-            <Reveal key={m.title} delay={i * 120} className={i === 1 ? "md:translate-y-6" : ""}>
-              <article className="group relative h-full rounded-[26px] border border-ink/10 bg-paper p-7 transition-all duration-500 hover:-translate-y-1.5 hover:border-ink/25 hover:shadow-[0_30px_60px_-30px_rgba(51,46,61,0.35)]">
-                <span className={`inline-grid h-14 w-14 place-items-center rounded-[18px] ${m.tint} transition-transform duration-500 group-hover:rotate-6 group-hover:scale-105`}>
-                  <m.Icon className="h-7 w-7" />
-                </span>
-                <h4 className="mt-5 font-display text-[16.5px] font-bold leading-snug">{m.title}</h4>
-                <p className="mt-3 text-[14px] leading-relaxed text-ink-soft">{m.text}</p>
-                <span className="mt-5 block h-[3px] w-10 rounded-full bg-ink/15 transition-all duration-500 group-hover:w-16 group-hover:bg-peach-deep" />
-              </article>
-            </Reveal>
-          ))}
+        {/* Три метода: sticky-левая колонка */}
+        <div className="mt-24 grid gap-12 lg:grid-cols-12">
+          <div className="lg:col-span-4">
+            <div className="lg:sticky lg:top-28">
+              <Reveal>
+                <p className="flex items-center gap-3 text-[11px] font-bold tracking-[0.32em] uppercase text-gold-deep">
+                  <span className="h-px w-10 bg-current opacity-60" />
+                  Методы
+                </p>
+                <h3 className="mt-5 font-display text-[clamp(28px,3.4vw,42px)] font-medium leading-[1.08]">
+                  Три пути — <span className="italic text-gold-deep">одна цель</span>
+                </h3>
+                <p className="mt-5 text-[14.5px] leading-relaxed text-ink-soft">
+                  Методы дополняют друг друга: разговор с чувствами, работа с телом и тренировка
+                  присутствия. Пропорции подбираются под вас.
+                </p>
+                <div className="mt-8 flex items-center gap-4">
+                  <YinYang className="h-12 w-12" />
+                  <p className="text-[12.5px] font-semibold leading-snug text-ink-faint">
+                    Равновесие сердца и разума —<br />внутренняя ось всей работы
+                  </p>
+                </div>
+              </Reveal>
+            </div>
+          </div>
+          <div className="lg:col-span-8">
+            <div className="space-y-5">
+              {METHODS.map((m, i) => (
+                <Reveal key={m.n} delay={i * 110}>
+                  <div className="group flex gap-7 rounded-[24px] border border-line bg-card p-7 transition-all duration-500 hover:-translate-x-0 hover:border-gold/60 hover:shadow-[0_28px_56px_-34px_rgba(35,33,29,0.4)] sm:gap-10 sm:p-9">
+                    <span className="font-display text-[40px] font-light leading-none text-ink/20 transition-colors duration-500 group-hover:text-gold sm:text-[52px]">
+                      {m.n}
+                    </span>
+                    <div>
+                      <h4 className="font-display text-[24px] font-semibold">{m.t}</h4>
+                      <p className="mt-2.5 text-[14.5px] leading-relaxed text-ink-soft">{m.d}</p>
+                    </div>
+                  </div>
+                </Reveal>
+              ))}
+            </div>
+          </div>
         </div>
 
         {/* Культурный код */}
-        <Reveal delay={100}>
-          <aside className="relative mt-20 overflow-hidden rounded-[32px] bg-lav/80 border border-lav-deep/25 p-8 sm:p-12">
-            <svg className="pointer-events-none absolute -right-10 -top-10 h-56 w-56 text-lav-deep/25" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" aria-hidden>
-              <path d="M12 3v18M4.2 7.5l15.6 9M19.8 7.5l-15.6 9" />
-            </svg>
-            <div className="relative grid gap-8 lg:grid-cols-[auto_1fr] lg:items-start">
-              <span className="grid h-16 w-16 place-items-center rounded-full bg-paper text-lav-deep shadow-sm">
-                <IconCare className="h-8 w-8" />
-              </span>
-              <div>
-                <h3 className="font-display text-[22px] sm:text-[26px] font-bold leading-tight">
+        <Reveal delay={120}>
+          <div className="relative mt-24 overflow-hidden rounded-[32px] bg-ink px-7 py-12 text-card sm:px-14 sm:py-14">
+            <Enso className="absolute -right-14 -top-14 h-64 w-64 text-card/12" strokeWidth={2} />
+            <div className="relative grid gap-10 lg:grid-cols-12 lg:items-center">
+              <div className="lg:col-span-4">
+                <p className="text-[11px] font-bold tracking-[0.32em] uppercase text-gold">Важно</p>
+                <h3 className="mt-4 font-display text-[clamp(26px,3vw,38px)] font-medium leading-tight">
                   {db.content.culture.title}
                 </h3>
-                <p className="mt-4 max-w-3xl text-[15px] sm:text-base leading-relaxed text-ink-soft">
-                  {db.content.culture.text}
-                </p>
-                <div className="mt-6 flex flex-wrap gap-2.5">
-                  {["Жизнь на стыке культур", "Межкультурные отношения", "Конфликт ценностей", "Религиозный контекст"].map((t) => (
-                    <span key={t} className="rounded-full border border-ink/15 bg-paper/70 px-3.5 py-1.5 text-[12.5px] font-bold text-ink-soft">
-                      {t}
+              </div>
+              <div className="lg:col-span-8">
+                <p className="text-[15px] leading-relaxed text-card/80">{db.content.culture.text}</p>
+                <div className="mt-7 flex flex-wrap gap-2.5">
+                  {["любая культура", "любая вера", "без оценок", "ваш темп"].map((c) => (
+                    <span key={c} className="rounded-full border border-card/25 px-4 py-2 text-[12px] font-bold text-card/80">
+                      {c}
                     </span>
                   ))}
                 </div>
               </div>
             </div>
-          </aside>
+          </div>
         </Reveal>
       </div>
     </section>

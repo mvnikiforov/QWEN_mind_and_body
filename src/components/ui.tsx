@@ -29,7 +29,7 @@ export function Reveal({
           }
         });
       },
-      { threshold: 0.12, rootMargin: "0px 0px -6% 0px" }
+      { threshold: 0.1, rootMargin: "0px 0px -5% 0px" }
     );
     io.observe(el);
     return () => io.disconnect();
@@ -46,7 +46,7 @@ export function Reveal({
   );
 }
 
-/* Заголовок секции: кикер с астериском + крупный display-заголовок */
+/* Заголовок секции: кикер с тонкой линией + изящный serif-заголовок */
 export function SectionHead({
   kicker,
   title,
@@ -58,39 +58,33 @@ export function SectionHead({
   sub?: ReactNode;
   tone?: "ink" | "paper";
 }) {
-  const kickerColor = tone === "ink" ? "text-peach-deep" : "text-peach";
-  const titleColor = tone === "ink" ? "text-ink" : "text-paper";
-  const subColor = tone === "ink" ? "text-ink-soft" : "text-paper/70";
+  const k = tone === "ink" ? "text-gold-deep" : "text-gold";
+  const t = tone === "ink" ? "text-ink" : "text-card";
+  const s = tone === "ink" ? "text-ink-soft" : "text-card/70";
   return (
     <div className="max-w-3xl">
       <Reveal>
-        <p className={`flex items-center gap-2 text-[11px] sm:text-xs font-bold tracking-[0.22em] uppercase ${kickerColor}`}>
-          <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
-            <path d="M12 3v18M4.2 7.5l15.6 9M19.8 7.5l-15.6 9" />
-          </svg>
+        <p className={`flex items-center gap-3 text-[11px] font-bold tracking-[0.32em] uppercase ${k}`}>
+          <span className="h-px w-10 bg-current opacity-60" />
           {kicker}
         </p>
       </Reveal>
-      <Reveal delay={90}>
-        <h2 className={`mt-4 font-display text-[26px] leading-[1.15] sm:text-4xl lg:text-[44px] font-bold ${titleColor}`}>
+      <Reveal delay={100}>
+        <h2 className={`mt-5 font-display font-medium text-[clamp(30px,4.4vw,52px)] leading-[1.06] tracking-[-0.01em] ${t}`}>
           {title}
         </h2>
       </Reveal>
       {sub && (
-        <Reveal delay={180}>
-          <p className={`mt-5 text-base sm:text-lg leading-relaxed ${subColor}`}>{sub}</p>
+        <Reveal delay={190}>
+          <p className={`mt-5 max-w-2xl text-[15.5px] sm:text-base leading-relaxed ${s}`}>{sub}</p>
         </Reveal>
       )}
     </div>
   );
 }
 
-export function Chip({ children, className = "" }: { children: ReactNode; className?: string }) {
-  return (
-    <span
-      className={`inline-flex items-center gap-1.5 rounded-full border border-ink/12 bg-paper/70 px-3.5 py-1.5 text-[13px] font-semibold text-ink-soft ${className}`}
-    >
-      {children}
-    </span>
-  );
+/* Предзаполнение формы записи из любой точки сайта */
+export function prefillService(title: string, price: string) {
+  window.dispatchEvent(new CustomEvent("prefill-service", { detail: { title, price } }));
+  document.getElementById("contact")?.scrollIntoView({ behavior: "smooth" });
 }
