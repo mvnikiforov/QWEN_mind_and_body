@@ -1,8 +1,72 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { IMG } from "../lib/db";
 import { Enso, IconArrow, YinYang } from "./icons";
 
 const STRIP = "тело • чувства • разум • дух • тишина • опора • ясность • ";
+
+/* Медитативное кольцо вокруг фото: тонкие концентрические линии
+   вращаются с разной скоростью, а четыре слова поочерёдно
+   «всплывают» в четырёх точках окружности. */
+const ORBIT = ["тело", "чувства", "разум", "дух"];
+
+function OrbitWords() {
+  const [active, setActive] = useState(0);
+  const [staticAll, setStaticAll] = useState(false);
+
+  useEffect(() => {
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      setStaticAll(true);
+      return;
+    }
+    const t = window.setInterval(() => setActive((a) => (a + 1) % ORBIT.length), 3400);
+    return () => window.clearInterval(t);
+  }, []);
+
+  return (
+    <div
+      className="pointer-events-none absolute -inset-[5%] sm:-inset-[7%]"
+      role="img"
+      aria-label="Тело, чувства, разум, дух"
+    >
+      {/* пунктирное кольцо — полный оборот за 28 секунд */}
+      <svg className="orbit-spin absolute inset-0 h-full w-full text-ink/40" viewBox="0 0 100 100" fill="none" aria-hidden>
+        <circle cx="50" cy="50" r="49.3" stroke="currentColor" strokeWidth="0.28" strokeDasharray="0.1 2.2" strokeLinecap="round" />
+        {ORBIT.map((_, i) => {
+          const a = ((45 + i * 90) * Math.PI) / 180;
+          return <circle key={i} cx={50 + 49.3 * Math.sin(a)} cy={50 - 49.3 * Math.cos(a)} r="0.5" fill="#a08149" fillOpacity="0.8" />;
+        })}
+      </svg>
+
+      {/* золотая дуга — вращается в противоположную сторону, 46 секунд */}
+      <div className="orbit-spin-rev absolute inset-[2.6%]" aria-hidden>
+        <svg viewBox="0 0 100 100" className="h-full w-full" fill="none">
+          <circle cx="50" cy="50" r="48.6" stroke="#a08149" strokeOpacity="0.5" strokeWidth="0.55" strokeLinecap="round" strokeDasharray="24 281" />
+        </svg>
+      </div>
+
+      {/* слова на окружности */}
+      {ORBIT.map((w, i) => {
+        const a = 45 + i * 90;
+        const on = staticAll || active === i;
+        return (
+          <div key={w} className="absolute inset-0" style={{ transform: `rotate(${a}deg)` }} aria-hidden>
+            <span
+              className={`absolute left-1/2 top-0 flex items-center gap-2 whitespace-nowrap font-display italic tracking-[0.08em] transition-all duration-1000 ease-[cubic-bezier(0.22,1,0.36,1)] text-[13.5px] sm:text-[16.5px] ${
+                on
+                  ? "opacity-100 text-ink/90 [text-shadow:0_1px_14px_rgba(244,241,234,0.95)]"
+                  : "opacity-0"
+              }`}
+              style={{ transform: `translate(-50%, calc(-50% + ${on ? "-7px" : "9px"})) rotate(${-a}deg)` }}
+            >
+              <i className={`h-1.5 w-1.5 rounded-full bg-gold transition-transform duration-1000 ${on ? "scale-100" : "scale-0"}`} />
+              {w}
+            </span>
+          </div>
+        );
+      })}
+    </div>
+  );
+}
 
 export default function Hero() {
   const ref = useRef<HTMLElement>(null);
@@ -115,16 +179,19 @@ export default function Hero() {
                 />
               </div>
 
+              {/* вращающееся кольцо со словами */}
+              <OrbitWords />
+
               {/* инь-ян на границе круга */}
-              <div className="floaty absolute -left-4 top-[10%]">
-                <YinYang className="h-14 w-14 drop-shadow-[0_12px_24px_rgba(35,33,29,0.25)]" />
+              <div className="floaty absolute -top-5 left-[6%]">
+                <YinYang className="h-12 w-12 drop-shadow-[0_12px_24px_rgba(35,33,29,0.25)]" />
               </div>
 
               {/* подписи */}
               <div className="floaty absolute -right-2 top-[30%] rounded-full border border-line bg-card/90 px-4 py-2 text-[11.5px] font-bold tracking-[0.08em] uppercase text-ink-soft shadow-sm backdrop-blur" style={{ animationDelay: "1.4s" }}>
                 кундалини-йога
               </div>
-              <div className="floaty absolute -left-6 bottom-[22%] rounded-full border border-line bg-card/90 px-4 py-2 text-[11.5px] font-bold tracking-[0.08em] uppercase text-ink-soft shadow-sm backdrop-blur" style={{ animationDelay: "0.7s" }}>
+              <div className="floaty absolute -left-6 top-[58%] rounded-full border border-line bg-card/90 px-4 py-2 text-[11.5px] font-bold tracking-[0.08em] uppercase text-ink-soft shadow-sm backdrop-blur" style={{ animationDelay: "0.7s" }}>
                 ДАО-практики
               </div>
 

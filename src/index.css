@@ -85,6 +85,15 @@ body {
   50% { box-shadow: 0 28px 64px -14px rgba(160, 129, 73, 1), 0 0 48px -4px rgba(160, 129, 73, 0.55); }
 }
 
+@keyframes orbit-spin {
+  to { transform: rotate(360deg); }
+}
+@keyframes orbit-spin-rev {
+  to { transform: rotate(-360deg); }
+}
+.orbit-spin { animation: orbit-spin 28s linear infinite; transform-origin: 50% 50%; }
+.orbit-spin-rev { animation: orbit-spin-rev 46s linear infinite; transform-origin: 50% 50%; }
+
 .breathe { animation: breathe 8s ease-in-out infinite; }
 .marquee-track-l { animation: marquee-l 80s linear infinite; }
 .floaty { animation: floaty 9s ease-in-out infinite; }
@@ -142,7 +151,8 @@ body {
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
   .reveal { opacity: 1 !important; transform: none !important; transition: none !important; }
-  .breathe, .marquee-track-l, .floaty, .spin-slow, .fadeup, .flash-ring, .ink-pulse {
+  .breathe, .marquee-track-l, .floaty, .spin-slow, .fadeup, .flash-ring, .ink-pulse,
+  .orbit-spin, .orbit-spin-rev, .sheen-sweep, .max-glow, .max-glow-strong {
     animation: none !important;
   }
   .animate-ping { animation: none !important; }
