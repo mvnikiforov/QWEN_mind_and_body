@@ -29,8 +29,8 @@ export default function Footer() {
                 <p className="text-[10.5px] font-extrabold tracking-[0.2em] uppercase text-gold">Про|Баланс</p>
               </div>
             </div>
-            <p className="mt-4 max-w-xs text-[13px] leading-relaxed text-card/60">
-              Психолог-консультант, гештальт-практик (МИГИП), магистрант-этнопсихолог (МГППУ),
+            <p className="mt-4 max-w-xs text-[13.5px] leading-relaxed text-paper/65">
+              Магистрант-этнопсихолог (МГППУ), гештальт-практик (МИГИП), 
               инструктор интегративной кундалини-йоги, тренер ДАО-практик.
             </p>
           </div>
