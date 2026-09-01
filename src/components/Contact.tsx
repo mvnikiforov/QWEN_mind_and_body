@@ -20,8 +20,10 @@ const initialForm = {
   request: "",
 };
 
-const FIELD = "w-full rounded-[14px] border border-line bg-card px-4 py-3 text-[14px] font-medium outline-none transition-all placeholder:text-ink-faint focus:border-gold focus:ring-4 focus:ring-gold/20";
-const LABEL = "mb-1.5 block text-[11px] font-extrabold uppercase tracking-[0.14em] text-ink-soft";
+const FIELD =
+  "w-full min-h-[58px] rounded-[14px] border border-line bg-card px-5 py-4 text-[16px] sm:text-[15px] font-medium leading-snug outline-none transition-all placeholder:text-ink-faint placeholder:leading-snug focus:border-gold focus:ring-4 focus:ring-gold/20";
+const LABEL = "mb-2 block text-[11.5px] font-extrabold uppercase tracking-[0.12em] leading-snug text-ink-soft";
+const AREA = `${FIELD} resize-y`;
 
 function Select({ value, onChange, options, label, placeholder }: {
   value: string;
@@ -31,16 +33,22 @@ function Select({ value, onChange, options, label, placeholder }: {
   placeholder: string;
 }) {
   return (
-    <label className="block">
+    <label className="block min-w-0">
       <span className={LABEL}>{label}</span>
       <span className="relative block">
-        <select value={value} onChange={(e) => onChange(e.target.value)} className={`${FIELD} appearance-none pr-9 ${value ? "" : "text-ink-faint"}`}>
+        <select
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+          className={`${FIELD} w-full cursor-pointer appearance-none pr-12 text-left ${value ? "text-ink" : "text-ink-faint"}`}
+        >
           <option value="">{placeholder}</option>
           {options.map((o) => (
-            <option key={o} value={o}>{o}</option>
+            <option key={o} value={o} className="bg-card text-ink">
+              {o}
+            </option>
           ))}
         </select>
-        <svg className="pointer-events-none absolute right-3.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-ink-faint" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round"><path d="m6 9.5 6 6 6-6" /></svg>
+        <svg className="pointer-events-none absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2 text-ink-faint" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round"><path d="m6 9.5 6 6 6-6" /></svg>
       </span>
     </label>
   );
@@ -169,13 +177,13 @@ function ContactForm() {
           <span className={LABEL}>Услуга / мероприятие *</span>
           <span className="relative block">
             <select value={service} onChange={(e) => { const key = e.target.value; setService(key); const [sid, vid] = key.split(":"); const va = db.services.find((s) => s.id === sid)?.variants.find((x) => x.id === vid); setPrice(va ? fmtPrice(va.price) + (va.priceUnit ? " " + va.priceUnit : "") : ""); }}
-              className={`${FIELD} appearance-none pr-9 ${service ? "text-ink" : "text-ink-faint"} ${errors.service ? "!border-[#c06b4a] ring-4 ring-[#c06b4a]/15" : ""}`}>
+              className={`${FIELD} w-full cursor-pointer appearance-none pr-12 ${service ? "text-ink" : "text-ink-faint"} ${errors.service ? "!border-[#c06b4a] ring-4 ring-[#c06b4a]/15" : ""}`}>
               <option value="">Выберите услугу или мероприятие</option>
               {serviceOptions.map((o) => (
-                <option key={o.key} value={o.key}>{o.label}</option>
+                <option key={o.key} value={o.key} className="bg-card text-ink">{o.label}</option>
               ))}
             </select>
-            <svg className="pointer-events-none absolute right-3.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-ink-faint" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round"><path d="m6 9.5 6 6 6-6" /></svg>
+            <svg className="pointer-events-none absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2 text-ink-faint" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round"><path d="m6 9.5 6 6 6-6" /></svg>
           </span>
           {price && <span className="mt-1.5 inline-block rounded-full bg-gold/12 px-3 py-1 text-[11.5px] font-extrabold text-gold-deep">{price}</span>}
         </label>
@@ -194,27 +202,27 @@ function ContactForm() {
           <label className="block"><span className={LABEL}>Возраст</span>
             <input type="number" min={14} max={100} value={form.age} onChange={(e) => set({ age: e.target.value })} placeholder="—" className={FIELD} /></label>
         </div>
-        <div className="mt-4 grid gap-4 sm:grid-cols-2">
+        <div className="mt-5 grid gap-5 sm:grid-cols-2">
           <label className="block"><span className={LABEL}>Опыт терапевтической работы</span>
-            <input value={form.therapyExp} onChange={(e) => set({ therapyExp: e.target.value })} placeholder="Проходили ли личную терапию? В каком подходе, как долго?" className={FIELD} /></label>
+            <textarea rows={2} value={form.therapyExp} onChange={(e) => set({ therapyExp: e.target.value })} placeholder="Проходили ли личную терапию? В каком подходе, как долго?" className={AREA} /></label>
           <label className="block"><span className={LABEL}>Опыт телесных практик</span>
-            <input value={form.bodyExp} onChange={(e) => set({ bodyExp: e.target.value })} placeholder="Йога, дыхание, медитация — как давно и регулярно?" className={FIELD} /></label>
+            <textarea rows={2} value={form.bodyExp} onChange={(e) => set({ bodyExp: e.target.value })} placeholder="Йога, дыхание, медитация — как давно и регулярно?" className={AREA} /></label>
         </div>
-        <div className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          <Select label="Диагностированные психические заболевания" value={form.mental} onChange={(v) => set({ mental: v })} options={["Нет", "Да (укажите в комментарии)", "Не готов(а) отвечать"]} placeholder="—" />
-          <Select label="Эпилепсия / судорожные состояния" value={form.epilepsy} onChange={(v) => set({ epilepsy: v })} options={["Нет", "Да (укажите в комментарии)", "Не знаю"]} placeholder="—" />
-          <Select label="Операции за последние полгода" value={form.surgery} onChange={(v) => set({ surgery: v })} options={["Нет", "Да (укажите в комментарии)"]} placeholder="—" />
-          <Select label="Грыжи позвоночника, проблемы с ОДА" value={form.hernia} onChange={(v) => set({ hernia: v })} options={["Нет", "Да (укажите в комментарии)", "Не знаю"]} placeholder="—" />
+        <div className="mt-5 grid gap-5 sm:grid-cols-2">
+          <Select label="Диагностированные психические заболевания" value={form.mental} onChange={(v) => set({ mental: v })} options={["Нет", "Да (укажите в комментарии)", "Не готов(а) отвечать"]} placeholder="Выберите ответ" />
+          <Select label="Эпилепсия / судорожные состояния" value={form.epilepsy} onChange={(v) => set({ epilepsy: v })} options={["Нет", "Да (укажите в комментарии)", "Не знаю"]} placeholder="Выберите ответ" />
+          <Select label="Операции за последние полгода" value={form.surgery} onChange={(v) => set({ surgery: v })} options={["Нет", "Да (укажите в комментарии)"]} placeholder="Выберите ответ" />
+          <Select label="Грыжи позвоночника, проблемы с ОДА" value={form.hernia} onChange={(v) => set({ hernia: v })} options={["Нет", "Да (укажите в комментарии)", "Не знаю"]} placeholder="Выберите ответ" />
         </div>
         {form.gender !== "Мужской" && (
-          <div className="mt-4 max-w-xs">
-            <Select label="Беременность (для женщин)" value={form.pregnancy} onChange={(v) => set({ pregnancy: v })} options={["Нет", "Да"]} placeholder="—" />
+          <div className="mt-5 sm:max-w-[calc(50%-10px)]">
+            <Select label="Беременность (для женщин)" value={form.pregnancy} onChange={(v) => set({ pregnancy: v })} options={["Нет", "Да"]} placeholder="Выберите ответ" />
           </div>
         )}
-        <label className="mt-4 block"><span className={LABEL}>Что привело вас? Основной запрос</span>
-          <textarea rows={3} value={form.request} onChange={(e) => set({ request: e.target.value })} placeholder="Пара слов о том, что сейчас важно" className={`${FIELD} resize-y`} /></label>
-        <label className="mt-4 block"><span className={LABEL}>Комментарий</span>
-          <textarea rows={2} value={comment} onChange={(e) => setComment(e.target.value)} placeholder="Дополнительная информация, которую считаете важной" className={`${FIELD} resize-y`} /></label>
+        <label className="mt-5 block"><span className={LABEL}>Что привело вас? Основной запрос</span>
+          <textarea rows={4} value={form.request} onChange={(e) => set({ request: e.target.value })} placeholder="Пара слов о том, что сейчас важно" className={AREA} /></label>
+        <label className="mt-5 block"><span className={LABEL}>Комментарий</span>
+          <textarea rows={3} value={comment} onChange={(e) => setComment(e.target.value)} placeholder="Дополнительная информация, которую считаете важной" className={AREA} /></label>
         <p className="mt-4 text-[12px] leading-relaxed text-ink-faint">
           Эти вопросы помогают мне лучше понять вашу ситуацию, исключить противопоказания и подобрать
           наиболее безопасные и эффективные практики. Если какой-то вопрос вызывает дискомфорт, его
