@@ -1,4 +1,5 @@
 import { useStore } from "../lib/store";
+import { MaxChannelButton } from "./ChannelFeed";
 import { IconLock, IconMax, IconPhone, IconSend, IconVk, YinYang } from "./icons";
 
 export default function Footer() {
@@ -15,6 +16,10 @@ export default function Footer() {
           Тело • Чувства • Разум • Дух
         </p>
         <p className="mt-3 font-display text-[clamp(18px,2.4vw,26px)] italic text-card/60">— к балансу и ясности</p>
+
+        <div className="mt-11 flex justify-center">
+          <MaxChannelButton href={c.maxHref} tone="gold" />
+        </div>
 
         <div className="mt-14 grid gap-10 border-t border-card/12 pt-10 md:grid-cols-3">
           <div>

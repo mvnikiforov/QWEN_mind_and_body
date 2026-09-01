@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useStore } from "../lib/store";
-import { IconMax } from "./icons";
+import { IconArrow, IconMax } from "./icons";
 import { Reveal, SectionHead } from "./ui";
 
 interface FeedPost {
@@ -29,6 +29,50 @@ async function tryFetchFeed(url: string): Promise<FeedPost[] | null> {
   }
 }
 
+/* Крупная кнопка «Перейти в канал МАХ»: бегущий блик, пульсирующее
+   золотое свечение, увеличение и поворот иконки при наведении. */
+export function MaxChannelButton({ href, tone = "ink" }: { href: string; tone?: "ink" | "gold" }) {
+  const dark = tone === "ink";
+  return (
+    <a
+      href={href}
+      target="_blank"
+      rel="noopener noreferrer"
+      className={`group relative inline-flex items-center gap-5 overflow-hidden rounded-full transition-all duration-500 ease-out hover:scale-[1.045] hover:-translate-y-1 active:scale-[0.98] ${
+        dark ? "bg-ink text-card max-glow" : "bg-gold text-ink max-glow-strong"
+      } px-8 py-5 sm:px-10`}
+    >
+      {/* бегущий блик */}
+      <span
+        aria-hidden
+        className={`sheen-sweep pointer-events-none absolute inset-y-0 left-0 w-1/3 bg-gradient-to-r from-transparent to-transparent ${
+          dark ? "via-gold/35" : "via-card/60"
+        }`}
+      />
+      <span
+        className={`relative grid h-12 w-12 shrink-0 place-items-center rounded-full transition-transform duration-700 ease-out group-hover:rotate-[360deg] ${
+          dark ? "bg-gold text-ink" : "bg-ink text-gold"
+        }`}
+      >
+        <IconMax className="h-[22px] w-[22px]" />
+      </span>
+      <span className="relative text-left leading-tight">
+        <span className="block font-display text-[21px] font-semibold tracking-wide sm:text-[26px]">
+          Перейти в канал МАХ
+        </span>
+        <span
+          className={`mt-0.5 block text-[10.5px] font-extrabold uppercase tracking-[0.24em] ${
+            dark ? "text-gold" : "text-ink/65"
+          }`}
+        >
+          живые моменты · практики · анонсы
+        </span>
+      </span>
+      <IconArrow className="relative h-5 w-5 shrink-0 transition-transform duration-500 group-hover:translate-x-2" />
+    </a>
+  );
+}
+
 export default function ChannelFeed() {
   const { db } = useStore();
   const c = db.content.contacts;
@@ -55,28 +99,15 @@ export default function ChannelFeed() {
     <section id="channel" className="relative overflow-hidden py-20 sm:py-28">
       <div className="pointer-events-none absolute -right-24 bottom-0 h-80 w-80 rounded-full bg-stone blur-3xl" />
       <div className="mx-auto max-w-7xl px-5 sm:px-8">
-        <div className="flex flex-wrap items-end justify-between gap-6">
-          <SectionHead
-            kicker="Живой поток"
-            title={
-              <>
-                Актуальное из <span className="italic text-gold-deep">моего канала</span>
-              </>
-            }
-            sub="Здесь я делюсь живыми моментами, мыслями и практиками. Заглядывайте, чтобы почувствовать атмосферу и оставаться на связи."
-          />
-          <Reveal delay={200}>
-            <a
-              href={c.maxHref}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="group inline-flex items-center gap-3 rounded-full border border-ink/25 px-6 py-3.5 text-[12.5px] font-bold tracking-[0.12em] uppercase transition-all duration-300 hover:border-ink hover:bg-ink hover:text-card"
-            >
-              <IconMax className="h-[18px] w-[18px]" />
-              Перейти в канал МАХ
-            </a>
-          </Reveal>
-        </div>
+        <SectionHead
+          kicker="Живой поток"
+          title={
+            <>
+              Актуальное из <span className="italic text-gold-deep">моего канала</span>
+            </>
+          }
+          sub="Здесь я делюсь живыми моментами, мыслями и практиками. Заглядывайте, чтобы почувствовать атмосферу и оставаться на связи."
+        />
 
         <div className="mt-12 grid gap-5 md:grid-cols-3">
           {shown.map((p, i) => (
@@ -114,11 +145,16 @@ export default function ChannelFeed() {
           ))}
         </div>
 
-        <p className="mt-7 text-center text-[12px] font-medium text-ink-faint">
-          {checked && live
-            ? "Публикации подгружаются из канала автоматически"
-            : "Публикации обновляются вручную, пока канал не открыл публичный API — уже скоро здесь будет автоподгрузка"}
-        </p>
+        <Reveal delay={140}>
+          <div className="mt-12 flex flex-col items-center gap-4">
+            <MaxChannelButton href={c.maxHref} />
+            <p className="text-[12px] font-medium text-ink-faint">
+              {checked && live
+                ? "Публикации подгружаются из канала автоматически"
+                : "Публикации обновляются вручную, пока канал не открыл публичный API — уже скоро здесь будет автоподгрузка"}
+            </p>
+          </div>
+        </Reveal>
       </div>
     </section>
   );
