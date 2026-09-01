@@ -3,6 +3,7 @@ import { StoreProvider } from "./lib/store";
 import Header from "./components/Header";
 import Hero from "./components/Hero";
 import Showcase from "./components/Showcase";
+import HotBanners from "./components/HotBanners";
 import Approach from "./components/Approach";
 import About from "./components/About";
 import Schedule from "./components/Schedule";
@@ -30,6 +31,7 @@ function Site() {
       <main>
         <Hero />
         <Showcase />
+        <HotBanners />
         <Approach />
         <About />
         <Schedule />

@@ -130,5 +130,6 @@ body {
   .breathe, .marquee-track-l, .floaty, .spin-slow, .fadeup, .flash-ring, .ink-pulse {
     animation: none !important;
   }
+  .animate-ping { animation: none !important; }
   * { transition-duration: 0.01ms !important; }
 }
