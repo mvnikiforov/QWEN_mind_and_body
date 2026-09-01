@@ -1,95 +1,142 @@
 import { useState } from "react";
 import { useStore } from "../lib/store";
 import { fmtPrice, type Service } from "../lib/db";
-import { IconArrow, IconCheck } from "./icons";
+import { IconArrow } from "./icons";
 import { prefillService, Reveal, SectionHead } from "./ui";
 
+const MODE_LABEL = { individual: "Индивидуальная", group: "Групповая" } as const;
+
 function ServiceCard({ s, delay }: { s: Service; delay: number }) {
-  const [open, setOpen] = useState(false);
-  const priceStr = fmtPrice(s.price);
-  const altTitle = s.ctaAlt?.toLowerCase().includes("абонемент") && s.subscription
-    ? `${s.title} — абонемент`
-    : s.title;
+  const [mode, setMode] = useState<"individual" | "group">("individual");
+  const v = s.variants.find((x) => x.mode === mode) ?? s.variants[0];
+  const idx = Math.max(0, s.variants.findIndex((x) => x.mode === v.mode));
+
+  const book = () =>
+    prefillService(
+      `${s.id}:${v.id}`,
+      fmtPrice(v.price) + (v.priceUnit ? ` ${v.priceUnit}` : "")
+    );
 
   return (
     <Reveal delay={delay} className="h-full">
-      <article
-        className={`group flex h-full flex-col overflow-hidden rounded-[26px] border bg-card transition-all duration-500 ${
-          open ? "border-gold shadow-[0_36px_70px_-34px_rgba(35,33,29,0.45)]" : "border-line hover:-translate-y-1.5 hover:border-ink/30 hover:shadow-[0_30px_60px_-34px_rgba(35,33,29,0.4)]"
-        }`}
-      >
-        {/* Фото */}
-        <button
-          className="relative block h-44 w-full overflow-hidden text-left md:h-48"
-          onClick={() => setOpen(!open)}
-          aria-expanded={open}
-          aria-label={`${s.title} — подробности`}
-        >
-          <img
-            src={s.image}
-            alt={s.title}
-            loading="lazy"
-            className="h-full w-full object-cover transition-transform duration-[1.4s] ease-out group-hover:scale-[1.06]"
-          />
-          <span className="absolute inset-0 bg-gradient-to-t from-ink/25 via-transparent to-transparent opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
-          {s.badge && (
-            <span className="absolute left-4 top-4 -rotate-2 rounded-full bg-gold px-3.5 py-1.5 text-[10.5px] font-extrabold tracking-[0.1em] uppercase text-card shadow-md">
-              {s.badge}
-            </span>
-          )}
-          <span className="absolute bottom-3 right-3 grid h-8 w-8 place-items-center rounded-full bg-card/90 text-ink backdrop-blur transition-all duration-300 md:hidden">
-            <svg viewBox="0 0 24 24" className={`h-4 w-4 transition-transform duration-300 ${open ? "rotate-180" : ""}`} fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
-              <path d="m6 9.5 6 6 6-6" />
-            </svg>
+      <article className="group/card flex h-full flex-col overflow-hidden rounded-[32px] border border-line bg-card transition-all duration-500 hover:-translate-y-1.5 hover:border-gold/60 hover:shadow-[0_44px_88px_-44px_rgba(35,33,29,0.55)]">
+        {/* Фото с кроссфейдом между форматами */}
+        <div className="relative h-60 overflow-hidden sm:h-64">
+          {s.variants.map((vv) => (
+            <img
+              key={vv.id}
+              src={vv.image}
+              alt={`${s.title} — ${MODE_LABEL[vv.mode]}`}
+              loading="lazy"
+              className={`absolute inset-0 h-full w-full object-cover transition-all duration-[900ms] ease-out ${
+                vv.mode === v.mode ? "scale-100 opacity-100" : "scale-[1.07] opacity-0"
+              }`}
+            />
+          ))}
+          <div className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-ink/55 to-transparent" />
+          <span
+            key={`chip-${v.id}`}
+            className="fadeup absolute left-5 top-5 rounded-full bg-card/90 px-4 py-2 text-[10.5px] font-extrabold uppercase tracking-[0.16em] text-ink backdrop-blur"
+          >
+            {MODE_LABEL[v.mode]}
           </span>
-        </button>
+          <h3 className="absolute bottom-4 left-6 right-6 font-display text-[28px] font-semibold leading-tight text-card drop-shadow-md">
+            {s.title}
+          </h3>
+        </div>
 
-        <div className="flex grow flex-col p-6">
-          <h3 className="font-display text-[22px] font-semibold leading-tight">{s.title}</h3>
-          <p className="mt-1.5 text-[12px] font-bold tracking-[0.06em] uppercase text-ink-faint">{s.duration}</p>
+        <div className="flex grow flex-col p-6 sm:p-8">
+          {/* Крупный сегментный переключатель формата */}
+          <div
+            className="relative grid grid-cols-2 rounded-full border-2 border-ink bg-card p-1 shadow-[0_12px_26px_-18px_rgba(35,33,29,0.7)]"
+            role="tablist"
+            aria-label={`Формат: ${s.title}`}
+          >
+            <span
+              aria-hidden
+              className="absolute inset-y-1 left-1 w-[calc(50%-4px)] rounded-full bg-ink transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)]"
+              style={{ transform: idx === 1 ? "translateX(100%)" : "translateX(0)" }}
+            />
+            {s.variants.map((vv, i) => (
+              <button
+                key={vv.id}
+                type="button"
+                role="tab"
+                aria-selected={i === idx}
+                onClick={() => setMode(vv.mode)}
+                className={`relative z-10 rounded-full py-3 text-[12.5px] font-extrabold uppercase tracking-[0.14em] transition-colors duration-300 ${
+                  i === idx ? "text-card" : "text-ink/50 hover:text-ink"
+                }`}
+              >
+                {MODE_LABEL[vv.mode]}
+              </button>
+            ))}
+          </div>
 
-          {/* Цена */}
-          <p className="mt-4 font-display text-[30px] font-medium leading-none">
-            {priceStr}
-            {s.priceUnit && <span className="ml-2 text-[13px] font-body font-semibold text-ink-soft">{s.priceUnit}</span>}
-          </p>
+          <p className="mt-4 text-[12.5px] font-semibold text-ink-faint">{s.subtitle}</p>
 
-          {/* Подробности: на десктопе всегда, на мобильном — по тапу */}
-          <div className={`acc-body md:!grid-rows-[1fr] ${open ? "open" : ""}`}>
-            <div className="acc-inner">
-              <div className="rounded-[16px] bg-card/85 backdrop-blur-sm md:bg-transparent md:p-0">
-                {s.subscription && (
-                  <p className="mt-4 flex items-start gap-2 rounded-[14px] border border-gold/35 bg-gold/8 px-3.5 py-2.5 text-[12.5px] font-semibold leading-snug text-gold-deep">
-                    <IconCheck className="mt-0.5 h-3.5 w-3.5 shrink-0" />
-                    {s.subscription}
-                  </p>
+          {/* Контент активного формата (анимируется при переключении) */}
+          <div key={v.id} className="fadeup">
+            <div className="mt-5 flex flex-wrap items-end justify-between gap-x-6 gap-y-2">
+              <p className="max-w-[58%] text-[13.5px] font-bold leading-snug text-ink-soft">{v.duration}</p>
+              <div className="text-right">
+                <p className="font-display text-[42px] font-medium leading-none tracking-tight">{fmtPrice(v.price)}</p>
+                {v.priceUnit && (
+                  <p className="mt-1.5 text-[11px] font-extrabold uppercase tracking-[0.14em] text-ink-faint">{v.priceUnit}</p>
                 )}
-                <p className="mt-4 text-[13.5px] leading-relaxed text-ink-soft">{s.description}</p>
               </div>
+            </div>
+
+            {v.packLabel && (
+              <div className="mt-5 flex flex-wrap items-center justify-between gap-x-3 gap-y-2 rounded-[18px] border border-gold/35 bg-gold/10 px-5 py-3.5">
+                <p className="text-[13px] font-bold leading-snug">{v.packLabel}</p>
+                {v.packBenefit && (
+                  <span className="shrink-0 rounded-full bg-gold px-3.5 py-1.5 text-[10.5px] font-extrabold uppercase tracking-wide text-card">
+                    {v.packBenefit}
+                  </span>
+                )}
+              </div>
+            )}
+
+            <p className="mt-5 text-[14px] leading-relaxed text-ink-soft">{v.description}</p>
+          </div>
+
+          {/* Оба варианта видны сразу — кликабельны */}
+          <div className="mt-6">
+            <p className="text-[10.5px] font-extrabold uppercase tracking-[0.22em] text-ink-faint">Оба варианта</p>
+            <div className="mt-2.5 grid grid-cols-2 gap-px overflow-hidden rounded-[16px] border border-line bg-line">
+              {s.variants.map((vv) => {
+                const on = vv.mode === v.mode;
+                return (
+                  <button
+                    key={vv.id}
+                    type="button"
+                    onClick={() => setMode(vv.mode)}
+                    className={`px-4 py-3.5 text-left transition-colors duration-300 ${
+                      on ? "bg-ink text-card" : "bg-card hover:bg-stone"
+                    }`}
+                  >
+                    <span className={`block text-[10.5px] font-extrabold uppercase tracking-[0.12em] ${on ? "text-card/65" : "text-ink-faint"}`}>
+                      {MODE_LABEL[vv.mode]}
+                    </span>
+                    <span className="mt-1 block font-display text-[21px] font-semibold leading-none">{fmtPrice(vv.price)}</span>
+                    <span className={`mt-1 block text-[11px] font-bold ${on ? "text-gold" : "text-gold-deep"}`}>
+                      {vv.packBenefit ?? vv.priceUnit ?? " "}
+                    </span>
+                  </button>
+                );
+              })}
             </div>
           </div>
 
-          {/* Кнопки */}
-          <div className="mt-auto flex flex-wrap gap-2.5 pt-5">
+          <div className="mt-auto pt-7">
             <button
-              onClick={() =>
-                s.cta.toLowerCase().includes("подробнее")
-                  ? document.getElementById("faq")?.scrollIntoView({ behavior: "smooth" })
-                  : prefillService(s.title, priceStr + (s.priceUnit ? ` ${s.priceUnit}` : ""))
-              }
-              className="inline-flex grow items-center justify-center gap-2 rounded-full bg-ink px-5 py-3 text-[12px] font-bold tracking-[0.08em] uppercase text-card transition-all duration-300 hover:bg-gold-deep"
+              onClick={book}
+              className="group/btn flex w-full items-center justify-center gap-3 rounded-full bg-ink py-4 text-[12.5px] font-extrabold uppercase tracking-[0.14em] text-card transition-all duration-300 hover:bg-gold-deep hover:shadow-[0_20px_40px_-18px_rgba(138,109,60,0.95)]"
             >
-              {s.cta}
-              <IconArrow className="h-3.5 w-3.5" />
+              Записаться
+              <IconArrow className="h-4 w-4 transition-transform duration-300 group-hover/btn:translate-x-1.5" />
             </button>
-            {s.ctaAlt && (
-              <button
-                onClick={() => prefillService(altTitle, s.subscription ?? priceStr)}
-                className="inline-flex items-center justify-center rounded-full border border-ink/25 px-5 py-3 text-[12px] font-bold tracking-[0.08em] uppercase text-ink transition-all duration-300 hover:border-ink hover:bg-stone"
-              >
-                {s.ctaAlt}
-              </button>
-            )}
           </div>
         </div>
       </article>
@@ -97,66 +144,36 @@ function ServiceCard({ s, delay }: { s: Service; delay: number }) {
   );
 }
 
-function GroupBlock({
-  roman,
-  title,
-  note,
-  items,
-}: {
-  roman: string;
-  title: string;
-  note: string;
-  items: Service[];
-}) {
-  return (
-    <div className="mt-16 first:mt-12">
-      <Reveal>
-        <div className="flex flex-wrap items-baseline gap-x-5 gap-y-2 border-b border-line pb-5">
-          <span className="font-display text-[44px] font-light leading-none text-gold/70">{roman}</span>
-          <h3 className="font-display text-[26px] sm:text-[30px] font-semibold">{title}</h3>
-          <p className="ml-auto text-[12.5px] font-semibold text-ink-faint">{note}</p>
-        </div>
-      </Reveal>
-
-      {/* Мобайл: горизонтальный скролл · планшет: 2 · десктоп: 3 */}
-      <div className="no-scrollbar -mx-5 mt-7 flex snap-x snap-mandatory gap-5 overflow-x-auto px-5 pb-3 sm:-mx-8 sm:px-8 md:mx-0 md:grid md:grid-cols-2 md:overflow-visible md:px-0 lg:grid-cols-3">
-        {items.map((s, i) => (
-          <div key={s.id} className="w-[82vw] shrink-0 snap-center sm:w-[58vw] md:w-auto">
-            <ServiceCard s={s} delay={i * 90} />
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-}
-
 export default function Showcase() {
   const { db } = useStore();
-  const individual = db.services.filter((s) => s.group === "individual");
-  const group = db.services.filter((s) => s.group === "group");
 
   return (
     <section id="services" className="relative py-20 sm:py-28">
-      <div className="mx-auto max-w-7xl px-5 sm:px-8">
-        <div className="flex flex-wrap items-end justify-between gap-6">
-          <SectionHead
-            kicker="Витрина"
-            title={
-              <>
-                Форматы работы <span className="italic text-gold-deep">и цены</span>
-              </>
-            }
-            sub="Все цены фиксированные и честные. Выберите свой формат — от разовой практики до длительной терапевтической работы."
-          />
-          <Reveal delay={220}>
-            <p className="hidden max-w-[220px] text-right text-[12px] font-semibold leading-relaxed text-ink-faint lg:block">
-              На мобильном листайте карточки вправо, тап по фото — подробности
-            </p>
-          </Reveal>
+      <div className="pointer-events-none absolute -left-28 top-24 h-96 w-96 rounded-full bg-stone blur-3xl" />
+      <div className="pointer-events-none absolute -right-24 bottom-20 h-80 w-80 rounded-full bg-stone/80 blur-3xl" />
+
+      <div className="relative mx-auto max-w-6xl px-5 sm:px-8">
+        <SectionHead
+          kicker="Витрина"
+          title={
+            <>
+              Форматы работы <span className="italic text-gold-deep">и цены</span>
+            </>
+          }
+          sub="Два направления работы. Внутри каждой карточки переключите «Индивидуальная» или «Групповая» — фото, длительность, цена и описание сменятся. Оба варианта и выгода пакетов видны сразу."
+        />
+
+        <div className="mt-14 grid gap-7 lg:grid-cols-2">
+          {db.services.map((s, i) => (
+            <ServiceCard key={s.id} s={s} delay={i * 140} />
+          ))}
         </div>
 
-        <GroupBlock roman="I" title="Индивидуальные форматы" note="лично для вас · онлайн и очно" items={individual} />
-        <GroupBlock roman="II" title="Групповые форматы" note="в кругу бережных людей" items={group} />
+        <Reveal delay={240}>
+          <p className="mt-10 text-center text-[13px] font-semibold text-ink-faint">
+            Все цены фиксированные · оплата согласуется лично · {db.content.contacts.note.toLowerCase()}
+          </p>
+        </Reveal>
       </div>
     </section>
   );

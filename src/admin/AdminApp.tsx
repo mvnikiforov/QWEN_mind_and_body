@@ -19,6 +19,7 @@ import {
   type OrderStatus,
   type Post,
   type Service,
+  type Variant,
 } from "../lib/db";
 import { IconCart, IconLock, IconSend, IconTrash, IconUpload, YinYang } from "../components/icons";
 import DocsTab from "./DocsTab";
@@ -250,75 +251,73 @@ function compressImage(file: File, maxSide = 1000): Promise<string> {
 function ServiceEditor({ s }: { s: Service }) {
   const [d, setD] = useState(s);
   const [saved, setSaved] = useState(false);
+  const [pendingImg, setPendingImg] = useState<number | null>(null);
   const fileRef = useRef<HTMLInputElement>(null);
+
   const set = (patch: Partial<Service>) => setD((v) => ({ ...v, ...patch }));
+  const setV = (i: number, patch: Partial<Variant>) =>
+    setD((v) => ({ ...v, variants: v.variants.map((vv, j) => (j === i ? { ...vv, ...patch } : vv)) }));
 
   const save = () => {
-    updateService(s.id, { ...d, price: Number(d.price) || 0 });
+    updateService(s.id, { ...d, variants: d.variants.map((v) => ({ ...v, price: Number(v.price) || 0 })) });
     setSaved(true);
     setTimeout(() => setSaved(false), 1800);
   };
 
   const onImage = async (e: ChangeEvent<HTMLInputElement>) => {
     const f = e.target.files?.[0];
-    if (!f) return;
+    if (!f || pendingImg == null) return;
     try {
-      set({ image: await compressImage(f) });
+      setV(pendingImg, { image: await compressImage(f) });
     } catch {
-      /* не удалось прочитать */
+      /* не удалось прочитать файл */
     }
   };
 
   return (
     <div className="rounded-[24px] border border-line bg-stone/50 p-6">
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <p className="font-display text-[16px] font-semibold">
-          <span className="mr-2.5 rounded-full bg-ink px-2.5 py-1 text-[10px] uppercase tracking-wider text-card">
-            {s.group === "individual" ? "индивидуальный" : "групповой"}
-          </span>
-          {s.title}
-        </p>
+        <p className="font-display text-[18px] font-semibold">{s.title}</p>
         <button onClick={save} className={`rounded-full px-5 py-2.5 text-[12.5px] font-bold transition-all ${saved ? "bg-moss text-card" : "bg-ink text-card hover:bg-gold-deep"}`}>
           {saved ? "Сохранено ✓" : "Сохранить"}
         </button>
       </div>
-      <div className="mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        <label className="block sm:col-span-2"><span className={LABEL}>Название</span>
+      <div className="mt-4 grid gap-4 sm:grid-cols-2">
+        <label className="block"><span className={LABEL}>Название карточки</span>
           <input className={FIELD} value={d.title} onChange={(e) => set({ title: e.target.value })} /></label>
-        <label className="block"><span className={LABEL}>Раздел витрины</span>
-          <span className="relative block">
-            <select className={`${FIELD} appearance-none pr-8`} value={d.group} onChange={(e) => set({ group: e.target.value as Service["group"] })}>
-              <option value="individual">Индивидуальные форматы</option>
-              <option value="group">Групповые форматы</option>
-            </select>
-            <svg className="pointer-events-none absolute right-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-ink-faint" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round"><path d="m6 9.5 6 6 6-6" /></svg>
-          </span>
-        </label>
-        <label className="block"><span className={LABEL}>Длительность / формат</span>
-          <input className={FIELD} value={d.duration} onChange={(e) => set({ duration: e.target.value })} /></label>
-        <label className="block"><span className={LABEL}>Цена, ₽ (0 = бесплатно)</span>
-          <input type="number" className={FIELD} value={d.price} onChange={(e) => set({ price: Number(e.target.value) })} /></label>
-        <label className="block"><span className={LABEL}>Приписка к цене</span>
-          <input className={FIELD} value={d.priceUnit ?? ""} placeholder="разовая / разовое" onChange={(e) => set({ priceUnit: e.target.value || undefined })} /></label>
-        <label className="block"><span className={LABEL}>Бейдж</span>
-          <input className={FIELD} value={d.badge ?? ""} placeholder="Выгодно −5 000 ₽" onChange={(e) => set({ badge: e.target.value || undefined })} /></label>
-        <label className="block"><span className={LABEL}>Текст основной кнопки</span>
-          <input className={FIELD} value={d.cta} onChange={(e) => set({ cta: e.target.value })} /></label>
-        <label className="block"><span className={LABEL}>Вторая кнопка (необязательно)</span>
-          <input className={FIELD} value={d.ctaAlt ?? ""} placeholder="Купить абонемент" onChange={(e) => set({ ctaAlt: e.target.value || undefined })} /></label>
-        <label className="block sm:col-span-2 lg:col-span-3"><span className={LABEL}>Абонемент / выгода (строка с галочкой)</span>
-          <input className={FIELD} value={d.subscription ?? ""} onChange={(e) => set({ subscription: e.target.value || undefined })} /></label>
-        <label className="block sm:col-span-2 lg:col-span-3"><span className={LABEL}>Описание</span>
-          <textarea rows={3} className={`${FIELD} resize-y`} value={d.description} onChange={(e) => set({ description: e.target.value })} /></label>
+        <label className="block"><span className={LABEL}>Подзаголовок</span>
+          <input className={FIELD} value={d.subtitle} onChange={(e) => set({ subtitle: e.target.value })} /></label>
       </div>
-      <div className="mt-4 flex flex-wrap items-center gap-4">
-        <input ref={fileRef} type="file" accept="image/*" onChange={onImage} className="hidden" />
-        <img src={d.image} alt="" className="h-20 w-28 rounded-[14px] border border-ink/10 object-cover" />
-        <button onClick={() => fileRef.current?.click()} className="inline-flex items-center gap-2 rounded-full border-2 border-ink/15 px-4 py-2.5 text-[12.5px] font-bold transition-colors hover:border-ink hover:bg-ink hover:text-card">
-          <IconUpload className="h-4 w-4" /> Заменить фото
-        </button>
-        <span className="text-[12px] font-medium text-ink-faint">На сайте сейчас: <b>{fmtPrice(s.price)}</b> · изменения появятся после «Сохранить»</span>
-      </div>
+
+      <input ref={fileRef} type="file" accept="image/*" onChange={onImage} className="hidden" />
+      {d.variants.map((vv, i) => (
+        <fieldset key={vv.id} className="mt-5 rounded-[18px] border border-line bg-card px-5 py-4">
+          <legend className="px-2 text-[11px] font-extrabold uppercase tracking-[0.18em] text-gold-deep">
+            Формат: {vv.mode === "individual" ? "Индивидуальная" : "Групповая"}
+          </legend>
+          <div className="grid gap-3.5 sm:grid-cols-2 lg:grid-cols-3">
+            <label className="block"><span className={LABEL}>Длительность</span>
+              <input className={FIELD} value={vv.duration} onChange={(e) => setV(i, { duration: e.target.value })} /></label>
+            <label className="block"><span className={LABEL}>Цена, ₽</span>
+              <input type="number" className={FIELD} value={vv.price} onChange={(e) => setV(i, { price: Number(e.target.value) })} /></label>
+            <label className="block"><span className={LABEL}>Приписка к цене</span>
+              <input className={FIELD} value={vv.priceUnit ?? ""} placeholder="разовая сессия" onChange={(e) => setV(i, { priceUnit: e.target.value || undefined })} /></label>
+            <label className="block lg:col-span-2"><span className={LABEL}>Пакет / абонемент</span>
+              <input className={FIELD} value={vv.packLabel ?? ""} placeholder="Пакет: 10 сессий — 25 000 ₽ (2 500 ₽/встреча)" onChange={(e) => setV(i, { packLabel: e.target.value || undefined })} /></label>
+            <label className="block"><span className={LABEL}>Выгода (бейдж)</span>
+              <input className={FIELD} value={vv.packBenefit ?? ""} placeholder="выгода 5 000 ₽" onChange={(e) => setV(i, { packBenefit: e.target.value || undefined })} /></label>
+            <label className="block sm:col-span-2 lg:col-span-3"><span className={LABEL}>Описание</span>
+              <textarea rows={3} className={`${FIELD} resize-y`} value={vv.description} onChange={(e) => setV(i, { description: e.target.value })} /></label>
+          </div>
+          <div className="mt-3.5 flex flex-wrap items-center gap-4">
+            <img src={vv.image} alt="" className="h-16 w-24 rounded-[12px] border border-ink/10 object-cover" />
+            <button onClick={() => { setPendingImg(i); fileRef.current?.click(); }} className="inline-flex items-center gap-2 rounded-full border-2 border-ink/15 px-4 py-2 text-[12px] font-bold transition-colors hover:border-ink hover:bg-ink hover:text-card">
+              <IconUpload className="h-3.5 w-3.5" /> Заменить фото
+            </button>
+            <span className="text-[11.5px] font-medium text-ink-faint">На сайте: <b>{fmtPrice(vv.price)}</b>{vv.packBenefit ? ` · ${vv.packBenefit}` : ""} · изменения появятся после «Сохранить»</span>
+          </div>
+        </fieldset>
+      ))}
     </div>
   );
 }
@@ -328,7 +327,7 @@ function ServicesTab() {
   return (
     <div>
       <h2 className="font-display text-[24px] font-semibold">Карточки витрины</h2>
-      <p className="mt-1 text-[12.5px] font-semibold text-ink-soft">Все цены фиксированные. Карточки распределены по разделам «Индивидуальные» и «Групповые форматы».</p>
+      <p className="mt-1 text-[12.5px] font-semibold text-ink-soft">Каждая карточка содержит два формата — «Индивидуальная» и «Групповая». Цена, фото, описание и выгода редактируются для каждого формата отдельно.</p>
       <div className="mt-6 space-y-5">
         {db.services.map((s) => <ServiceEditor key={s.id} s={s} />)}
       </div>

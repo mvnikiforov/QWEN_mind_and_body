@@ -87,10 +87,13 @@ function ContactForm() {
       (Object.keys(form) as (keyof typeof form)[]).forEach((k) => {
         if (form[k].trim()) cleanForm[k] = form[k].trim();
       });
+      const [sid, vid] = service.split(":");
+      const sv = db.services.find((x) => x.id === sid);
+      const va = sv?.variants.find((x) => x.id === vid);
       createOrder({
         name: name.trim(),
         contact: contact.trim(),
-        serviceTitle: service,
+        serviceTitle: sv && va ? `${sv.title} — ${va.mode === "individual" ? "индивидуальная" : "групповая"}` : service,
         price: price || "уточняется",
         comment: comment.trim() || undefined,
         form: Object.keys(cleanForm).length ? cleanForm : undefined,
@@ -117,8 +120,13 @@ function ContactForm() {
     setForm({ ...initialForm }); setErrors({}); setRemind(false); setSent(false);
   };
 
-  const serviceOptions = db.services.map((s) => s.title);
-  if (service && !serviceOptions.includes(service)) serviceOptions.unshift(service);
+  const serviceOptions = db.services.flatMap((s) =>
+    s.variants.map((v) => ({
+      key: `${s.id}:${v.id}`,
+      label: `${s.title} — ${v.mode === "individual" ? "индивидуальная" : "групповая"}`,
+    }))
+  );
+  if (service && !serviceOptions.some((o) => o.key === service)) serviceOptions.unshift({ key: service, label: service });
 
   if (sent) {
     return (
@@ -160,11 +168,11 @@ function ContactForm() {
         <label className="block sm:col-span-2">
           <span className={LABEL}>Услуга / мероприятие *</span>
           <span className="relative block">
-            <select value={service} onChange={(e) => { setService(e.target.value); setPrice(db.services.find((s) => s.title === e.target.value)?.price ? fmtPrice(db.services.find((s) => s.title === e.target.value)!.price) : ""); }}
+            <select value={service} onChange={(e) => { const key = e.target.value; setService(key); const [sid, vid] = key.split(":"); const va = db.services.find((s) => s.id === sid)?.variants.find((x) => x.id === vid); setPrice(va ? fmtPrice(va.price) + (va.priceUnit ? " " + va.priceUnit : "") : ""); }}
               className={`${FIELD} appearance-none pr-9 ${service ? "text-ink" : "text-ink-faint"} ${errors.service ? "!border-[#c06b4a] ring-4 ring-[#c06b4a]/15" : ""}`}>
               <option value="">Выберите услугу или мероприятие</option>
-              {serviceOptions.map((t) => (
-                <option key={t} value={t}>{t}</option>
+              {serviceOptions.map((o) => (
+                <option key={o.key} value={o.key}>{o.label}</option>
               ))}
             </select>
             <svg className="pointer-events-none absolute right-3.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-ink-faint" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round"><path d="m6 9.5 6 6 6-6" /></svg>

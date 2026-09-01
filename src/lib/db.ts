@@ -16,19 +16,23 @@ export interface User {
   role: Role;
 }
 
+export interface Variant {
+  id: string;
+  mode: "individual" | "group";
+  image: string;
+  duration: string;
+  price: number;
+  priceUnit?: string;
+  packLabel?: string;
+  packBenefit?: string;
+  description: string;
+}
+
 export interface Service {
   id: string;
-  group: "individual" | "group";
   title: string;
-  duration: string;
-  price: number; // 0 = бесплатно
-  priceUnit?: string;
-  subscription?: string;
-  badge?: string;
-  description: string;
-  image: string;
-  cta: string;
-  ctaAlt?: string;
+  subtitle: string;
+  variants: Variant[];
 }
 
 export type OrderStatus = "new" | "paid" | "done" | "closed";
@@ -109,7 +113,7 @@ export interface Session {
   role: Role;
 }
 
-const KEY = "probalance-db-v2";
+const KEY = "probalance-db-v3";
 const SESSION_KEY = "probalance-session";
 const listeners = new Set<() => void>();
 
@@ -131,112 +135,68 @@ function uid(): string {
 
 function seed(): DB {
   return {
-    version: 2,
+    version: 3,
     users: [{ id: "u-admin", login: "admin", pass: "valeria", name: "Валерия", role: "admin" }],
     services: [
       {
-        id: "session",
-        group: "individual",
-        title: "Терапевтическая сессия",
-        duration: "50 минут",
-        price: 3000,
-        priceUnit: "разовая",
-        subscription: "Абонемент: 10 встреч — 25 000 ₽ (2 500 ₽/встреча, выгода 5 000 ₽)",
-        description:
-          "Глубокая работа с чувствами, телом и мыслями. Снятие зажимов, прояснение ситуации, возвращение опоры. Учитываю культурный и религиозный контекст. Офлайн или онлайн.",
-        image: IMG.chairs,
-        cta: "Записаться",
+        id: "sessions",
+        title: "Терапевтические сессии",
+        subtitle: "Гештальт-подход · бережно, в вашем темпе",
+        variants: [
+          {
+            id: "ind",
+            mode: "individual",
+            image: IMG.chairs,
+            duration: "50 минут",
+            price: 3000,
+            priceUnit: "разовая сессия",
+            packLabel: "Пакет: 10 сессий — 25 000 ₽ (2 500 ₽/встреча)",
+            packBenefit: "выгода 5 000 ₽",
+            description:
+              "Глубокая работа с чувствами, телом и мыслями. Снятие зажимов, прояснение ситуации, возвращение опоры. Учитываю культурный и религиозный контекст. Офлайн или онлайн.",
+          },
+          {
+            id: "grp",
+            mode: "group",
+            image: IMG.circle,
+            duration: "4 часа · раз в 2 недели (с перерывом на чай)",
+            price: 2500,
+            priceUnit: "разовое посещение",
+            packLabel: "Абонемент: 4 встречи — 8 000 ₽ (2 000 ₽/встреча)",
+            packBenefit: "выгода 2 000 ₽",
+            description:
+              "Терапевтическая мини-группа: длительная групповая работа для глубоких изменений. Пространство поддержки, живой обратной связи и бережного контакта.",
+          },
+        ],
       },
       {
-        id: "package10",
-        group: "individual",
-        title: "Пакет «10 терапевтических сессий»",
-        duration: "10 сессий по 50 минут",
-        price: 25000,
-        badge: "Выгодно −5 000 ₽",
-        description: "Системная терапия для устойчивых изменений. Одна встреча 2 500 ₽ вместо 3 000 ₽.",
-        image: IMG.road,
-        cta: "Купить пакет",
-      },
-      {
-        id: "probalance-1",
-        group: "individual",
-        title: "Индивидуальная практика ПРО|БАЛАНС",
-        duration: "2 часа",
-        price: 5000,
-        description:
-          "Персональная интегративная практика для психоэмоциональной разгрузки, управления вниманием, мягкой распаковки телесных блоков.",
-        image: IMG.hero,
-        cta: "Записаться",
-      },
-      {
-        id: "dao-1",
-        group: "individual",
-        title: "Индивидуальный ДАО-комплекс «Чун-Лэй»",
-        duration: "2 часа",
-        price: 10000,
-        description:
-          "Безопасный запуск внутренних ресурсов через энерговолну (контактно или бесконтактно). Возвращение текучести и лёгкости.",
-        image: IMG.dao,
-        cta: "Записаться",
-      },
-      {
-        id: "probalance-group",
-        group: "group",
-        title: "Групповая практика ПРО|БАЛАНС",
-        duration: "1,5–2 часа",
-        price: 2000,
-        priceUnit: "разовое",
-        subscription: "Абонемент на 4 занятия — 6 800 ₽ (1 700 ₽/занятие, выгода 1 200 ₽)",
-        description:
-          "Интегративные практики для разгрузки и восстановления энергии. Развитие навыка управления вниманием, снятие стресса.",
-        image: IMG.studio,
-        cta: "Записаться",
-        ctaAlt: "Купить абонемент",
-      },
-      {
-        id: "dao-mk",
-        group: "group",
-        title: "Групповой мастер-класс «Чун-Лэй»",
-        duration: "4 часа",
-        price: 6000,
-        description:
-          "Пробуждающий ДАО-комплекс. Работа с энерговолной, телесная осознанность. Подходит для знакомства.",
-        image: IMG.circle,
-        cta: "Записаться на мастер-класс",
-      },
-      {
-        id: "mindfulness",
-        group: "group",
-        title: "Mindfulness-практика (групповая онлайн)",
-        duration: "1 час",
-        price: 600,
-        description: "Практика присутствия и безоценочного наблюдения. Снижение тревоги, ясность ума.",
-        image: IMG.meditation,
-        cta: "Записаться на практику",
-      },
-      {
-        id: "procrastination",
-        group: "group",
-        title: "Мастер-класс «Прокрастинация или важный сигнал?»",
-        duration: "3 часа",
-        price: 2000,
-        description: "Тематическая встреча в гештальт-подходе. Исследуем, что стоит за откладыванием дел.",
-        image: IMG.chairsCircle,
-        cta: "Записаться на мастер-класс",
-      },
-      {
-        id: "mini-group",
-        group: "group",
-        title: "Терапевтическая мини-группа",
-        duration: "Раз в 2 недели · 4 часа (с перерывом на чай)",
-        price: 2500,
-        priceUnit: "разовое",
-        subscription: "Абонемент на 4 встречи — 8 000 ₽ (2 000 ₽/встреча)",
-        description: "Длительная групповая работа для глубоких изменений. Пространство поддержки.",
-        image: IMG.circle,
-        cta: "Узнать подробнее",
-        ctaAlt: "Записаться в группу",
+        id: "probalance",
+        title: "ПРО|БАЛАНС",
+        subtitle: "Интегративные практики · тело, дыхание, внимание",
+        variants: [
+          {
+            id: "ind",
+            mode: "individual",
+            image: IMG.hero,
+            duration: "2 часа",
+            price: 5000,
+            priceUnit: "разовая практика",
+            description:
+              "Персональная интегративная практика для психоэмоциональной разгрузки, управления вниманием, мягкой распаковки телесных блоков.",
+          },
+          {
+            id: "grp",
+            mode: "group",
+            image: IMG.studio,
+            duration: "1,5–2 часа",
+            price: 2000,
+            priceUnit: "разовое занятие",
+            packLabel: "Абонемент: 4 занятия — 6 800 ₽ (1 700 ₽/занятие)",
+            packBenefit: "выгода 1 200 ₽",
+            description:
+              "Интегративные практики для разгрузки и восстановления энергии. Развитие навыка управления вниманием, снятие стресса.",
+          },
+        ],
       },
     ],
     orders: [],
@@ -312,7 +272,7 @@ export function loadDB(): DB {
     const raw = localStorage.getItem(KEY);
     if (raw) {
       const parsed = JSON.parse(raw) as DB;
-      if (parsed && parsed.version === 2) return parsed;
+      if (parsed && parsed.version === 3) return parsed;
     }
   } catch {
     /* повреждённые данные — пересоздаём */
@@ -479,7 +439,7 @@ export function exportDB(): string {
 export function importDB(json: string): boolean {
   try {
     const parsed = JSON.parse(json) as DB;
-    if (!parsed || parsed.version !== 2 || !Array.isArray(parsed.users)) return false;
+    if (!parsed || parsed.version !== 3 || !Array.isArray(parsed.users)) return false;
     localStorage.setItem(KEY, JSON.stringify(parsed));
     listeners.forEach((l) => l());
     return true;

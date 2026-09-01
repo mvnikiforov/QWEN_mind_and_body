@@ -109,7 +109,7 @@ export default function DocsTab() {
 
       <Block title="1. Как устроено хранение данных (низкоуровневые компоненты)">
         <ul className="list-disc space-y-2 pl-5">
-          <li>«База данных» сайта — таблицы <Code>users</Code>, <Code>services</Code>, <Code>orders</Code>, <Code>events</Code>, <Code>posts</Code>, <Code>content</Code> в localStorage браузера (ключ <Code>probalance-db-v2</Code>). Сессия входа — в sessionStorage.</li>
+          <li>«База данных» сайта — таблицы <Code>users</Code>, <Code>services</Code>, <Code>orders</Code>, <Code>events</Code>, <Code>posts</Code>, <Code>content</Code> в localStorage браузера (ключ <Code>probalance-db-v3</Code>). Сессия входа — в sessionStorage.</li>
           <li>Все изменения из админ-панели (витрина, афиша, публикации, контакты, статусы заказов) записываются в базу мгновенно и сразу видны на сайте.</li>
           <li>Заявки с сайта попадают в таблицу <Code>orders</Code> со статусом <b>Новый</b> и заполненной мини-анкетой. Оплата не подключена — статусы меняются вручную: Новый → Оплачен → Проведена встреча → Закрыт.</li>
           <li>Загружаемые фото сжимаются на лету (до ~1000 px, JPEG 85%) и хранятся в базе в виде data-URL.</li>
@@ -122,7 +122,7 @@ export default function DocsTab() {
           <li><b>Резервная копия:</b> «Настройки» → Экспорт базы → сохраните JSON-файл. Восстановление — Импорт базы.</li>
           <li><b>Пароль:</b> первый вход <Code>admin</Code> / <Code>valeria</Code>, сразу смените в «Настройках». Сессия сбрасывается при закрытии вкладки.</li>
           <li><b>Сброс:</b> кнопка «Сброс к исходным данным» возвращает витрину, афишу и тексты к заводским; заказы при этом удаляются.</li>
-          <li><b>Отладка:</b> в консоли браузера база доступна как <Code>JSON.parse(localStorage.getItem('probalance-db-v2'))</Code>.</li>
+          <li><b>Отладка:</b> в консоли браузера база доступна как <Code>JSON.parse(localStorage.getItem('probalance-db-v3'))</Code>.</li>
           <li><b>Канал МАХ:</b> блок «Актуальное из канала» пытается подгрузить публикации по URL из «Контент → URL автоподгрузки» (RSS/JSON, таймаут 4 сек). Пока API закрыт — поле пустое, показываются ручные публикации из вкладки «Канал». Ожидаемый формат JSON: <Code>[&#123;"date","title","text","image"&#125;]</Code>.</li>
         </ul>
       </Block>
