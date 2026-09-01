@@ -32,22 +32,110 @@ npm run build   # production-сборка в папку dist
 **Резервное копирование:** «Настройки» → Экспорт базы → сохранить JSON.
 Восстановление — Импорт базы (например, на новом устройстве).
 
-## Перенос на хостинг / VDS
+## Деплой на reg.ru (shared-хостинг)
 
-1. `npm run build` → скопировать содержимое `dist/` в корень сайта.
-2. **Статический хостинг** (Netlify/Vercel/GitHub Pages/обычная панель) — просто загрузить `dist`.
-3. **VDS + nginx:**
-   ```nginx
-   server {
-     listen 80;
-     server_name vash-domen.ru;
-     root /var/www/probalance;
-     index index.html;
-     location / { try_files $uri /index.html; }
-   }
+> **Важно:** на хостинг загружаются **только собранные файлы из папки `dist/`**.
+> Исходный код (`src/`, `package.json`, `node_modules/`) хостингу не нужен — shared-хостинг
+> не собирает проекты, а только раздаёт готовые статические файлы.
+
+**Ошибка `Failed to load module script ... MIME type of ""`** означает, что на сервере лежит
+не сборка: браузер запросил модуль (например `/src/main.tsx` из корневого `index.html`
+или файл из вложенной папки `dist/`), а сервер вернул страницу ошибки без MIME-типа.
+
+### Пошагово
+
+1. **Соберите проект локально** (нужен Node.js 18+):
+   ```bash
+   npm install
+   npm run build
    ```
-4. HTTPS: `sudo certbot --nginx -d vash-domen.ru`.
-5. Перенос данных: экспорт базы на старом устройстве → импорт в админке на новом.
+   Появится папка `dist/` — в ней `index.html` и папка `assets/`. Это и есть сайт.
+
+2. **Откройте файловый менеджер reg.ru** (или FTP-клиент, например FileZilla):
+   «Мои услуги» → ваш хостинг → «Файловый менеджер».
+
+3. **Перейдите в корневую папку сайта** — обычно это `public_html/`
+   (или `www/<ваш-домен>/`, если доменов несколько).
+
+4. **Удалите из неё всё**, что лежит там сейчас (включая ошибочно загруженные `src/`,
+   `node_modules/`, `package.json` и т.д.). Папка должна остаться пустой.
+
+5. **Загрузите СОДЕРЖИМОЕ папки `dist/`** (не саму папку `dist`, а файлы из неё!):
+   - `index.html`
+   - папку `assets/`
+   
+   После загрузки в `public_html/` должны лежать `index.html` и `assets/` — на одном уровне.
+
+6. **Добавьте `.htaccess`** (чинит MIME-типы и включает сжатие):
+   - возьмите файл `deploy/htaccess` из проекта,
+   - загрузите его в `public_html/` и **переименуйте в `.htaccess`**
+     (если файл с точкой не создаётся — включите в файловом менеджере
+     «Показывать скрытые файлы»).
+
+7. Откройте `https://ваш-домен.ru` — сайт должен заработать.
+   Админка: `https://ваш-домен.ru/#/admin` (вход `admin` / `valeria`, пароль смените сразу).
+
+### Проверка, что всё правильно
+
+- В `public_html/` лежит `index.html`, в нём пути вида `src="/assets/index-XXXX.js"`.
+- Открыв этот URL напрямую (`https://ваш-домен.ru/assets/index-XXXX.js`), вы видите
+  JavaScript-код, а не страницу 404.
+- Сайт открывается в корне домена. Размещение в подкаталоге не поддерживается
+  (сборка использует абсолютные пути от корня).
+
+### Обновление сайта после правок
+
+Снова `npm run build` → удалите старые файлы из `public_html/` → загрузите новое
+содержимое `dist/` (файл `.htaccess` при этом не трогайте). Данные (заказы, тексты)
+хранятся в браузере администратора и при обновлении файлов не теряются; для переноса
+между устройствами — «Настройки» → Экспорт/Импорт базы.
+
+## Деплой (перенос на хостинг / VDS)
+
+Сайт — чистая статика: `npm run build` собирает всё в папку `dist/`, дальше её можно
+разместить где угодно. Готовые файлы — в папке [`deploy/`](deploy/).
+
+### Вариант 1 — статический хостинг (быстрее всего, ~5 минут)
+
+1. `npm run build`
+2. **Netlify:** [app.netlify.com/drop](https://app.netlify.com/drop) → перетащите папку `dist`.
+   **Vercel:** `npm i -g vercel && vercel --prod` (из корня проекта).
+   **GitHub Pages / обычная панель хостинга (cPanel, FTP):** загрузите *содержимое* `dist/` в корень сайта.
+3. Готово. HTTPS включится автоматически.
+
+### Вариант 2 — VDS + nginx
+
+1. `npm run build` → скопируйте содержимое `dist/` на сервер:
+   `rsync -avz dist/ user@сервер:/var/www/probalance/`
+   (или воспользуйтесь скриптом: `bash deploy/deploy.sh user@сервер`)
+2. Установите nginx: `sudo apt install nginx`
+3. `sudo mkdir -p /var/www/probalance && sudo chown -R www-data:www-data /var/www/probalance`
+4. Скопируйте конфиг (замените домен внутри):
+   `sudo cp deploy/nginx.conf /etc/nginx/sites-available/probalance`
+   `sudo ln -s /etc/nginx/sites-available/probalance /etc/nginx/sites-enabled/`
+   `sudo nginx -t && sudo systemctl reload nginx`
+5. HTTPS: `sudo apt install certbot python3-certbot-nginx && sudo certbot --nginx -d vash-domen.ru`
+
+### Вариант 3 — Docker
+
+```bash
+docker compose -f deploy/docker-compose.yml up -d --build
+```
+
+Сайт будет доступен на порту 8080 (меняется в `deploy/docker-compose.yml`).
+
+### Перенос данных (заказы, отредактированные тексты)
+
+База сайта хранится в localStorage браузера администратора. Чтобы перенести её на новое
+устройство: админка → «Настройки» → **Экспорт базы** (скачается JSON) → на новом устройстве
+войти в админку → «Настройки» → **Импорт базы** → выбрать файл.
+
+### Обновление сайта после правок
+
+1. `npm run build`
+2. Статический хостинг — загрузить новую `dist/` (Netlify/Vercel из Git-репозитория делают это сами при пуше).
+3. VDS — `bash deploy/deploy.sh user@сервер`.
+4. Docker — `docker compose -f deploy/docker-compose.yml up -d --build`.
 
 ## Интеграция с каналом МАХ
 

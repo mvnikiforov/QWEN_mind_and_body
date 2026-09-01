@@ -350,21 +350,33 @@ function EventsTab() {
       <p className="mt-1 text-[12.5px] font-semibold text-ink-soft">Изменения сохраняются сразу и мгновенно отображаются на сайте.</p>
       <div className="mt-6 space-y-3">
         {db.events.map((e: EventItem) => (
-          <div key={e.id} className="fadeup grid gap-3 rounded-[20px] border border-line bg-card px-5 py-4 lg:grid-cols-[1fr_170px_140px_120px_1fr_auto] lg:items-center">
-            <input className={FIELD} value={e.title} onChange={(ev) => updateEvent(e.id, { title: ev.target.value })} aria-label="Название" />
-            <input className={FIELD} value={e.when} onChange={(ev) => updateEvent(e.id, { when: ev.target.value })} aria-label="Когда" />
-            <input className={FIELD} value={e.time} onChange={(ev) => updateEvent(e.id, { time: ev.target.value })} aria-label="Время" />
-            <span className="relative">
-              <select className={`${FIELD} appearance-none pr-8`} value={e.format} onChange={(ev) => updateEvent(e.id, { format: ev.target.value as EventItem["format"] })} aria-label="Формат">
-                <option value="offline">Очно</option>
-                <option value="online">Онлайн</option>
-              </select>
-              <svg className="pointer-events-none absolute right-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-ink-faint" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round"><path d="m6 9.5 6 6 6-6" /></svg>
-            </span>
-            <input className={FIELD} value={e.price} onChange={(ev) => updateEvent(e.id, { price: ev.target.value })} aria-label="Стоимость" />
-            <button onClick={() => deleteEvent(e.id)} className="grid h-10 w-10 place-items-center justify-self-end rounded-full border border-ink/15 text-ink-soft transition-colors hover:border-[#c06b4a] hover:text-[#a8522f]" aria-label="Удалить">
-              <IconTrash className="h-4 w-4" />
-            </button>
+          <div key={e.id} className="fadeup rounded-[20px] border border-line bg-card px-5 py-4">
+            <div className="grid gap-3 lg:grid-cols-[1.4fr_1fr_0.7fr_0.7fr_1fr_auto] lg:items-center">
+              <input className={FIELD} value={e.title} onChange={(ev) => updateEvent(e.id, { title: ev.target.value })} aria-label="Название" />
+              <input className={FIELD} value={e.when} onChange={(ev) => updateEvent(e.id, { when: ev.target.value })} aria-label="Когда" />
+              <input className={FIELD} value={e.time} onChange={(ev) => updateEvent(e.id, { time: ev.target.value })} aria-label="Время" />
+              <span className="relative">
+                <select className={`${FIELD} appearance-none pr-8`} value={e.format} onChange={(ev) => updateEvent(e.id, { format: ev.target.value as EventItem["format"] })} aria-label="Формат">
+                  <option value="offline">Очно</option>
+                  <option value="online">Онлайн</option>
+                </select>
+                <svg className="pointer-events-none absolute right-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-ink-faint" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round"><path d="m6 9.5 6 6 6-6" /></svg>
+              </span>
+              <input className={FIELD} value={e.price} onChange={(ev) => updateEvent(e.id, { price: ev.target.value })} aria-label="Стоимость" />
+              <button onClick={() => deleteEvent(e.id)} className="grid h-10 w-10 place-items-center justify-self-end rounded-full border border-ink/15 text-ink-soft transition-colors hover:border-[#c06b4a] hover:text-[#a8522f]" aria-label="Удалить">
+                <IconTrash className="h-4 w-4" />
+              </button>
+            </div>
+            <div className="mt-3 grid gap-3 lg:grid-cols-[1fr_1fr]">
+              <label className="block">
+                <span className="mb-1 block text-[11px] font-extrabold uppercase tracking-wide text-ink-soft">Примечание к цене</span>
+                <input className={FIELD} value={e.priceNote ?? ""} onChange={(ev) => updateEvent(e.id, { priceNote: ev.target.value || undefined })} aria-label="Примечание к цене" />
+              </label>
+              <label className="block">
+                <span className="mb-1 block text-[11px] font-extrabold uppercase tracking-wide text-ink-soft">Описание</span>
+                <textarea rows={2} className={`${FIELD} resize-y`} value={e.desc ?? ""} onChange={(ev) => updateEvent(e.id, { desc: ev.target.value })} aria-label="Описание" />
+              </label>
+            </div>
           </div>
         ))}
       </div>

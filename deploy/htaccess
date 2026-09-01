@@ -1,0 +1,50 @@
+# ============================================================
+#  .htaccess для shared-хостинга reg.ru (Apache)
+#  Скопируйте этот файл в корень сайта и переименуйте в .htaccess
+#  (в файловом менеджере включите «Показывать скрытые файлы»)
+# ============================================================
+
+# --- MIME-типы (чинит ошибку «MIME type of ""» для модульных скриптов) ---
+<IfModule mod_mime.c>
+  AddType application/javascript   .js .mjs
+  AddType text/css                 .css
+  AddType image/svg+xml            .svg .svgz
+  AddType application/json         .json
+  AddType application/wasm         .wasm
+  AddType font/woff2               .woff2
+  AddType font/woff                .woff
+</IfModule>
+
+# --- Главная страница ---
+DirectoryIndex index.html
+
+# --- SPA: любой запрос к несуществующему файлу → index.html ---
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+  RewriteBase /
+  RewriteRule ^index\.html$ - [L]
+  RewriteCond %{REQUEST_FILENAME} !-f
+  RewriteCond %{REQUEST_FILENAME} !-d
+  RewriteRule . /index.html [L]
+</IfModule>
+
+# --- Сжатие ---
+<IfModule mod_deflate.c>
+  AddOutputFilterByType DEFLATE text/html text/css application/javascript application/json image/svg+xml
+</IfModule>
+
+# --- Кэширование ассетов ---
+<IfModule mod_expires.c>
+  ExpiresActive On
+  ExpiresByType text/css "access plus 7 days"
+  ExpiresByType application/javascript "access plus 7 days"
+  ExpiresByType image/jpeg "access plus 30 days"
+  ExpiresByType image/png "access plus 30 days"
+  ExpiresByType image/webp "access plus 30 days"
+</IfModule>
+
+# --- Безопасность: запрет листинга каталогов ---
+Options -Indexes
+
+# --- Кодировка ---
+AddDefaultCharset UTF-8
