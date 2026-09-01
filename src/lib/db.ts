@@ -70,6 +70,9 @@ export interface EventItem {
   time: string;
   format: "online" | "offline";
   price: string;
+  priceNote?: string;
+  desc: string;
+  actions: { label: string; kind: "book" | "link"; target?: string }[];
 }
 
 export interface Post {
@@ -113,7 +116,7 @@ export interface Session {
   role: Role;
 }
 
-const KEY = "probalance-db-v3";
+const KEY = "probalance-db-v4";
 const SESSION_KEY = "probalance-session";
 const listeners = new Set<() => void>();
 
@@ -135,7 +138,7 @@ function uid(): string {
 
 function seed(): DB {
   return {
-    version: 3,
+    version: 4,
     users: [{ id: "u-admin", login: "admin", pass: "valeria", name: "Валерия", role: "admin" }],
     services: [
       {
@@ -201,12 +204,45 @@ function seed(): DB {
     ],
     orders: [],
     events: [
-      { id: "ev-1", title: "Практика ПРО|БАЛАНС (групповая)", when: "Еженедельно · четверг", time: "11:30", format: "offline", price: "2 000 ₽ · абонемент 1 700 ₽" },
-      { id: "ev-2", title: "Чайная встреча", when: "Последнее воскресенье месяца", time: "по договорённости", format: "offline", price: "Бесплатно · чай/кофе для себя" },
-      { id: "ev-3", title: "Mindfulness-практика", when: "Еженедельно · суббота", time: "10:00", format: "online", price: "600 ₽" },
-      { id: "ev-4", title: "Групповой мастер-класс «Чун-Лэй»", when: "По анонсам", time: "4 часа", format: "offline", price: "6 000 ₽" },
-      { id: "ev-5", title: "Мастер-класс «Прокрастинация или важный сигнал?»", when: "По анонсам", time: "3 часа", format: "offline", price: "2 000 ₽" },
-      { id: "ev-6", title: "Терапевтическая мини-группа", when: "По набору · раз в 2 недели", time: "4 часа", format: "offline", price: "2 500 ₽ разовое · 8 000 ₽ абонемент" },
+      {
+        id: "ev-tea",
+        title: "Чайная встреча",
+        when: "Последнее воскресенье месяца",
+        time: "13:00",
+        format: "offline",
+        price: "Бесплатно",
+        priceNote: "заказ напитков для себя",
+        desc: "Тёплая встреча, где можно познакомиться со мной и с пространством ПРО|БАЛАНС. Это возможность поговорить по душам, поддержать контакт от сердца к сердцу, задать вопросы и почувствовать атмосферу. Никакой программы — только живое общение за чашкой чая или кофе.",
+        actions: [{ label: "Записаться", kind: "book" }],
+      },
+      {
+        id: "ev-mini",
+        title: "Практики в мини-группе ПРО|БАЛАНС",
+        when: "Еженедельно по четвергам",
+        time: "11:30",
+        format: "offline",
+        price: "2 000 ₽ разовое",
+        priceNote: "абонемент на 4 занятия — 6 800 ₽ (1 700 ₽/занятие)",
+        desc: "Интегративные телесно-ориентированные практики для психоэмоциональной разгрузки и восстановления энергии. Мягкая работа с телом, вниманием и дыханием в поддерживающей мини-группе.",
+        actions: [
+          { label: "Записаться", kind: "book" },
+          { label: "Купить абонемент", kind: "book", target: "абонемент 6 800 ₽ за 4 занятия" },
+        ],
+      },
+      {
+        id: "ev-mind",
+        title: "Mindfulness-практика",
+        when: "Онлайн по субботам",
+        time: "10:00",
+        format: "online",
+        price: "600 ₽ разовое",
+        priceNote: "курсом из 10 встреч — выгоднее и полезнее",
+        desc: "Практика осознанности и безоценочного присутствия. Помогает снизить тревогу, улучшить концентрацию и ясность ума. Подходит для любого уровня подготовки. Регулярное участие даёт более глубокий и устойчивый эффект.",
+        actions: [
+          { label: "Записаться", kind: "book" },
+          { label: "Узнать о курсе", kind: "link", target: "#corp-course" },
+        ],
+      },
     ],
     posts: [
       {
@@ -272,7 +308,7 @@ export function loadDB(): DB {
     const raw = localStorage.getItem(KEY);
     if (raw) {
       const parsed = JSON.parse(raw) as DB;
-      if (parsed && parsed.version === 3) return parsed;
+      if (parsed && parsed.version === 4) return parsed;
     }
   } catch {
     /* повреждённые данные — пересоздаём */
@@ -352,7 +388,16 @@ export function updateEvent(id: string, patch: Partial<EventItem>) {
 
 export function addEvent() {
   mutate((db) => {
-    db.events.push({ id: uid(), title: "Новое мероприятие", when: "По анонсам", time: "—", format: "offline", price: "—" });
+    db.events.push({
+      id: uid(),
+      title: "Новое мероприятие",
+      when: "По анонсам",
+      time: "—",
+      format: "offline",
+      price: "—",
+      desc: "Короткое описание мероприятия.",
+      actions: [{ label: "Записаться", kind: "book" }],
+    });
   });
 }
 
@@ -439,7 +484,7 @@ export function exportDB(): string {
 export function importDB(json: string): boolean {
   try {
     const parsed = JSON.parse(json) as DB;
-    if (!parsed || parsed.version !== 3 || !Array.isArray(parsed.users)) return false;
+    if (!parsed || parsed.version !== 4 || !Array.isArray(parsed.users)) return false;
     localStorage.setItem(KEY, JSON.stringify(parsed));
     listeners.forEach((l) => l());
     return true;
