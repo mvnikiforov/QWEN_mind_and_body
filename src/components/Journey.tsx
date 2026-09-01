@@ -1,5 +1,6 @@
 import { IconArrow, IconCare, IconCheck, YinYang } from "./icons";
 import { Reveal, SectionHead } from "./ui";
+import ReviewsSection from "./Reviews";
 
 const STEPS = [
   { n: "01", t: "Заявка", d: "Оставляете заявку через форму или пишете в мессенджер — как вам удобнее." },
@@ -115,28 +116,7 @@ export default function Journey() {
         </div>
 
         {/* Отзывы */}
-        <div className="mt-24">
-          <SectionHead
-            kicker="Отзывы"
-            title={
-              <>
-                Слова тех, кто уже <span className="italic text-gold-deep">прошёл этот путь</span>
-              </>
-            }
-          />
-          <div className="mt-10 grid gap-5 md:grid-cols-3">
-            {[0, 1, 2].map((i) => (
-              <Reveal key={i} delay={i * 110}>
-                <div className="flex h-40 flex-col items-center justify-center rounded-[24px] border border-dashed border-ink/20 text-center transition-colors duration-500 hover:border-gold/60">
-                  <YinYang className="h-8 w-8 opacity-40" />
-                  <p className="mt-3 max-w-[210px] text-[13px] font-semibold text-ink-faint">
-                    Здесь появятся отзывы моих клиентов
-                  </p>
-                </div>
-              </Reveal>
-            ))}
-          </div>
-        </div>
+        <ReviewsSection />
 
         {/* Образование */}
         <div id="education" className="mt-24">
