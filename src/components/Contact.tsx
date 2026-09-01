@@ -209,7 +209,7 @@ function ContactForm() {
             <textarea rows={2} value={form.bodyExp} onChange={(e) => set({ bodyExp: e.target.value })} placeholder="Йога, дыхание, медитация — как давно и регулярно?" className={AREA} /></label>
         </div>
         <div className="mt-5 grid gap-5 sm:grid-cols-2">
-          <Select label="Диагностированные психические заболевания" value={form.mental} onChange={(v) => set({ mental: v })} options={["Нет", "Да (укажите в комментарии)", "Не готов(а) отвечать"]} placeholder="Выберите ответ" />
+          <Select label="Психические заболевания" value={form.mental} onChange={(v) => set({ mental: v })} options={["Нет", "Да (укажите в комментарии)", "Не готов(а) отвечать"]} placeholder="Выберите ответ" />
           <Select label="Эпилепсия / судорожные состояния" value={form.epilepsy} onChange={(v) => set({ epilepsy: v })} options={["Нет", "Да (укажите в комментарии)", "Не знаю"]} placeholder="Выберите ответ" />
           <Select label="Операции за последние полгода" value={form.surgery} onChange={(v) => set({ surgery: v })} options={["Нет", "Да (укажите в комментарии)"]} placeholder="Выберите ответ" />
           <Select label="Грыжи позвоночника, проблемы с ОДА" value={form.hernia} onChange={(v) => set({ hernia: v })} options={["Нет", "Да (укажите в комментарии)", "Не знаю"]} placeholder="Выберите ответ" />
