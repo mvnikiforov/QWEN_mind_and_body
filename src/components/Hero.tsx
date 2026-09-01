@@ -52,16 +52,15 @@ export default function Hero() {
               Распаковка психо-эмоциональных зажимов. Раскрытие внутренних ресурсов — для полноты и яркости жизни.
             </p>
 
-            {/* ТЕЛО • ЧУВСТВА — чёрное / РАЗУМ • ДУХ — белое (контур) */}
+            {/* ТЕЛО • ЧУВСТВА • РАЗУМ • ДУХ — единый графитовый тон */}
             <div className="fadeup mt-9 border-y border-line py-4" style={{ animationDelay: "280ms" }}>
-              <p className="flex flex-wrap items-baseline gap-x-4 gap-y-1 font-display text-[clamp(17px,2.2vw,24px)] font-semibold uppercase tracking-[0.22em]">
-                <span>Тело</span>
-                <span className="text-[0.55em] text-gold">•</span>
-                <span>Чувства</span>
-                <span className="mx-1 inline-block h-[0.9em] w-px translate-y-[0.12em] bg-line" />
-                <span className="word-outline text-ink/70">Разум</span>
-                <span className="text-[0.55em] text-gold">•</span>
-                <span className="word-outline text-ink/70">Дух</span>
+              <p className="flex flex-wrap items-baseline gap-y-1 font-display text-[clamp(17px,2.2vw,24px)] font-semibold uppercase tracking-[0.22em] text-ink/90">
+                {["Тело", "Чувства", "Разум", "Дух"].map((w, i) => (
+                  <span key={w} className="flex items-baseline">
+                    {i > 0 && <span className="mx-4 text-[0.55em] leading-none text-ink/35">•</span>}
+                    {w}
+                  </span>
+                ))}
               </p>
             </div>
 
