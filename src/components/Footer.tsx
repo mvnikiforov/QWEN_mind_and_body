@@ -15,7 +15,7 @@ export default function Footer() {
         <p className="word-outline font-display font-medium uppercase leading-tight tracking-[0.12em] text-card/45 text-[clamp(26px,5vw,58px)]" aria-label="Тело, чувства, разум, дух — к балансу и ясности">
           Тело • Чувства • Разум • Дух
         </p>
-        <p className="mt-3 font-display text-[clamp(18px,2.4vw,26px)] italic text-card/60">— к балансу и ясности</p>
+        <p className="mt-3 font-display text-[clamp(18px,2.4vw,26px)] italic text-card/60">ТЕЛО • ЧУВСТВА • РАЗУМ • ДУХ — к балансу и ясности</p>
 
         <div className="mt-11 flex justify-center">
           <MaxChannelButton href={c.maxHref} tone="gold" />
