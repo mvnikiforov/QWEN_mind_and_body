@@ -1,16 +1,56 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 import { IMG } from "../lib/db";
 import { Enso, IconArrow, YinYang } from "./icons";
 
 const STRIP = "тело • чувства • разум • дух • тишина • опора • ясность • ";
 
 /* Медитативное кольцо вокруг фото: тонкие концентрические линии
-   вращаются с разной скоростью, а четыре слова поочерёдно
-   «всплывают» в четырёх точках окружности. */
-const ORBIT = ["тело", "чувства", "разум", "дух"];
+   вращаются с разной скоростью. Основные слова (тело, чувства,
+   разум, дух) поочерёдно всплывают по диагоналям примерно каждые
+   2 секунды; дополнительные — реже, в свободных точках окружности
+   (верх, право, низ, лево), не перекрывая основные. */
+const MAIN_WORDS = ["тело", "чувства", "разум", "дух"];
+const MAIN_ANGLES = [45, 135, 225, 315];
+const EXTRA_WORDS = ["ДАО-практики", "кундалини", "терапия", "мультикультурный подход", "mindfulness"];
+const EXTRA_ANGLES = [0, 90, 180, 270, 0];
+
+function OrbitWord({
+  angle,
+  on,
+  big,
+  children,
+}: {
+  angle: number;
+  on: boolean;
+  big?: boolean;
+  children: ReactNode;
+}) {
+  /* боковые точки скрываем на мобильных — длинные слова не вылезают за экран */
+  const side = angle === 90 || angle === 270;
+  return (
+    <div className={`absolute inset-0 ${side ? "hidden md:block" : ""}`} style={{ transform: `rotate(${angle}deg)` }} aria-hidden>
+      <span
+        className={`absolute left-1/2 top-0 flex items-center gap-2 whitespace-nowrap transition-all ease-[cubic-bezier(0.22,1,0.36,1)] ${
+          big
+            ? "duration-700 font-display text-[13.5px] italic tracking-[0.08em] text-ink/90 sm:text-[16.5px]"
+            : "duration-[1200ms] text-[9.5px] font-bold uppercase tracking-[0.22em] text-ink-soft/90 sm:text-[11px]"
+        } ${on ? "opacity-100 [text-shadow:0_1px_14px_rgba(244,241,234,0.95)]" : "opacity-0"}`}
+        style={{ transform: `translate(-50%, calc(-50% + ${on ? "-7px" : "9px"})) rotate(${-angle}deg)` }}
+      >
+        <i
+          className={`rounded-full bg-gold transition-transform duration-700 ${
+            big ? "h-1.5 w-1.5" : "h-1 w-1 opacity-70"
+          } ${on ? "scale-100" : "scale-0"}`}
+        />
+        {children}
+      </span>
+    </div>
+  );
+}
 
 function OrbitWords() {
-  const [active, setActive] = useState(0);
+  const [main, setMain] = useState(0);
+  const [extra, setExtra] = useState(-1);
   const [staticAll, setStaticAll] = useState(false);
 
   useEffect(() => {
@@ -18,22 +58,30 @@ function OrbitWords() {
       setStaticAll(true);
       return;
     }
-    const t = window.setInterval(() => setActive((a) => (a + 1) % ORBIT.length), 3400);
-    return () => window.clearInterval(t);
+    const t1 = window.setInterval(() => setMain((m) => (m + 1) % MAIN_WORDS.length), 2000);
+    const t2 = window.setInterval(() => setExtra((x) => (x + 1) % EXTRA_WORDS.length), 4000);
+    return () => {
+      window.clearInterval(t1);
+      window.clearInterval(t2);
+    };
   }, []);
 
   return (
     <div
       className="pointer-events-none absolute -inset-[5%] sm:-inset-[7%]"
       role="img"
-      aria-label="Тело, чувства, разум, дух"
+      aria-label="Тело, чувства, разум, дух. ДАО-практики, кундалини, терапия, мультикультурный подход, mindfulness"
     >
       {/* пунктирное кольцо — полный оборот за 28 секунд */}
       <svg className="orbit-spin absolute inset-0 h-full w-full text-ink/40" viewBox="0 0 100 100" fill="none" aria-hidden>
         <circle cx="50" cy="50" r="49.3" stroke="currentColor" strokeWidth="0.28" strokeDasharray="0.1 2.2" strokeLinecap="round" />
-        {ORBIT.map((_, i) => {
-          const a = ((45 + i * 90) * Math.PI) / 180;
-          return <circle key={i} cx={50 + 49.3 * Math.sin(a)} cy={50 - 49.3 * Math.cos(a)} r="0.5" fill="#a08149" fillOpacity="0.8" />;
+        {MAIN_ANGLES.map((a) => {
+          const rad = (a * Math.PI) / 180;
+          return <circle key={a} cx={50 + 49.3 * Math.sin(rad)} cy={50 - 49.3 * Math.cos(rad)} r="0.5" fill="#a08149" fillOpacity="0.8" />;
+        })}
+        {EXTRA_ANGLES.slice(0, 4).map((a) => {
+          const rad = (a * Math.PI) / 180;
+          return <circle key={`x-${a}`} cx={50 + 49.3 * Math.sin(rad)} cy={50 - 49.3 * Math.cos(rad)} r="0.3" fill="#a08149" fillOpacity="0.45" />;
         })}
       </svg>
 
@@ -44,26 +92,19 @@ function OrbitWords() {
         </svg>
       </div>
 
-      {/* слова на окружности */}
-      {ORBIT.map((w, i) => {
-        const a = 45 + i * 90;
-        const on = staticAll || active === i;
-        return (
-          <div key={w} className="absolute inset-0" style={{ transform: `rotate(${a}deg)` }} aria-hidden>
-            <span
-              className={`absolute left-1/2 top-0 flex items-center gap-2 whitespace-nowrap font-display italic tracking-[0.08em] transition-all duration-1000 ease-[cubic-bezier(0.22,1,0.36,1)] text-[13.5px] sm:text-[16.5px] ${
-                on
-                  ? "opacity-100 text-ink/90 [text-shadow:0_1px_14px_rgba(244,241,234,0.95)]"
-                  : "opacity-0"
-              }`}
-              style={{ transform: `translate(-50%, calc(-50% + ${on ? "-7px" : "9px"})) rotate(${-a}deg)` }}
-            >
-              <i className={`h-1.5 w-1.5 rounded-full bg-gold transition-transform duration-1000 ${on ? "scale-100" : "scale-0"}`} />
-              {w}
-            </span>
-          </div>
-        );
-      })}
+      {/* основные слова — по диагоналям, каждые 2 секунды */}
+      {MAIN_WORDS.map((w, i) => (
+        <OrbitWord key={w} angle={MAIN_ANGLES[i]} on={staticAll || main === i} big>
+          {w}
+        </OrbitWord>
+      ))}
+
+      {/* дополнительные — реже, в свободных точках, вторичным стилем */}
+      {EXTRA_WORDS.map((w, i) => (
+        <OrbitWord key={w} angle={EXTRA_ANGLES[i]} on={staticAll ? i < 4 : extra === i}>
+          {w}
+        </OrbitWord>
+      ))}
     </div>
   );
 }
