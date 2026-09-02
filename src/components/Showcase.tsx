@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useStore } from "../lib/store";
 import { fmtPrice, type Service } from "../lib/db";
 import { IconArrow } from "./icons";
@@ -10,16 +10,6 @@ function ServiceCard({ s, delay, className = "" }: { s: Service; delay: number; 
   const [mode, setMode] = useState<"individual" | "group">("individual");
   const v = s.variants.find((x) => x.mode === mode) ?? s.variants[0];
   const idx = Math.max(0, s.variants.findIndex((x) => x.mode === v.mode));
-
-  /* категории под Hero могут переключить формат карточки при переходе */
-  useEffect(() => {
-    const on = (e: Event) => {
-      const d = (e as CustomEvent<{ serviceId: string; mode: "individual" | "group" }>).detail;
-      if (d.serviceId === s.id) setMode(d.mode);
-    };
-    window.addEventListener("showcase-format", on);
-    return () => window.removeEventListener("showcase-format", on);
-  }, [s.id]);
 
   const book = () =>
     prefillService(
