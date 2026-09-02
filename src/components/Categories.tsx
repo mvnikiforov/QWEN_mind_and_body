@@ -1,27 +1,19 @@
 import type { ReactNode } from "react";
-import { IconArrow } from "./icons";
 import { Reveal } from "./ui";
+import { YinYang } from "./icons";
 
-function dispatchFormat(serviceId: string, mode: "individual" | "group") {
-  window.dispatchEvent(new CustomEvent("showcase-format", { detail: { serviceId, mode } }));
-}
+/* Информационные блоки-категории над витриной.
+   Без ссылок и навигации — только ориентир по форматам работы.
+   Шахматная инь-ян раскладка: графит ↔ светлый. */
 
-const CATS: {
-  n: string;
-  title: string;
-  icon: ReactNode;
-  href: string;
-  tint: string;
-  onClick?: () => void;
-}[] = [
+const CATS: { n: string; title: string; note: string; dark: boolean; icon: ReactNode }[] = [
   {
     n: "01",
-    title: "Индивидуальная сессия",
-    tint: "bg-card",
-    href: "#card-session",
-    onClick: () => dispatchFormat("session", "individual"),
+    title: "Индивидуальные сессии",
+    note: "гештальт · 50 минут",
+    dark: true,
     icon: (
-      <svg viewBox="0 0 24 24" className="h-[22px] w-[22px]" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <svg viewBox="0 0 24 24" className="h-[22px] w-[22px] sm:h-6 sm:w-6" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round">
         <path d="M4.5 4v7.5h5V19" />
         <path d="M4.5 11.5h5" />
         <path d="M19.5 4v7.5h-5V19" />
@@ -34,11 +26,10 @@ const CATS: {
   {
     n: "02",
     title: "Пакет «Баланс»",
-    tint: "bg-gold/10",
-    href: "#card-probalance",
-    onClick: () => dispatchFormat("probalance", "group"),
+    note: "цикл встреч · выгода",
+    dark: false,
     icon: (
-      <svg viewBox="0 0 24 24" className="h-[22px] w-[22px]" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <svg viewBox="0 0 24 24" className="h-[22px] w-[22px] sm:h-6 sm:w-6" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round">
         <path d="M12 3.2 20 7l-8 3.8L4 7z" />
         <path d="m4 11.6 8 3.8 8-3.8" />
         <path d="m4 16 8 3.8L20 16" />
@@ -47,12 +38,11 @@ const CATS: {
   },
   {
     n: "03",
-    title: "Групповая программа",
-    tint: "bg-moss/10",
-    href: "#card-session",
-    onClick: () => dispatchFormat("session", "group"),
+    title: "Групповые программы",
+    note: "круги до 10 человек",
+    dark: false,
     icon: (
-      <svg viewBox="0 0 24 24" className="h-[22px] w-[22px]" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round">
+      <svg viewBox="0 0 24 24" className="h-[22px] w-[22px] sm:h-6 sm:w-6" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round">
         <circle cx="12" cy="12" r="8.6" strokeDasharray="0.2 3.4" />
         <circle cx="12" cy="6.4" r="1.9" />
         <circle cx="6.8" cy="15.4" r="1.9" />
@@ -63,10 +53,10 @@ const CATS: {
   {
     n: "04",
     title: "Онлайн-курс",
-    tint: "bg-stone",
-    href: "#corp-course",
+    note: "для команд · 10 встреч",
+    dark: true,
     icon: (
-      <svg viewBox="0 0 24 24" className="h-[22px] w-[22px]" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <svg viewBox="0 0 24 24" className="h-[22px] w-[22px] sm:h-6 sm:w-6" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round">
         <rect x="3.2" y="4.6" width="17.6" height="12" rx="1.6" />
         <path d="M10.4 8.4v4.4l3.9-2.2z" fill="currentColor" stroke="none" />
         <path d="M8.6 20.4h6.8" />
@@ -75,36 +65,79 @@ const CATS: {
   },
 ];
 
-/* Горизонтальная полоса категорий — сразу под Hero */
 export default function Categories() {
   return (
-    <section aria-label="Быстрый выбор формата" className="relative py-9 sm:py-12">
+    <section aria-label="Направления работы" className="relative py-9 sm:py-12">
       <div className="mx-auto max-w-7xl px-5 sm:px-8">
-        <div className="flex gap-3.5 overflow-x-auto pb-2 no-scrollbar md:grid md:grid-cols-4 md:gap-4 md:overflow-visible md:pb-0 lg:gap-5">
+        <Reveal>
+          <div className="mb-4 flex items-baseline justify-between gap-4">
+            <p className="flex items-center gap-3 text-[11px] font-bold tracking-[0.3em] uppercase text-gold-deep">
+              <span className="h-px w-10 bg-current opacity-60" />
+              Направления работы
+            </p>
+            <p className="hidden text-[11px] font-bold uppercase tracking-[0.22em] text-ink-faint sm:block">
+              баланс форматов
+            </p>
+          </div>
+        </Reveal>
+
+        {/* Шахматная лента инь-ян: 2×2 на мобильных, 4 в ряд на десктопе */}
+        <div className="grid grid-cols-2 gap-px overflow-hidden rounded-[26px] border border-line bg-line lg:grid-cols-4">
           {CATS.map((c, i) => (
-            <Reveal key={c.n} delay={i * 90} className="w-[218px] shrink-0 md:w-auto">
-              <a
-                href={c.href}
-                onClick={c.onClick}
-                className={`group flex h-full items-center gap-4 rounded-[22px] border border-line ${c.tint} px-5 py-5 transition-all duration-500 hover:-translate-y-1.5 hover:border-gold/70 hover:bg-card hover:shadow-[0_26px_52px_-30px_rgba(35,33,29,0.5)]`}
+            <Reveal key={c.n} delay={i * 90} className="h-full">
+              <div
+                className={`group relative flex h-full flex-col justify-between overflow-hidden px-3.5 py-5 transition-colors duration-500 sm:px-5 sm:py-7 ${
+                  c.dark ? "bg-ink text-card hover:bg-[#2d2b26]" : "bg-card text-ink hover:bg-stone/70"
+                }`}
               >
-                <span className="grid h-11 w-11 shrink-0 place-items-center rounded-full border border-ink/20 bg-card text-ink transition-all duration-500 group-hover:border-ink group-hover:bg-ink group-hover:text-gold">
-                  {c.icon}
-                </span>
-                <span className="min-w-0">
-                  <span className="block font-display text-[12px] italic leading-none text-gold-deep/80">{c.n}</span>
-                  <span className="mt-1 block whitespace-nowrap text-[13.5px] font-extrabold tracking-tight md:text-[14.5px]">
-                    {c.title}
+                {/* «око» инь-ян */}
+                <span
+                  aria-hidden
+                  className={`absolute right-3.5 top-3.5 h-1.5 w-1.5 rounded-full transition-transform duration-500 group-hover:scale-150 ${
+                    c.dark ? "bg-card/60" : "bg-ink/50"
+                  }`}
+                />
+                {/* кривая тайцзи в углу */}
+                <svg
+                  aria-hidden
+                  className={`pointer-events-none absolute -bottom-5 -right-5 h-24 w-24 transition-transform duration-700 ease-out group-hover:-translate-y-1.5 ${
+                    c.dark ? "text-card/10" : "text-ink/10"
+                  }`}
+                  viewBox="0 0 100 100"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2.5"
+                >
+                  <path d="M100 0A50 50 0 0 0 0 100" />
+                  <path d="M100 30A35 35 0 0 0 30 100" />
+                </svg>
+
+                <div className="flex items-center justify-between pr-5">
+                  <span className={`font-display text-[16px] italic leading-none sm:text-[19px] ${c.dark ? "text-gold" : "text-ink-faint"}`}>
+                    {c.n}
                   </span>
-                </span>
-                <IconArrow className="ml-auto h-4 w-4 shrink-0 -translate-x-1 text-ink-faint opacity-0 transition-all duration-500 group-hover:translate-x-0 group-hover:text-gold-deep group-hover:opacity-100" />
-              </a>
+                  <YinYang
+                    className={`h-5 w-5 transition-transform duration-700 ease-out group-hover:rotate-180 sm:h-6 sm:w-6 ${
+                      c.dark ? "opacity-90" : "opacity-75"
+                    }`}
+                  />
+                </div>
+
+                <div className="mt-8 sm:mt-10">
+                  <span className={`block transition-colors duration-500 ${c.dark ? "text-gold" : "text-ink"}`}>{c.icon}</span>
+                  <p className="mt-3 whitespace-nowrap text-[11.5px] font-extrabold tracking-tight sm:text-[15px]">{c.title}</p>
+                  <p
+                    className={`mt-1 whitespace-nowrap text-[9.5px] font-bold uppercase tracking-[0.08em] sm:text-[10.5px] sm:tracking-[0.14em] ${
+                      c.dark ? "text-card/55" : "text-ink-faint"
+                    }`}
+                  >
+                    {c.note}
+                  </p>
+                </div>
+              </div>
             </Reveal>
           ))}
         </div>
-        <p className="mt-3 text-center text-[11px] font-semibold tracking-wide text-ink-faint md:hidden">
-          листайте, чтобы увидеть все форматы →
-        </p>
       </div>
     </section>
   );

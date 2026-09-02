@@ -147,6 +147,18 @@ body {
 .no-scrollbar { scrollbar-width: none; }
 .no-scrollbar::-webkit-scrollbar { display: none; }
 
+/* ---------- сенсорные устройства: статичный, чёткий контент ----------
+   На телефонах и планшетах отключаются все «плавающие» анимации:
+   парение чипов, «дыхание» фона, вращение колец, бегущая строка,
+   пульсации и свечения. Контент остаётся неподвижным при касании. */
+@media (pointer: coarse), (hover: none) {
+  .floaty, .floaty-slow, .breathe, .orbit-spin, .orbit-spin-rev, .spin-slow,
+  .marquee-track-l, .ink-pulse, .sheen-sweep, .max-glow, .max-glow-strong,
+  .animate-ping {
+    animation: none !important;
+  }
+}
+
 /* ---------- reduced motion ---------- */
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }

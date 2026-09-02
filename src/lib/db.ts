@@ -184,6 +184,8 @@ function seed(): DB {
             duration: "2 часа",
             price: 5000,
             priceUnit: "разовая практика",
+            packLabel: "Абонемент: 4 занятия — 17 000 ₽ (4 250 ₽/занятие)",
+            packBenefit: "выгода 3 000 ₽",
             description:
               "Персональная интегративная практика для психоэмоциональной разгрузки, управления вниманием, мягкой распаковки телесных блоков.",
           },
@@ -194,7 +196,7 @@ function seed(): DB {
             duration: "1,5–2 часа",
             price: 2000,
             priceUnit: "разовое занятие",
-            packLabel: "Абонемент: 4 занятия — 6 800 ₽ (1 700 ₽/занятие)",
+            packLabel: "Абонемент · 4 встречи (1 700 ₽/практика вместо 2 000 ₽)",
             packBenefit: "выгода 1 200 ₽",
             description:
               "Интегративные практики для разгрузки и восстановления энергии. Развитие навыка управления вниманием, снятие стресса.",
@@ -222,7 +224,7 @@ function seed(): DB {
         time: "11:30",
         format: "offline",
         price: "2 000 ₽ разовое",
-        priceNote: "абонемент на 4 занятия — 6 800 ₽ (1 700 ₽/занятие)",
+        priceNote: "Абонемент · 4 встречи (1 700 ₽/практика вместо 2 000 ₽)",
         desc: "Интегративные телесно-ориентированные практики для психоэмоциональной разгрузки и восстановления энергии. Мягкая работа с телом, вниманием и дыханием в поддерживающей мини-группе.",
         actions: [
           { label: "Записаться", kind: "book" },
@@ -308,7 +310,29 @@ export function loadDB(): DB {
     const raw = localStorage.getItem(KEY);
     if (raw) {
       const parsed = JSON.parse(raw) as DB;
-      if (parsed && parsed.version === 4) return parsed;
+      if (parsed && parsed.version === 4) {
+        // Миграция: абонемент для индивидуального формата ПРО|БАЛАНС (для существующих пользователей)
+        const pb = parsed.services.find((s) => s.id === "probalance");
+        const ind = pb?.variants.find((v) => v.id === "ind");
+        if (ind && !ind.packLabel) {
+          ind.packLabel = "Абонемент: 4 занятия — 17 000 ₽ (4 250 ₽/занятие)";
+          ind.packBenefit = "выгода 3 000 ₽";
+        }
+        // Миграция: новая формулировка абонемента мини-группы ПРО|БАЛАНС
+        const grp = pb?.variants.find((v) => v.id === "grp");
+        if (grp && grp.packLabel && grp.packLabel.includes("4 занятия — 6 800")) {
+          grp.packLabel = "Абонемент · 4 встречи (1 700 ₽/практика вместо 2 000 ₽)";
+        }
+        parsed.events.forEach((ev) => {
+          if (ev.priceNote && ev.priceNote.includes("абонемент на 4 занятия — 6 800")) {
+            ev.priceNote = "Абонемент · 4 встречи (1 700 ₽/практика вместо 2 000 ₽)";
+          }
+          if (ev.price === "2 000 ₽ · абонемент 1 700 ₽") {
+            ev.price = "Разовое 2 000 ₽ · Абонемент · 4 встречи (1 700 ₽/практика вместо 2 000 ₽)";
+          }
+        });
+        return parsed;
+      }
     }
   } catch {
     /* повреждённые данные — пересоздаём */

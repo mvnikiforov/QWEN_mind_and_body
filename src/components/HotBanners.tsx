@@ -33,11 +33,14 @@ export default function HotBanners() {
                     Количество мест ограничено
                   </span>
                   <span className="rounded-full border border-card/25 px-4 py-2 text-[12px] font-bold text-card/85">1 раз в неделю · 1,5–2 часа</span>
-                  <span className="rounded-full border border-card/25 px-4 py-2 text-[12px] font-bold text-card/85">2 000 ₽ · абонемент 1 700 ₽</span>
+                  <span className="rounded-full border border-card/25 px-4 py-2 text-[12px] font-bold text-card/85">разовое — 2 000 ₽</span>
+                  <span className="rounded-full border border-gold/60 bg-gold/15 px-4 py-2 text-[12px] font-bold text-gold">
+                    Абонемент · 4 встречи (1 700 ₽/практика вместо 2 000 ₽)
+                  </span>
                 </div>
               </div>
               <button
-                onClick={() => prefillService("Набор: мини-группа ПРО|БАЛАНС", "2 000 ₽ разовое · абонемент 6 800 ₽")}
+                onClick={() => prefillService("Набор: мини-группа ПРО|БАЛАНС", "Разовое 2 000 ₽ · Абонемент · 4 встречи (1 700 ₽/практика вместо 2 000 ₽)")}
                 className="group/btn inline-flex w-max items-center gap-3 rounded-full bg-gold px-8 py-5 text-[13px] font-extrabold uppercase tracking-[0.14em] text-ink transition-all duration-300 hover:-translate-y-1 hover:bg-card hover:shadow-[0_24px_48px_-18px_rgba(160,129,73,0.9)] lg:self-center"
               >
                 Записаться в группу

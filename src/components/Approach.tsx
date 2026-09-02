@@ -93,9 +93,15 @@ export default function Approach() {
                     <span className="font-display text-[40px] font-light leading-none text-ink/20 transition-colors duration-500 group-hover:text-gold sm:text-[52px]">
                       {m.n}
                     </span>
-                    <div>
-                      <h4 className="font-display text-[24px] font-semibold">{m.t}</h4>
-                      <p className="mt-2.5 text-[14.5px] leading-relaxed text-ink-soft">{m.d}</p>
+                    <div className="min-w-0">
+                      <h4 className="text-[20px] font-extrabold uppercase leading-[1.14] tracking-[0.045em] text-ink transition-colors duration-500 group-hover:text-gold-deep sm:text-[26px]">
+                        {m.t}
+                      </h4>
+                      <span
+                        aria-hidden
+                        className="mt-3 block h-[3px] w-12 rounded-full bg-gold transition-all duration-500 ease-out group-hover:w-28 group-hover:bg-gold-deep"
+                      />
+                      <p className="mt-3.5 text-[14.5px] leading-relaxed text-ink-soft">{m.d}</p>
                     </div>
                   </div>
                 </Reveal>
