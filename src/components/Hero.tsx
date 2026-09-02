@@ -138,13 +138,13 @@ export default function Hero() {
         <div className="grid items-center gap-16 lg:grid-cols-12">
           {/* Текст */}
           <div className="lg:col-span-7">
-            <div className="fadeup flex flex-wrap items-center gap-x-3 gap-y-2 text-[11.5px] font-bold tracking-[0.2em] uppercase text-ink-soft">
-              {["Онлайн и очно", "Доступные цены", "Пространство баланса"].map((b, i) => (
-                <span key={b} className="flex items-center gap-3">
-                  {i > 0 && <span className="h-1 w-1 rounded-full bg-gold" />}
-                  {b}
-                </span>
-              ))}
+            {/* Плашка-статус: статичная, без анимации */}
+            <div className="flex flex-wrap items-baseline gap-y-2 text-[12.5px] font-bold uppercase leading-relaxed tracking-[0.12em] text-ink-soft md:text-[14.5px] md:tracking-[0.14em]">
+              <span>Онлайн и очно</span>
+              <span aria-hidden="true" className="mx-3 text-gold">·</span>
+              <span>Доступно</span>
+              <span aria-hidden="true" className="mx-3 text-gold">·</span>
+              <span>Пространство баланса</span>
             </div>
 
             <h1
