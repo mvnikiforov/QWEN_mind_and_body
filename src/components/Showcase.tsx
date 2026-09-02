@@ -27,6 +27,12 @@ function ServiceCard({ s, delay }: { s: Service; delay: number }) {
       fmtPrice(v.price) + (v.priceUnit ? ` ${v.priceUnit}` : "")
     );
 
+  const bookPack = () =>
+    prefillService(
+      `${s.id}:${v.id}`,
+      (v.packLabel ?? "") + (v.packBenefit ? ` · ${v.packBenefit}` : "")
+    );
+
   return (
     <Reveal delay={delay} className="h-full">
       <article id={`card-${s.id}`} className="group/card flex h-full scroll-mt-28 flex-col overflow-hidden rounded-[32px] border border-line bg-card transition-all duration-500 hover:-translate-y-1.5 hover:border-gold/60 hover:shadow-[0_44px_88px_-44px_rgba(35,33,29,0.55)]">
@@ -139,7 +145,7 @@ function ServiceCard({ s, delay }: { s: Service; delay: number }) {
             </div>
           </div>
 
-          <div className="mt-auto pt-7">
+          <div className="mt-auto space-y-3 pt-7">
             <button
               onClick={book}
               className="group/btn flex w-full items-center justify-center gap-3 rounded-full bg-ink py-4 text-[12.5px] font-extrabold uppercase tracking-[0.14em] text-card transition-all duration-300 hover:bg-gold-deep hover:shadow-[0_20px_40px_-18px_rgba(138,109,60,0.95)]"
@@ -147,6 +153,17 @@ function ServiceCard({ s, delay }: { s: Service; delay: number }) {
               Записаться
               <IconArrow className="h-4 w-4 transition-transform duration-300 group-hover/btn:translate-x-1.5" />
             </button>
+            {v.packLabel && (
+              <button
+                onClick={bookPack}
+                className="group/pack flex w-full items-center justify-center gap-3 rounded-full border-2 border-gold-deep/70 bg-gold/10 py-3.5 text-[12px] font-extrabold uppercase tracking-[0.14em] text-gold-deep transition-all duration-300 hover:border-gold-deep hover:bg-gold-deep hover:text-card hover:shadow-[0_18px_36px_-16px_rgba(138,109,60,0.9)]"
+              >
+                Купить абонемент
+                <span className="rounded-full bg-gold-deep/15 px-2.5 py-1 text-[10.5px] font-extrabold normal-case tracking-normal transition-colors duration-300 group-hover/pack:bg-card/20">
+                  {v.packBenefit ?? "выгодно"}
+                </span>
+              </button>
+            )}
           </div>
         </div>
       </article>

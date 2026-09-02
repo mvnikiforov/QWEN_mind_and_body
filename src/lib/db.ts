@@ -184,6 +184,8 @@ function seed(): DB {
             duration: "2 часа",
             price: 5000,
             priceUnit: "разовая практика",
+            packLabel: "Абонемент: 4 занятия — 17 000 ₽ (4 250 ₽/занятие)",
+            packBenefit: "выгода 3 000 ₽",
             description:
               "Персональная интегративная практика для психоэмоциональной разгрузки, управления вниманием, мягкой распаковки телесных блоков.",
           },
@@ -308,7 +310,16 @@ export function loadDB(): DB {
     const raw = localStorage.getItem(KEY);
     if (raw) {
       const parsed = JSON.parse(raw) as DB;
-      if (parsed && parsed.version === 4) return parsed;
+      if (parsed && parsed.version === 4) {
+        // Миграция: абонемент для индивидуального формата ПРО|БАЛАНС (для существующих пользователей)
+        const pb = parsed.services.find((s) => s.id === "probalance");
+        const ind = pb?.variants.find((v) => v.id === "ind");
+        if (ind && !ind.packLabel) {
+          ind.packLabel = "Абонемент: 4 занятия — 17 000 ₽ (4 250 ₽/занятие)";
+          ind.packBenefit = "выгода 3 000 ₽";
+        }
+        return parsed;
+      }
     }
   } catch {
     /* повреждённые данные — пересоздаём */
