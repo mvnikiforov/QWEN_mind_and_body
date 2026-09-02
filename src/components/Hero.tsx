@@ -54,7 +54,8 @@ function OrbitWords() {
   const [staticAll, setStaticAll] = useState(false);
 
   useEffect(() => {
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+    /* Сенсорные устройства и reduced motion — полностью статичное кольцо */
+    if (window.matchMedia("(prefers-reduced-motion: reduce), (pointer: coarse), (hover: none)").matches) {
       setStaticAll(true);
       return;
     }
@@ -112,9 +113,10 @@ function OrbitWords() {
 export default function Hero() {
   const ref = useRef<HTMLElement>(null);
 
-  /* лёгкий параллакс от мыши */
+  /* лёгкий параллакс от мыши (только десктоп: на сенсорных экранах — статично) */
   useEffect(() => {
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    if (window.matchMedia("(pointer: coarse), (hover: none)").matches) return;
     const el = ref.current;
     if (!el) return;
     const onMove = (e: MouseEvent) => {
