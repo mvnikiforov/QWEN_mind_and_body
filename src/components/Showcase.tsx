@@ -6,7 +6,7 @@ import { prefillService, Reveal, SectionHead } from "./ui";
 
 const MODE_LABEL = { individual: "Индивидуальная", group: "Групповая" } as const;
 
-function ServiceCard({ s, delay }: { s: Service; delay: number }) {
+function ServiceCard({ s, delay, className = "" }: { s: Service; delay: number; className?: string }) {
   const [mode, setMode] = useState<"individual" | "group">("individual");
   const v = s.variants.find((x) => x.mode === mode) ?? s.variants[0];
   const idx = Math.max(0, s.variants.findIndex((x) => x.mode === v.mode));
@@ -34,7 +34,7 @@ function ServiceCard({ s, delay }: { s: Service; delay: number }) {
     );
 
   return (
-    <Reveal delay={delay} className="h-full">
+    <Reveal delay={delay} className={`h-full ${className}`}>
       <article id={`card-${s.id}`} className="group/card flex h-full scroll-mt-28 flex-col overflow-hidden rounded-[32px] border border-line bg-card transition-all duration-500 hover:-translate-y-1.5 hover:border-gold/60 hover:shadow-[0_44px_88px_-44px_rgba(35,33,29,0.55)]">
         {/* Фото с кроссфейдом между форматами */}
         <div className="relative h-60 overflow-hidden sm:h-64">
@@ -187,14 +187,24 @@ export default function Showcase() {
               Форматы работы <span className="italic text-gold-deep">и цены</span>
             </>
           }
-          sub="Два направления работы. Внутри каждой карточки переключите «Индивидуальная» или «Групповая» — фото, длительность, цена и описание сменятся. Оба варианта и выгода пакетов видны сразу."
+          sub="Два направления работы — обе карточки стоят в ряд. Внутри каждой переключите «Индивидуальная» или «Групповая»: фото, длительность, цена и описание сменятся, а оба варианта и выгода пакетов видны сразу. На телефоне карточки листаются горизонтально."
         />
 
-        <div className="mt-14 grid gap-7 lg:grid-cols-2">
+        {/* Горизонтальный ряд: на ноутбуке обе карточки в ряд,
+            на мобильных — горизонтальный скролл с «подглядыванием» следующей */}
+        <div className="no-scrollbar mt-14 flex snap-x snap-mandatory items-stretch gap-5 overflow-x-auto pb-4 sm:gap-7 md:snap-none md:overflow-visible md:pb-0">
           {db.services.map((s, i) => (
-            <ServiceCard key={s.id} s={s} delay={i * 140} />
+            <ServiceCard
+              key={s.id}
+              s={s}
+              delay={i * 140}
+              className="w-[300px] shrink-0 snap-start sm:w-[340px] md:w-auto md:basis-0 md:flex-1"
+            />
           ))}
         </div>
+        <p className="mt-2 text-center text-[11px] font-semibold tracking-wide text-ink-faint md:hidden">
+          листайте, чтобы увидеть обе карточки →
+        </p>
 
         <Reveal delay={240}>
           <p className="mt-10 text-center text-[13px] font-semibold text-ink-faint">
