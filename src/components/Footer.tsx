@@ -11,10 +11,12 @@ export default function Footer() {
       <div className="pointer-events-none absolute -top-24 right-1/4 h-72 w-72 rounded-full bg-gold/10 blur-3xl" />
 
       <div className="relative mx-auto max-w-7xl px-5 pb-10 pt-14 sm:px-8 sm:pt-16">
-        <p className="font-display font-medium uppercase leading-tight tracking-[0.12em] text-card/80 text-[clamp(24px,5vw,58px)]">
-          Тело <span className="text-gold">•</span> Чувства <span className="text-gold">•</span> Разум <span className="text-gold">•</span> Дух
-        </p>
-        <p className="mt-3 font-display text-[clamp(17px,2.4vw,26px)] italic text-card/70">— к балансу и ясности</p>
+        <div className="text-center">
+          <p className="font-display font-medium uppercase leading-tight tracking-[0.12em] text-card/80 text-[clamp(24px,5vw,58px)]">
+            Тело <span className="text-gold">•</span> Чувства <span className="text-gold">•</span> Разум <span className="text-gold">•</span> Дух
+          </p>
+          <p className="mt-3 font-display text-[clamp(17px,2.4vw,26px)] italic text-card/70">— к балансу и ясности</p>
+        </div>
 
         <div className="mt-10 flex justify-center sm:mt-11">
           <MaxChannelButton href={c.maxHref} tone="gold" />
