@@ -82,10 +82,10 @@ export default function ReviewsSection() {
             </Reveal>
             {/* Переключатель направлений: на мобильных — горизонтальная прокрутка со снапом */}
             <Reveal delay={240}>
-              <div className="relative -mx-5 mt-6 lg:mx-0">
+              <div className="relative -mx-5 mt-6 w-screen max-w-[100vw] lg:mx-0 lg:w-auto lg:max-w-none">
                 <div
                   ref={listRef}
-                  className="scroll-ribbon flex snap-x snap-proximity select-none gap-2 overflow-x-auto px-5 pb-2 lg:flex-col lg:snap-none lg:gap-2.5 lg:overflow-visible lg:px-0 lg:pb-0"
+                  className="scroll-ribbon flex w-full max-w-full snap-x snap-mandatory gap-2.5 overflow-x-auto px-5 pb-2 lg:flex-col lg:snap-none lg:gap-2.5 lg:overflow-visible lg:px-0 lg:pb-0"
                 >
                   {GROUPS.map((gr, i) => (
                     <button
@@ -96,7 +96,7 @@ export default function ReviewsSection() {
                       }}
                       onClick={() => setActive(i)}
                       aria-pressed={i === active}
-                      className={`flex min-h-[48px] shrink-0 cursor-pointer snap-start items-center gap-3.5 rounded-[16px] border px-4 py-3 text-left text-[13px] font-bold transition-colors duration-300 sm:px-5 lg:w-full lg:justify-between lg:gap-4 lg:transition-all ${
+                      className={`flex min-h-[52px] w-max shrink-0 cursor-pointer snap-center items-center gap-3 rounded-[16px] border px-4 py-3 text-left text-[13px] font-bold transition-colors duration-300 sm:px-5 lg:w-full lg:justify-between lg:gap-4 lg:transition-all ${
                         i === active
                           ? "border-ink bg-ink text-card shadow-[0_16px_32px_-20px_rgba(35,33,29,0.7)]"
                           : "border-line bg-card text-ink-soft hover:border-ink/40 hover:text-ink lg:hover:translate-x-1"
@@ -127,20 +127,20 @@ export default function ReviewsSection() {
           <span aria-hidden className="pointer-events-none absolute -top-8 right-0 hidden select-none font-display text-[150px] italic leading-none text-ink/6 sm:block lg:-top-10 lg:text-[200px]">
             „
           </span>
-          <div className="relative space-y-3.5 sm:space-y-5">
+          <div className="relative w-full max-w-full space-y-3.5 sm:space-y-5">
             {g.reviews.map((r, i) => (
               <div
                 key={active + "-" + r.name + i}
-                className="fadeup group min-w-0 break-words rounded-[22px] border border-line bg-card/75 p-5 backdrop-blur-sm transition-all duration-500 hover:border-gold/60 hover:shadow-[0_30px_60px_-36px_rgba(35,33,29,0.5)] sm:rounded-[24px] sm:p-8 lg:hover:-translate-y-1"
+                className="fadeup group w-full max-w-full min-w-0 overflow-hidden rounded-[22px] border border-line bg-card/85 p-5 transition-all duration-500 hover:border-gold/60 hover:shadow-[0_30px_60px_-36px_rgba(35,33,29,0.5)] sm:rounded-[24px] sm:p-8 lg:hover:-translate-y-1"
                 style={{ animationDelay: `${i * 130}ms` }}
               >
-                <div className="flex flex-wrap items-center gap-x-3 gap-y-1.5 sm:gap-x-4 sm:gap-y-2">
+                <div className="flex w-full flex-wrap items-center gap-x-3 gap-y-1.5 sm:gap-x-4 sm:gap-y-2">
                   <h3 className="font-display text-[18px] font-semibold text-gold-deep sm:text-[21px]">{g.title}</h3>
                   <span className="rounded-full border border-ink/15 px-3 py-1 text-[10px] font-extrabold uppercase tracking-[0.14em] text-ink-faint sm:text-[10.5px]">
                     {g.chip}
                   </span>
                 </div>
-                <p className="mt-3 text-[14px] leading-relaxed text-ink sm:mt-3.5 sm:text-[14.5px]">{r.text}</p>
+                <p className="mt-3 w-full text-[14px] leading-relaxed text-ink [overflow-wrap:anywhere] sm:mt-3.5 sm:text-[14.5px]">{r.text}</p>
                 <p className="mt-4 flex flex-wrap items-center gap-x-3 gap-y-2 sm:mt-5">
                   <span className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-ink font-display text-[15px] italic text-gold">
                     {r.name[0]}

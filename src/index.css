@@ -46,6 +46,9 @@ body {
 .scroll-ribbon {
   -webkit-overflow-scrolling: touch;
   overscroll-behavior-x: contain;
+  overscroll-behavior-y: none;
+  /* свайп по ленте принадлежит только ленте: страница не двигается ни по X, ни по Y */
+  touch-action: pan-x;
   scrollbar-width: none;
 }
 .scroll-ribbon::-webkit-scrollbar {
