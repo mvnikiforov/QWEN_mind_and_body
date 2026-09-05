@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Reveal, SectionHead } from "./ui";
 
 const GROUPS: { title: string; chip: string; reviews: { name: string; text: string }[] }[] = [
@@ -49,6 +49,18 @@ export default function ReviewsSection() {
   const [active, setActive] = useState(0);
   const g = GROUPS[active];
   const total = GROUPS.reduce((n, x) => n + x.reviews.length, 0);
+  const listRef = useRef<HTMLDivElement>(null);
+  const btnRefs = useRef<(HTMLButtonElement | null)[]>([]);
+
+  /* На мобильных активное направление всегда видно: плавно центрируем его в ленте */
+  useEffect(() => {
+    const btn = btnRefs.current[active];
+    const list = listRef.current;
+    if (!btn || !list || typeof window === "undefined" || window.innerWidth >= 1024) return;
+    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const target = btn.offsetLeft - (list.clientWidth - btn.clientWidth) / 2;
+    list.scrollTo({ left: Math.max(0, target), behavior: reduced ? "auto" : "smooth" });
+  }, [active]);
 
   return (
     <div className="mt-16 sm:mt-24">
@@ -68,49 +80,64 @@ export default function ReviewsSection() {
                 {total} отзывов · {GROUPS.length} направлений
               </p>
             </Reveal>
-            {/* Переключатель направлений */}
+            {/* Переключатель направлений: на мобильных — горизонтальная прокрутка со снапом */}
             <Reveal delay={240}>
-              <div className="-mx-5 mt-6 flex gap-2 overflow-x-auto no-scrollbar px-5 lg:mx-0 lg:flex-col lg:gap-2.5 lg:overflow-visible lg:px-0">
+              <div
+                ref={listRef}
+                className="-mx-5 mt-6 flex snap-x gap-2 overflow-x-auto no-scrollbar px-5 pb-1 lg:mx-0 lg:flex-col lg:gap-2.5 lg:overflow-visible lg:px-0 lg:pb-0"
+              >
                 {GROUPS.map((gr, i) => (
                   <button
                     key={gr.title}
                     type="button"
+                    ref={(el) => {
+                      btnRefs.current[i] = el;
+                    }}
                     onClick={() => setActive(i)}
                     aria-pressed={i === active}
-                    className={`flex shrink-0 items-center justify-between gap-4 rounded-[16px] border px-5 py-3 text-left text-[13px] font-bold transition-all duration-300 min-h-[48px] lg:w-full ${
+                    className={`flex min-h-[48px] shrink-0 snap-start items-center gap-3.5 rounded-[16px] border px-4 py-3 text-left text-[13px] font-bold transition-all duration-300 lg:w-full lg:justify-between lg:gap-4 lg:px-5 ${
                       i === active
                         ? "border-ink bg-ink text-card shadow-[0_16px_32px_-20px_rgba(35,33,29,0.7)]"
-                        : "border-line bg-card text-ink-soft hover:translate-x-1 hover:border-ink/40 hover:text-ink"
+                        : "border-line bg-card text-ink-soft hover:border-ink/40 hover:text-ink lg:hover:translate-x-1"
                     }`}
                   >
                     <span className="whitespace-nowrap">{gr.title}</span>
-                    <span className={`font-display text-[15px] italic ${i === active ? "text-gold" : "text-ink-faint"}`}>
+                    <span
+                      className={`grid h-6 w-6 shrink-0 place-items-center rounded-full font-display text-[13px] italic leading-none ${
+                        i === active ? "bg-gold/25 text-gold" : "bg-stone text-ink-faint"
+                      }`}
+                    >
                       {gr.reviews.length}
                     </span>
                   </button>
                 ))}
               </div>
+              <p className="mt-2.5 text-[11px] font-semibold text-ink-faint lg:hidden">листайте, чтобы увидеть все направления →</p>
             </Reveal>
           </div>
         </div>
 
         {/* Карточки активного направления */}
-        <div className="relative lg:col-span-8">
-          <span aria-hidden className="pointer-events-none absolute -top-10 right-0 select-none font-display text-[150px] italic leading-none text-ink/6 lg:text-[200px]">
+        <div className="relative min-w-0 lg:col-span-8">
+          <span aria-hidden className="pointer-events-none absolute -top-8 right-0 hidden select-none font-display text-[150px] italic leading-none text-ink/6 sm:block lg:-top-10 lg:text-[200px]">
             „
           </span>
-          <div className="relative space-y-4 sm:space-y-5">
+          <div className="relative space-y-3.5 sm:space-y-5">
             {g.reviews.map((r, i) => (
-              <div key={active + "-" + r.name + i} className="fadeup group rounded-[24px] border border-line bg-card/75 p-6 backdrop-blur-sm transition-all duration-500 hover:-translate-y-1 hover:border-gold/60 hover:shadow-[0_30px_60px_-36px_rgba(35,33,29,0.5)] sm:p-8" style={{ animationDelay: `${i * 130}ms` }}>
-                <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
-                  <h3 className="font-display text-[19px] sm:text-[21px] font-semibold text-gold-deep">{g.title}</h3>
-                  <span className="rounded-full border border-ink/15 px-3 py-1 text-[10.5px] font-extrabold uppercase tracking-[0.14em] text-ink-faint">
+              <div
+                key={active + "-" + r.name + i}
+                className="fadeup group min-w-0 break-words rounded-[22px] border border-line bg-card/75 p-5 backdrop-blur-sm transition-all duration-500 hover:border-gold/60 hover:shadow-[0_30px_60px_-36px_rgba(35,33,29,0.5)] sm:rounded-[24px] sm:p-8 lg:hover:-translate-y-1"
+                style={{ animationDelay: `${i * 130}ms` }}
+              >
+                <div className="flex flex-wrap items-center gap-x-3 gap-y-1.5 sm:gap-x-4 sm:gap-y-2">
+                  <h3 className="font-display text-[18px] font-semibold text-gold-deep sm:text-[21px]">{g.title}</h3>
+                  <span className="rounded-full border border-ink/15 px-3 py-1 text-[10px] font-extrabold uppercase tracking-[0.14em] text-ink-faint sm:text-[10.5px]">
                     {g.chip}
                   </span>
                 </div>
-                <p className="mt-3.5 text-[14px] sm:text-[14.5px] leading-relaxed text-ink">{r.text}</p>
-                <p className="mt-5 flex items-center gap-3">
-                  <span className="grid h-9 w-9 place-items-center rounded-full bg-ink font-display text-[15px] italic text-gold">
+                <p className="mt-3 text-[14px] leading-relaxed text-ink sm:mt-3.5 sm:text-[14.5px]">{r.text}</p>
+                <p className="mt-4 flex flex-wrap items-center gap-x-3 gap-y-2 sm:mt-5">
+                  <span className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-ink font-display text-[15px] italic text-gold">
                     {r.name[0]}
                   </span>
                   <span className="text-[13.5px] font-extrabold">{r.name}</span>

@@ -27,7 +27,7 @@ const EDUCATION = [
 
 export default function Journey() {
   return (
-    <section id="process" className="relative bg-cream/0 bg-stone/30 py-20 sm:py-28 overflow-hidden">
+    <section id="process" className="relative overflow-hidden bg-stone/30 py-20 sm:py-28">
       <div className="pointer-events-none absolute -right-20 top-10 h-80 w-80 rounded-full bg-stone blur-3xl" />
       <div className="mx-auto max-w-7xl px-5 sm:px-8">
         <SectionHead
