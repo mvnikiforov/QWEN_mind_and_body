@@ -1,0 +1,10 @@
+# Запуск:  docker compose -f deploy/docker-compose.yml up -d --build
+services:
+  web:
+    build:
+      context: ..
+      dockerfile: deploy/Dockerfile
+    container_name: probalance
+    restart: unless-stopped
+    ports:
+      - "8080:80"
