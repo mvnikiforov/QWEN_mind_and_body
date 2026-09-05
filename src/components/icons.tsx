@@ -123,3 +123,23 @@ export function IconCart({ className = "", strokeWidth = 1.7, style }: P) {
     </svg>
   );
 }
+
+export function IconDoc({ className = "", strokeWidth = 1.7, style }: P) {
+  return (
+    <svg viewBox="0 0 24 24" className={className} style={style} fill="none" stroke="currentColor" strokeWidth={strokeWidth} strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+      <path d="M7 3.5h7.5L19 8v12a1.5 1.5 0 0 1-1.5 1.5h-10A1.5 1.5 0 0 1 6 20V5A1.5 1.5 0 0 1 7.5 3.5z" />
+      <path d="M14.5 3.5V8H19" />
+      <path d="M9.5 13h6M9.5 16.5h6" />
+    </svg>
+  );
+}
+
+export function IconDownload({ className = "", strokeWidth = 1.8, style }: P) {
+  return (
+    <svg viewBox="0 0 24 24" className={className} style={style} fill="none" stroke="currentColor" strokeWidth={strokeWidth} strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+      <path d="M12 4v11" />
+      <path d="m7 11.5 5 5 5-5" />
+      <path d="M4.5 15.5V18a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2v-2.5" />
+    </svg>
+  );
+}

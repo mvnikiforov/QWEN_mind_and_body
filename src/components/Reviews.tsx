@@ -65,7 +65,7 @@ export default function ReviewsSection() {
   return (
     <div className="mt-16 sm:mt-24">
       <div className="grid gap-10 lg:grid-cols-12 lg:gap-12">
-        <div className="lg:col-span-4">
+        <div className="min-w-0 lg:col-span-4">
           <div className="lg:sticky lg:top-28">
             <SectionHead
               kicker="Отзывы"
@@ -82,37 +82,42 @@ export default function ReviewsSection() {
             </Reveal>
             {/* Переключатель направлений: на мобильных — горизонтальная прокрутка со снапом */}
             <Reveal delay={240}>
-              <div
-                ref={listRef}
-                className="-mx-5 mt-6 flex snap-x gap-2 overflow-x-auto no-scrollbar px-5 pb-1 lg:mx-0 lg:flex-col lg:gap-2.5 lg:overflow-visible lg:px-0 lg:pb-0"
-              >
-                {GROUPS.map((gr, i) => (
-                  <button
-                    key={gr.title}
-                    type="button"
-                    ref={(el) => {
-                      btnRefs.current[i] = el;
-                    }}
-                    onClick={() => setActive(i)}
-                    aria-pressed={i === active}
-                    className={`flex min-h-[48px] shrink-0 snap-start items-center gap-3.5 rounded-[16px] border px-4 py-3 text-left text-[13px] font-bold transition-all duration-300 lg:w-full lg:justify-between lg:gap-4 lg:px-5 ${
-                      i === active
-                        ? "border-ink bg-ink text-card shadow-[0_16px_32px_-20px_rgba(35,33,29,0.7)]"
-                        : "border-line bg-card text-ink-soft hover:border-ink/40 hover:text-ink lg:hover:translate-x-1"
-                    }`}
-                  >
-                    <span className="whitespace-nowrap">{gr.title}</span>
-                    <span
-                      className={`grid h-6 w-6 shrink-0 place-items-center rounded-full font-display text-[13px] italic leading-none ${
-                        i === active ? "bg-gold/25 text-gold" : "bg-stone text-ink-faint"
+              <div className="relative -mx-5 mt-6 lg:mx-0">
+                <div
+                  ref={listRef}
+                  className="scroll-ribbon flex snap-x snap-proximity select-none gap-2 overflow-x-auto px-5 pb-2 lg:flex-col lg:snap-none lg:gap-2.5 lg:overflow-visible lg:px-0 lg:pb-0"
+                >
+                  {GROUPS.map((gr, i) => (
+                    <button
+                      key={gr.title}
+                      type="button"
+                      ref={(el) => {
+                        btnRefs.current[i] = el;
+                      }}
+                      onClick={() => setActive(i)}
+                      aria-pressed={i === active}
+                      className={`flex min-h-[48px] shrink-0 cursor-pointer snap-start items-center gap-3.5 rounded-[16px] border px-4 py-3 text-left text-[13px] font-bold transition-colors duration-300 sm:px-5 lg:w-full lg:justify-between lg:gap-4 lg:transition-all ${
+                        i === active
+                          ? "border-ink bg-ink text-card shadow-[0_16px_32px_-20px_rgba(35,33,29,0.7)]"
+                          : "border-line bg-card text-ink-soft hover:border-ink/40 hover:text-ink lg:hover:translate-x-1"
                       }`}
                     >
-                      {gr.reviews.length}
-                    </span>
-                  </button>
-                ))}
+                      <span className="pointer-events-none whitespace-nowrap">{gr.title}</span>
+                      <span
+                        className={`pointer-events-none grid h-6 w-6 shrink-0 place-items-center rounded-full font-display text-[13px] italic leading-none ${
+                          i === active ? "bg-gold/25 text-gold" : "bg-stone text-ink-faint"
+                        }`}
+                      >
+                        {gr.reviews.length}
+                      </span>
+                    </button>
+                  ))}
+                </div>
+                {/* градиентные подсказки, что лента прокручивается */}
+                <span aria-hidden className="pointer-events-none absolute inset-y-0 left-0 w-6 bg-gradient-to-r from-stone/80 to-transparent lg:hidden" />
+                <span aria-hidden className="pointer-events-none absolute inset-y-0 right-0 w-10 bg-gradient-to-l from-stone/80 to-transparent lg:hidden" />
               </div>
-              <p className="mt-2.5 text-[11px] font-semibold text-ink-faint lg:hidden">листайте, чтобы увидеть все направления →</p>
+              <p className="mt-2 text-[11px] font-semibold text-ink-faint lg:hidden">листайте, чтобы увидеть все направления →</p>
             </Reveal>
           </div>
         </div>

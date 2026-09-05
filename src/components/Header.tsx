@@ -60,11 +60,11 @@ export default function Header() {
           >
             Записаться
           </a>
-          {/* Компактная кнопка рядом с бургером (до lg) */}
+          {/* Компактная кнопка рядом с бургером (до lg, скрывается на очень узких экранах) */}
           <a
             href="#contact"
             onClick={() => setOpen(false)}
-            className="inline-flex min-h-[44px] items-center rounded-full bg-ink px-4 py-2.5 text-[11px] font-extrabold uppercase tracking-[0.1em] text-card transition-colors hover:bg-gold-deep lg:hidden"
+            className="hidden min-h-[44px] items-center rounded-full bg-ink px-4 py-2.5 text-[11px] font-extrabold uppercase tracking-[0.1em] text-card transition-colors hover:bg-gold-deep min-[400px]:inline-flex lg:hidden"
           >
             Запись
           </a>

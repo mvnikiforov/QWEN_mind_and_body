@@ -81,7 +81,7 @@ export default function Categories() {
         </Reveal>
 
         {/* Мобильные: горизонтальный скролл, видно ~1.6 блока · Десктоп: 4 в ряд */}
-        <div className="-mx-5 flex gap-2.5 overflow-x-auto no-scrollbar snap-x snap-mandatory px-5 pb-1 sm:gap-3 lg:mx-0 lg:grid lg:grid-cols-4 lg:gap-px lg:overflow-visible lg:rounded-[26px] lg:border lg:border-line lg:bg-line lg:px-0 lg:pb-0">
+        <div className="scroll-ribbon -mx-5 flex gap-2.5 overflow-x-auto snap-x snap-mandatory px-5 pb-1 sm:gap-3 lg:mx-0 lg:grid lg:grid-cols-4 lg:gap-px lg:overflow-visible lg:rounded-[26px] lg:border lg:border-line lg:bg-line lg:px-0 lg:pb-0">
           {CATS.map((c, i) => (
             <Reveal key={c.n} delay={i * 90} className="h-full w-[62vw] max-w-[250px] shrink-0 snap-start lg:w-auto lg:max-w-none">
               <div

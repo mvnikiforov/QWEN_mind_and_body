@@ -188,7 +188,7 @@ export default function Showcase() {
         </div>
 
         {/* Мобильные: горизонтальный скролл (~83% экрана), планшет: 2, десктоп: 3 в ряд */}
-        <div className="-mx-5 mt-10 flex snap-x snap-mandatory gap-4 overflow-x-auto no-scrollbar px-5 pb-2 sm:mt-14 sm:gap-5 md:mx-0 md:grid md:grid-cols-2 md:gap-7 md:overflow-visible md:px-0 md:pb-0 lg:grid-cols-3">
+        <div className="scroll-ribbon -mx-5 mt-10 flex snap-x snap-mandatory gap-4 overflow-x-auto px-5 pb-2 sm:mt-14 sm:gap-5 md:mx-0 md:grid md:grid-cols-2 md:gap-7 md:overflow-visible md:px-0 md:pb-0 lg:grid-cols-3">
           {db.services.map((s, i) => (
             <ServiceCard
               key={s.id}

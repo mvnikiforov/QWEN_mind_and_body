@@ -14,7 +14,7 @@ export default function About() {
           <div className="lg:col-span-5">
             <Reveal>
               <div className="relative mx-auto max-w-[420px]">
-                <Enso className="spin-slow absolute -inset-8 text-ink/20" strokeWidth={1} />
+                <Enso className="spin-slow absolute -inset-2.5 text-ink/20 sm:-inset-8" strokeWidth={1} />
                 <div className="relative overflow-hidden rounded-[32px] border border-line shadow-[0_44px_90px_-46px_rgba(35,33,29,0.55)]">
                   <img
                     src={a.photo}

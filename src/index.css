@@ -29,6 +29,29 @@ body {
   overflow-x: hidden;
 }
 
+/* Гарантия: страница никогда не скроллится по горизонтали */
+html,
+body {
+  overflow-x: hidden;
+}
+@supports (overflow-x: clip) {
+  html,
+  body {
+    overflow-x: clip;
+  }
+}
+
+/* Ленты с горизонтальной прокруткой: свайп принадлежит ленте,
+   а не странице; плавный инерционный скролл на iOS */
+.scroll-ribbon {
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-x: contain;
+  scrollbar-width: none;
+}
+.scroll-ribbon::-webkit-scrollbar {
+  display: none;
+}
+
 ::selection {
   background: var(--color-gold);
   color: var(--color-card);
