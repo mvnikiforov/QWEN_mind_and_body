@@ -11,7 +11,7 @@ export default function Footer() {
       <div className="pointer-events-none absolute -top-24 right-1/4 h-72 w-72 rounded-full bg-gold/10 blur-3xl" />
 
       <div className="relative mx-auto max-w-7xl px-5 pb-10 pt-14 sm:px-8 sm:pt-16">
-        <p   className="word-outline font-display font-medium uppercase leading-tight tracking-[0.12em] text-white/80 text-[clamp(24px,5vw,58px)]" style={{ textShadow: '0 0 20px rgba(0,0,0,0.2)' }}>Тело • Чувства • Разум • Дух</p>
+        <p className="word-outline font-display font-medium uppercase leading-tight tracking-[0.12em] text-white text-[clamp(24px,5vw,58px)]" style={{textShadow: '0 0 40px rgba(255,255,255,0.1)'}}>Тело • Чувства • Разум • Дух</p>
         <p className="mt-3 font-display text-[clamp(17px,2.4vw,26px)] italic text-card/60">— к балансу и ясности</p>
 
         <div className="mt-10 flex justify-center sm:mt-11">
