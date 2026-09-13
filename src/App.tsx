@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import { StoreProvider } from "./lib/store";
 import Header from "./components/Header";
 import Hero from "./components/Hero";
-import Categories from "./components/Categories";
 import Showcase from "./components/Showcase";
 import HotBanners from "./components/HotBanners";
 import Approach from "./components/Approach";
@@ -31,7 +30,6 @@ function Site() {
       <Header />
       <main>
         <Hero />
-        <Categories />
         <Showcase />
         <HotBanners />
         <Approach />
