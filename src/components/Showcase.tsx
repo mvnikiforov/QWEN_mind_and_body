@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useStore } from "../lib/store";
-import { fmtPrice, type Service } from "../lib/db";
+import { fmtPrice, type Service, IMG } from "../lib/db";
 import { IconArrow } from "./icons";
 import { prefillService, Reveal, SectionHead } from "./ui";
 
@@ -20,14 +20,14 @@ function ServiceCard({ s, delay, className = "" }: { s: Service; delay: number; 
   const bookPack = () =>
     prefillService(
       `${s.id}:${v.id}`,
-      (v.packLabel ?? "") + (v.packBenefit ? ` · ${v.packBenefit}` : "")
+      (v.packLabel ?? "")
     );
 
   return (
     <Reveal delay={delay} className={`h-full ${className}`}>
       <article id={`card-${s.id}`} className="group/card flex h-full scroll-mt-28 flex-col overflow-hidden rounded-[32px] border border-line bg-card transition-all duration-500 hover:-translate-y-1.5 hover:border-gold/60 hover:shadow-[0_44px_88px_-44px_rgba(35,33,29,0.55)]">
         {/* Фото с кроссфейдом между форматами */}
-        <div className="relative h-60 overflow-hidden sm:h-64">
+        <div className="relative h-56 overflow-hidden sm:h-64">
           {s.variants.map((vv) => (
             <img
               key={vv.id}
@@ -46,12 +46,12 @@ function ServiceCard({ s, delay, className = "" }: { s: Service; delay: number; 
           >
             {MODE_LABEL[v.mode]}
           </span>
-          <h3 className="absolute bottom-4 left-6 right-6 font-display text-[28px] font-semibold leading-tight text-card drop-shadow-md">
+          <h3 className="absolute bottom-4 left-6 right-6 font-display text-[24px] font-semibold leading-tight text-card drop-shadow-md sm:text-[28px]">
             {s.title}
           </h3>
         </div>
 
-        <div className="flex grow flex-col p-6 sm:p-8">
+        <div className="flex grow flex-col p-5 sm:p-8">
           {/* Крупный сегментный переключатель формата */}
           <div
             className="relative grid grid-cols-2 rounded-full border-2 border-ink bg-card p-1 shadow-[0_12px_26px_-18px_rgba(35,33,29,0.7)]"
@@ -70,7 +70,7 @@ function ServiceCard({ s, delay, className = "" }: { s: Service; delay: number; 
                 role="tab"
                 aria-selected={i === idx}
                 onClick={() => setMode(vv.mode)}
-                className={`relative z-10 rounded-full py-3 text-[12.5px] font-extrabold uppercase tracking-[0.14em] transition-colors duration-300 ${
+                className={`relative z-10 rounded-full py-3 text-[11.5px] font-extrabold uppercase tracking-[0.14em] transition-colors duration-300 ${
                   i === idx ? "text-card" : "text-ink/50 hover:text-ink"
                 }`}
               >
@@ -79,38 +79,38 @@ function ServiceCard({ s, delay, className = "" }: { s: Service; delay: number; 
             ))}
           </div>
 
-          <p className="mt-4 text-[12.5px] font-semibold text-ink-faint">{s.subtitle}</p>
+          <p className="mt-3 text-[11.5px] font-semibold text-ink-faint sm:text-[12.5px]">{s.subtitle}</p>
 
           {/* Контент активного формата (анимируется при переключении) */}
           <div key={v.id} className="fadeup">
-            <div className="mt-5 flex flex-wrap items-end justify-between gap-x-6 gap-y-2">
-              <p className="max-w-[58%] text-[13.5px] font-bold leading-snug text-ink-soft">{v.duration}</p>
+            <div className="mt-4 flex flex-wrap items-end justify-between gap-x-6 gap-y-2">
+              <p className="max-w-[55%] text-[12.5px] font-bold leading-snug text-ink-soft sm:text-[13.5px]">{v.duration}</p>
               <div className="text-right">
-                <p className="font-display text-[42px] font-medium leading-none tracking-tight">{fmtPrice(v.price)}</p>
+                <p className="font-display text-[36px] font-medium leading-none tracking-tight sm:text-[42px]">{fmtPrice(v.price)}</p>
                 {v.priceUnit && (
-                  <p className="mt-1.5 text-[11px] font-extrabold uppercase tracking-[0.14em] text-ink-faint">{v.priceUnit}</p>
+                  <p className="mt-1.5 text-[10px] font-extrabold uppercase tracking-[0.14em] text-ink-faint sm:text-[11px]">{v.priceUnit}</p>
                 )}
               </div>
             </div>
 
             {v.packLabel && (
-              <div className="mt-5 flex flex-wrap items-center justify-between gap-x-3 gap-y-2 rounded-[18px] border border-gold/35 bg-gold/10 px-5 py-3.5">
-                <p className="text-[13px] font-bold leading-snug">{v.packLabel}</p>
+              <div className="mt-4 flex flex-wrap items-center justify-between gap-x-3 gap-y-2 rounded-[18px] border border-gold/35 bg-gold/10 px-4 py-3 sm:px-5 sm:py-3.5">
+                <p className="text-[12px] font-bold leading-snug sm:text-[13px]">{v.packLabel}</p>
                 {v.packBenefit && (
-                  <span className="shrink-0 rounded-full bg-gold px-3.5 py-1.5 text-[10.5px] font-extrabold uppercase tracking-wide text-card">
+                  <span className="shrink-0 rounded-full bg-gold px-3 py-1.5 text-[9.5px] font-extrabold uppercase tracking-wide text-card sm:text-[10.5px]">
                     {v.packBenefit}
                   </span>
                 )}
               </div>
             )}
 
-            <p className="mt-5 text-[14px] leading-relaxed text-ink-soft">{v.description}</p>
+            <p className="mt-4 line-clamp-3 text-[13px] leading-relaxed text-ink-soft sm:text-[14px]">{v.description}</p>
           </div>
 
           {/* Оба варианта видны сразу — кликабельны */}
-          <div className="mt-6">
-            <p className="text-[10.5px] font-extrabold uppercase tracking-[0.22em] text-ink-faint">Оба варианта</p>
-            <div className="mt-2.5 grid grid-cols-2 gap-px overflow-hidden rounded-[16px] border border-line bg-line">
+          <div className="mt-5">
+            <p className="text-[10px] font-extrabold uppercase tracking-[0.22em] text-ink-faint">Оба варианта</p>
+            <div className="mt-2 grid grid-cols-2 gap-px overflow-hidden rounded-[16px] border border-line bg-line">
               {s.variants.map((vv) => {
                 const on = vv.mode === v.mode;
                 return (
@@ -118,15 +118,15 @@ function ServiceCard({ s, delay, className = "" }: { s: Service; delay: number; 
                     key={vv.id}
                     type="button"
                     onClick={() => setMode(vv.mode)}
-                    className={`px-4 py-3.5 text-left transition-colors duration-300 ${
+                    className={`px-3 py-3 text-left transition-colors duration-300 ${
                       on ? "bg-ink text-card" : "bg-card hover:bg-stone"
                     }`}
                   >
-                    <span className={`block text-[10.5px] font-extrabold uppercase tracking-[0.12em] ${on ? "text-card/65" : "text-ink-faint"}`}>
+                    <span className={`block text-[9.5px] font-extrabold uppercase tracking-[0.12em] ${on ? "text-card/65" : "text-ink-faint"}`}>
                       {MODE_LABEL[vv.mode]}
                     </span>
-                    <span className="mt-1 block font-display text-[21px] font-semibold leading-none">{fmtPrice(vv.price)}</span>
-                    <span className={`mt-1 block text-[11px] font-bold ${on ? "text-gold" : "text-gold-deep"}`}>
+                    <span className="mt-0.5 block font-display text-[18px] font-semibold leading-none sm:text-[21px]">{fmtPrice(vv.price)}</span>
+                    <span className={`mt-0.5 block text-[10px] font-bold ${on ? "text-gold" : "text-gold-deep"}`}>
                       {vv.packBenefit ?? vv.priceUnit ?? " "}
                     </span>
                   </button>
@@ -135,10 +135,10 @@ function ServiceCard({ s, delay, className = "" }: { s: Service; delay: number; 
             </div>
           </div>
 
-          <div className="mt-auto space-y-3 pt-7">
+          <div className="mt-auto space-y-2.5 pt-6">
             <button
               onClick={book}
-              className="group/btn flex w-full items-center justify-center gap-3 rounded-full bg-ink py-4 text-[12.5px] font-extrabold uppercase tracking-[0.14em] text-card transition-all duration-300 hover:bg-gold-deep hover:shadow-[0_20px_40px_-18px_rgba(138,109,60,0.95)]"
+              className="group/btn flex w-full items-center justify-center gap-3 rounded-full bg-ink py-3.5 text-[11.5px] font-extrabold uppercase tracking-[0.14em] text-card transition-all duration-300 hover:bg-gold-deep hover:shadow-[0_20px_40px_-18px_rgba(138,109,60,0.95)]"
             >
               Записаться
               <IconArrow className="h-4 w-4 transition-transform duration-300 group-hover/btn:translate-x-1.5" />
@@ -146,12 +146,14 @@ function ServiceCard({ s, delay, className = "" }: { s: Service; delay: number; 
             {v.packLabel && (
               <button
                 onClick={bookPack}
-                className="group/pack flex w-full items-center justify-center gap-3 rounded-full border-2 border-gold-deep/70 bg-gold/10 py-3.5 text-[12px] font-extrabold uppercase tracking-[0.14em] text-gold-deep transition-all duration-300 hover:border-gold-deep hover:bg-gold-deep hover:text-card hover:shadow-[0_18px_36px_-16px_rgba(138,109,60,0.9)]"
+                className="group/pack flex w-full items-center justify-center gap-2 rounded-full border-2 border-gold-deep/70 bg-gold/10 py-3 text-[11px] font-extrabold uppercase tracking-[0.14em] text-gold-deep transition-all duration-300 hover:border-gold-deep hover:bg-gold-deep hover:text-card hover:shadow-[0_18px_36px_-16px_rgba(138,109,60,0.9)]"
               >
                 Купить абонемент
-                <span className="rounded-full bg-gold-deep/15 px-2.5 py-1 text-[10.5px] font-extrabold normal-case tracking-normal transition-colors duration-300 group-hover/pack:bg-card/20">
-                  {v.packBenefit ?? "выгодно"}
-                </span>
+                {v.packBenefit && (
+                  <span className="block text-[9.5px] font-extrabold normal-case tracking-normal text-gold-deep sm:text-[10.5px]">
+                    {v.packBenefit}
+                  </span>
+                )}
               </button>
             )}
           </div>
@@ -163,6 +165,44 @@ function ServiceCard({ s, delay, className = "" }: { s: Service; delay: number; 
 
 export default function Showcase() {
   const { db } = useStore();
+
+  // Добавляем третью карточку "Пакет Баланс" после ПРО|БАЛАНС
+  const allServices = [...db.services];
+  const probalanceIndex = allServices.findIndex(s => s.id === "probalance");
+  if (probalanceIndex !== -1) {
+    const balancePack: Service = {
+      id: "balance-pack",
+      title: "Пакет «Баланс»",
+      subtitle: "Комплексная программа · глубокая трансформация",
+      variants: [
+        {
+          id: "ind",
+          mode: "individual",
+          image: IMG.hero,
+          duration: "4 встречи по 2 часа",
+          price: 18000,
+          priceUnit: "полный курс",
+          packLabel: "Полный пакет: 4 индивидуальные встречи",
+          packBenefit: "экономия 2 000 ₽",
+          description:
+            "Персональная программа из четырёх встреч для глубокой работы с запросом. Включает интегративные практики, гештальт-терапию и телесную работу.",
+        },
+        {
+          id: "grp",
+          mode: "group",
+          image: IMG.circle,
+          duration: "6 недель · еженедельно",
+          price: 12000,
+          priceUnit: "полный курс",
+          packLabel: "Групповой курс: 6 недель практики",
+          packBenefit: "экономия 3 000 ₽",
+          description:
+            "Групповая программа для тех, кто хочет пройти путь трансформации в поддерживающем окружении. Сочетание практик, теории и обмена опытом.",
+        },
+      ],
+    };
+    allServices.splice(probalanceIndex + 1, 0, balancePack);
+  }
 
   return (
     <section id="services" className="relative py-20 sm:py-28">
@@ -180,21 +220,30 @@ export default function Showcase() {
           sub="Выберите формат, который откликается. Цены переключаются — для подписчиков моей группы действует особая цена на индивидуальные консультации."
         />
 
-        {/* Горизонтальный ряд: на ноутбуке обе карточки в ряд,
-            на мобильных — горизонтальный скролл с «подглядыванием» следующей */}
-        <div className="no-scrollbar mt-14 flex snap-x snap-mandatory items-stretch gap-5 overflow-x-auto pb-4 sm:gap-7 md:snap-none md:overflow-visible md:pb-0">
-          {db.services.map((s, i) => (
-            <ServiceCard
-              key={s.id}
-              s={s}
-              delay={i * 140}
-              className="w-[300px] shrink-0 snap-start sm:w-[340px] md:w-auto md:basis-0 md:flex-1"
-            />
-          ))}
+        {/* Горизонтальный скролл на мобильных: видно 1 карточку, стрелка-указатель */}
+        <div className="relative mt-10">
+          {/* Мерцающая стрелка-указатель */}
+          <div className="mb-3 flex items-center justify-center md:hidden">
+            <svg className="h-8 w-8 animate-pulse text-gold" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M5 12h14M12 5l7 7-7 7" />
+            </svg>
+            <span className="ml-2 text-[11px] font-bold uppercase tracking-[0.2em] text-gold">листайте →</span>
+          </div>
+
+          <div className="no-scrollbar flex snap-x snap-mandatory items-stretch gap-3 overflow-x-auto pb-4 sm:gap-5 md:snap-none md:overflow-visible md:pb-0">
+            {allServices.map((s, i) => (
+              <ServiceCard
+                key={s.id}
+                s={s}
+                delay={i * 140}
+                className="w-full shrink-0 snap-start md:w-auto md:basis-0 md:flex-1"
+              />
+            ))}
+          </div>
+          <p className="mt-2 text-center text-[10px] font-semibold tracking-wide text-ink-faint md:hidden">
+            свайпните, чтобы увидеть все карточки
+          </p>
         </div>
-        <p className="mt-2 text-center text-[11px] font-semibold tracking-wide text-ink-faint md:hidden">
-          листайте, чтобы увидеть обе карточки →
-        </p>
 
         <Reveal delay={240}>
           <p className="mt-10 text-center text-[13px] font-semibold text-ink-faint">
