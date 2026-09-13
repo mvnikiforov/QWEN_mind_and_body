@@ -316,7 +316,7 @@ export function loadDB(): DB {
         const ind = pb?.variants.find((v) => v.id === "ind");
         if (ind && !ind.packLabel) {
           ind.packLabel = "Абонемент: 4 занятия — 17 000 ₽ (4 250 ₽/занятие)";
-          ind.packBenefit = "выгода 3 000 ₽";
+          ind.packBenefit = "экономия 3 000 ₽";
         }
         // Миграция: новая формулировка абонемента мини-группы ПРО|БАЛАНС
         const grp = pb?.variants.find((v) => v.id === "grp");
@@ -338,6 +338,42 @@ export function loadDB(): DB {
     /* повреждённые данные — пересоздаём */
   }
   const db = seed();
+  // Добавляем карточку "Пакет Баланс" после ПРО|БАЛАНС
+  const probalanceIndex = db.services.findIndex(s => s.id === "probalance");
+  if (probalanceIndex !== -1) {
+    const balancePack: Service = {
+      id: "balance-pack",
+      title: "Пакет «Баланс»",
+      subtitle: "Комплексная программа · глубокая трансформация",
+      variants: [
+        {
+          id: "ind",
+          mode: "individual",
+          image: IMG.hero,
+          duration: "4 встречи по 2 часа + 4 сессии по 50 мин",
+          price: 25600,
+          priceUnit: "полный пакет",
+          packLabel: "Пакет «Баланс»: 4 терапевтические сессии + 4 индивидуальные практики",
+          packBenefit: "выгода 6 400 ₽",
+          description:
+            "Уникальное сочетание терапевтических сессий (гештальт-подход) и интегративных практик ПРО|БАЛАНС. Глубокая работа с запросом на уровне тела, чувств и сознания. Персональная программа трансформации.",
+        },
+        {
+          id: "grp",
+          mode: "group",
+          image: IMG.circle,
+          duration: "4 встречи группы по 4 часа + 4 практики по 1,5–2 часа",
+          price: 14000,
+          priceUnit: "полный пакет",
+          packLabel: "Пакет «Баланс»: 4 групповые встречи + 4 групповые практики",
+          packBenefit: "выгода 4 000 ₽",
+          description:
+            "Групповой формат пакета «Баланс». Сочетание терапевтической мини-группы и интегративных практик в поддерживающем окружении. Идеально для тех, кто ценит силу сообщества и регулярность.",
+        },
+      ],
+    };
+    db.services.splice(probalanceIndex + 1, 0, balancePack);
+  }
   try {
     localStorage.setItem(KEY, JSON.stringify(db));
   } catch {

@@ -127,7 +127,7 @@ function ServiceCard({ s, delay, className = "" }: { s: Service; delay: number; 
                     </span>
                     <span className="mt-0.5 block font-display text-[18px] font-semibold leading-none sm:text-[21px]">{fmtPrice(vv.price)}</span>
                     <span className={`mt-0.5 block text-[10px] font-bold ${on ? "text-gold" : "text-gold-deep"}`}>
-                      {vv.packBenefit ?? vv.priceUnit ?? " "}
+                      {vv.priceUnit ?? " "}
                     </span>
                   </button>
                 );
@@ -146,9 +146,9 @@ function ServiceCard({ s, delay, className = "" }: { s: Service; delay: number; 
             {v.packLabel && (
               <button
                 onClick={bookPack}
-                className="group/pack flex w-full items-center justify-center gap-2 rounded-full border-2 border-gold-deep/70 bg-gold/10 py-3 text-[11px] font-extrabold uppercase tracking-[0.14em] text-gold-deep transition-all duration-300 hover:border-gold-deep hover:bg-gold-deep hover:text-card hover:shadow-[0_18px_36px_-16px_rgba(138,109,60,0.9)]"
+                className="group/pack flex w-full flex-col items-center justify-center gap-1 rounded-full border-2 border-gold-deep/70 bg-gold/10 py-3 text-[11px] font-extrabold uppercase tracking-[0.14em] text-gold-deep transition-all duration-300 hover:border-gold-deep hover:bg-gold-deep hover:text-card hover:shadow-[0_18px_36px_-16px_rgba(138,109,60,0.9)] sm:flex-row sm:gap-2"
               >
-                Купить абонемент
+                <span>Купить абонемент</span>
                 {v.packBenefit && (
                   <span className="block text-[9.5px] font-extrabold normal-case tracking-normal text-gold-deep sm:text-[10.5px]">
                     {v.packBenefit}
@@ -165,44 +165,6 @@ function ServiceCard({ s, delay, className = "" }: { s: Service; delay: number; 
 
 export default function Showcase() {
   const { db } = useStore();
-
-  // Добавляем третью карточку "Пакет Баланс" после ПРО|БАЛАНС
-  const allServices = [...db.services];
-  const probalanceIndex = allServices.findIndex(s => s.id === "probalance");
-  if (probalanceIndex !== -1) {
-    const balancePack: Service = {
-      id: "balance-pack",
-      title: "Пакет «Баланс»",
-      subtitle: "Комплексная программа · глубокая трансформация",
-      variants: [
-        {
-          id: "ind",
-          mode: "individual",
-          image: IMG.hero,
-          duration: "4 встречи по 2 часа",
-          price: 18000,
-          priceUnit: "полный курс",
-          packLabel: "Полный пакет: 4 индивидуальные встречи",
-          packBenefit: "экономия 2 000 ₽",
-          description:
-            "Персональная программа из четырёх встреч для глубокой работы с запросом. Включает интегративные практики, гештальт-терапию и телесную работу.",
-        },
-        {
-          id: "grp",
-          mode: "group",
-          image: IMG.circle,
-          duration: "6 недель · еженедельно",
-          price: 12000,
-          priceUnit: "полный курс",
-          packLabel: "Групповой курс: 6 недель практики",
-          packBenefit: "экономия 3 000 ₽",
-          description:
-            "Групповая программа для тех, кто хочет пройти путь трансформации в поддерживающем окружении. Сочетание практик, теории и обмена опытом.",
-        },
-      ],
-    };
-    allServices.splice(probalanceIndex + 1, 0, balancePack);
-  }
 
   return (
     <section id="services" className="relative py-20 sm:py-28">
@@ -231,7 +193,7 @@ export default function Showcase() {
           </div>
 
           <div className="no-scrollbar flex snap-x snap-mandatory items-stretch gap-3 overflow-x-auto pb-4 sm:gap-5 md:snap-none md:overflow-visible md:pb-0">
-            {allServices.map((s, i) => (
+            {db.services.map((s, i) => (
               <ServiceCard
                 key={s.id}
                 s={s}

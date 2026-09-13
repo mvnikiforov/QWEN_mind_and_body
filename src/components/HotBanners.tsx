@@ -56,7 +56,7 @@ export default function HotBanners() {
           <Reveal delay={120}>
             <div className="group relative flex h-full flex-col overflow-hidden rounded-[34px] border border-ink/12 bg-[#ddd1b8] px-8 py-9 text-ink transition-transform duration-500 hover:-translate-y-1 sm:px-10 sm:py-10">
               <YinYang className="pointer-events-none absolute -bottom-10 -right-10 h-44 w-44 opacity-[0.16] transition-transform duration-[1.4s] ease-out group-hover:rotate-90" />
-              <p className="inline-flex w-max items-center gap-2 rounded-full bg-ink px-3.5 py-1.5 text-[10.5px] font-extrabold uppercase tracking-[0.2em] text-gold">
+              <p className="inline-flex w-max items-center gap-2 rounded-full bg-ink px-3.5 py-1.5 text-[10.5px] font-extrabold uppercase tracking-[0.2em] text-gold animate-pulse">
                 Открыт набор
               </p>
               <h3 className="mt-4 font-display text-[clamp(24px,2.6vw,34px)] font-medium leading-tight">
@@ -87,7 +87,7 @@ export default function HotBanners() {
               <span className="pointer-events-none absolute -right-6 -top-10 select-none font-display text-[200px] font-light italic leading-none text-card/10 transition-transform duration-[1.4s] ease-out group-hover:-rotate-6">
                 10
               </span>
-              <p className="inline-flex w-max items-center gap-2 rounded-full border border-card/40 px-3.5 py-1.5 text-[10.5px] font-extrabold uppercase tracking-[0.2em] text-card/90">
+              <p className="inline-flex w-max items-center gap-2 rounded-full border border-card/40 px-3.5 py-1.5 text-[10.5px] font-extrabold uppercase tracking-[0.2em] text-card/90 animate-pulse">
                 Для компаний
               </p>
               <h3 className="mt-4 font-display text-[clamp(24px,2.6vw,34px)] font-medium leading-tight">

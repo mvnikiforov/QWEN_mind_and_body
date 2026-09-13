@@ -110,19 +110,22 @@ export default function Approach() {
           </div>
         </div>
 
-        {/* Культурный код */}
+        {/* Культурный код — преобразован в баннер "Мультикультурный подход" */}
         <Reveal delay={120}>
-          <div className="relative mt-24 overflow-hidden rounded-[32px] bg-ink px-7 py-12 text-card sm:px-14 sm:py-14">
+          <div className="relative mt-16 overflow-hidden rounded-[32px] bg-gold-deep px-7 py-12 text-card sm:px-14 sm:py-14">
             <Enso className="absolute -right-14 -top-14 h-64 w-64 text-card/12" strokeWidth={2} />
             <div className="relative grid gap-10 lg:grid-cols-12 lg:items-center">
-              <div className="lg:col-span-4">
+              <div className="lg:col-span-5">
                 <p className="text-[11px] font-bold tracking-[0.32em] uppercase text-gold">Важно</p>
-                <h3 className="mt-4 font-display text-[clamp(26px,3vw,38px)] font-medium leading-tight">
-                  {db.content.culture.title}
+                <h3 className="mt-4 font-display text-[clamp(28px,3.2vw,42px)] font-medium leading-tight">
+                  Мультикультурный подход
                 </h3>
+                <p className="mt-3 text-[16px] font-semibold leading-relaxed text-gold/90">
+                  Бережность к вашему культурному коду и ценностям
+                </p>
               </div>
-              <div className="lg:col-span-8">
-                <p className="text-[15px] leading-relaxed text-card/80">{db.content.culture.text}</p>
+              <div className="lg:col-span-7">
+                <p className="text-[15px] leading-relaxed text-card/85">{db.content.culture.text}</p>
                 <div className="mt-7 flex flex-wrap gap-2.5">
                   {["любая культура", "любая вера", "без оценок", "ваш темп"].map((c) => (
                     <span key={c} className="rounded-full border border-card/25 px-4 py-2 text-[12px] font-bold text-card/80">

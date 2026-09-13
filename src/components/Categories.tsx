@@ -25,7 +25,7 @@ const CATS: { n: string; title: string; note: string; dark: boolean; icon: React
   {
     n: "02",
     title: "Пакет «Баланс»",
-    note: "цикл встреч · выгода",
+    note: "цикл встреч · выгода от 20%",
     dark: false,
     icon: (
       <svg viewBox="0 0 24 24" className="h-[28px] w-[28px] sm:h-[34px] sm:w-[34px]" fill="none" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round">
