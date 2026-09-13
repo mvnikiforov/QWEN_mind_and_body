@@ -247,7 +247,7 @@ export default function Hero() {
         <div className="flex overflow-hidden">
           <div className="marquee-track-l flex shrink-0 whitespace-nowrap">
             {[0, 1].map((k) => (
-              <span key={k} className="word-outline pr-8 font-display text-[clamp(30px,5vw,60px)] font-medium uppercase tracking-[0.14em] text-ink/25">
+              <span key={k} className="word-outline pr-8 font-display text-[clamp(30px,5vw,60px)] font-medium uppercase tracking-[0.14em] text-gold-deep">
                 {STRIP.repeat(3)}
               </span>
             ))}
