@@ -11,7 +11,7 @@ const STRIP = "тело • чувства • разум • дух • тиш�
    (верх, право, низ, лево), не перекрывая основные. */
 const MAIN_WORDS = ["тело", "чувства", "разум", "дух"];
 const MAIN_ANGLES = [45, 135, 225, 315];
-const EXTRA_WORDS = ["ДАО-практики", "кундалини", "терапия", "мультикультурный подход", "mindfulness"];
+const EXTRA_WORDS = ["ДАО-практики", "Кундалини-йога", "Мультикультурный подход", "Гештальт-терапия", "Mindfulness"];
 const EXTRA_ANGLES = [0, 90, 180, 270, 0];
 
 function OrbitWord({
@@ -30,16 +30,16 @@ function OrbitWord({
   return (
     <div className={`absolute inset-0 ${side ? "hidden md:block" : ""}`} style={{ transform: `rotate(${angle}deg)` }} aria-hidden>
       <span
-        className={`absolute left-1/2 top-0 flex items-center gap-2 whitespace-nowrap transition-all ease-[cubic-bezier(0.22,1,0.36,1)] ${
+        className={`absolute left-1/2 top-0 flex items-center gap-1.5 sm:gap-2 whitespace-nowrap transition-all ease-[cubic-bezier(0.22,1,0.36,1)] ${
           big
-            ? "duration-700 font-display text-[13.5px] italic tracking-[0.08em] text-ink/90 sm:text-[16.5px]"
-            : "duration-[1200ms] text-[9.5px] font-bold uppercase tracking-[0.22em] text-ink-soft/90 sm:text-[11px]"
+            ? "duration-700 font-display text-[11px] italic tracking-[0.08em] text-ink/90 sm:text-[13.5px] md:text-[16.5px]"
+            : "duration-[1200ms] text-[8px] font-bold uppercase tracking-[0.22em] text-ink-soft/90 sm:text-[9.5px] md:text-[11px]"
         } ${on ? "opacity-100 [text-shadow:0_1px_14px_rgba(244,241,234,0.95)]" : "opacity-0"}`}
         style={{ transform: `translate(-50%, calc(-50% + ${on ? "-7px" : "9px"})) rotate(${-angle}deg)` }}
       >
         <i
           className={`rounded-full bg-gold transition-transform duration-700 ${
-            big ? "h-1.5 w-1.5" : "h-1 w-1 opacity-70"
+            big ? "h-1 w-1 sm:h-1.5 sm:w-1.5" : "h-0.5 w-0.5 sm:h-1 sm:w-1 opacity-70"
           } ${on ? "scale-100" : "scale-0"}`}
         />
         {children}
@@ -50,7 +50,7 @@ function OrbitWord({
 
 function OrbitWords() {
   const [main, setMain] = useState(0);
-  const [extra, setExtra] = useState(-1);
+  const [extraPair, setExtraPair] = useState(0);
   const [staticAll, setStaticAll] = useState(false);
 
   useEffect(() => {
@@ -60,7 +60,8 @@ function OrbitWords() {
       return;
     }
     const t1 = window.setInterval(() => setMain((m) => (m + 1) % MAIN_WORDS.length), 2000);
-    const t2 = window.setInterval(() => setExtra((x) => (x + 1) % EXTRA_WORDS.length), 4000);
+    // Пара слов сменяется каждые 1.5 секунды
+    const t2 = window.setInterval(() => setExtraPair((p) => (p + 1) % EXTRA_WORDS.length), 1500);
     return () => {
       window.clearInterval(t1);
       window.clearInterval(t2);
@@ -69,9 +70,9 @@ function OrbitWords() {
 
   return (
     <div
-      className="pointer-events-none absolute -inset-[5%] sm:-inset-[7%]"
+      className="pointer-events-none absolute -inset-[8%] sm:-inset-[7%]"
       role="img"
-      aria-label="Тело, чувства, разум, дух. ДАО-практики, кундалини, терапия, мультикультурный подход, mindfulness"
+      aria-label="Тело, чувства, разум, дух. ДАО-практики, Кундалини-йога, Мультикультурный подход, Гештальт-терапия, Mindfulness"
     >
       {/* пунктирное кольцо — полный оборот за 28 секунд */}
       <svg className="orbit-spin absolute inset-0 h-full w-full text-ink/40" viewBox="0 0 100 100" fill="none" aria-hidden>
@@ -100,12 +101,16 @@ function OrbitWords() {
         </OrbitWord>
       ))}
 
-      {/* дополнительные — реже, в свободных точках, вторичным стилем */}
-      {EXTRA_WORDS.map((w, i) => (
-        <OrbitWord key={w} angle={EXTRA_ANGLES[i]} on={staticAll ? i < 4 : extra === i}>
-          {w}
-        </OrbitWord>
-      ))}
+      {/* дополнительные — два слова видны одновременно, сменяются каждые 1.5 сек */}
+      {EXTRA_WORDS.map((w, i) => {
+        // Показываем текущее и следующее слово (циклически)
+        const isVisible = staticAll ? i < 4 : i === extraPair || i === (extraPair + 1) % EXTRA_WORDS.length;
+        return (
+          <OrbitWord key={w} angle={EXTRA_ANGLES[i]} on={isVisible}>
+            {w}
+          </OrbitWord>
+        );
+      })}
     </div>
   );
 }
@@ -141,8 +146,6 @@ export default function Hero() {
             {/* Плашка-статус: статичная, без анимации */}
             <div className="flex flex-wrap items-baseline gap-y-2 text-[12.5px] font-bold uppercase leading-relaxed tracking-[0.12em] text-ink-soft md:text-[14.5px] md:tracking-[0.14em]">
               <span>Онлайн и очно</span>
-              <span aria-hidden="true" className="mx-3 text-gold">·</span>
-              <span>Доступно</span>
               <span aria-hidden="true" className="mx-3 text-gold">·</span>
               <span>Пространство баланса</span>
             </div>
@@ -180,13 +183,10 @@ export default function Hero() {
             <div className="fadeup mt-10 flex flex-wrap items-center gap-5" style={{ animationDelay: "420ms" }}>
               <a
                 href="#services"
-                className="group inline-flex items-center gap-3 rounded-full bg-ink px-8 py-4 text-[13px] font-bold tracking-[0.14em] uppercase text-card transition-all duration-300 hover:-translate-y-1 hover:bg-gold-deep hover:shadow-[0_22px_44px_-16px_rgba(138,109,60,0.85)]"
+                className="group inline-flex w-full items-center justify-center gap-3 rounded-full bg-ink px-8 py-4 text-[13px] font-bold tracking-[0.14em] uppercase text-card transition-all duration-300 hover:-translate-y-1 hover:bg-gold-deep hover:shadow-[0_22px_44px_-16px_rgba(138,109,60,0.85)] sm:w-auto"
               >
                 Выбрать формат
                 <IconArrow className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1.5" />
-              </a>
-              <a href="#schedule" className="link-grow text-[13px] font-bold tracking-[0.14em] uppercase text-ink-soft transition-colors hover:text-ink">
-                Афиша встреч ↓
               </a>
             </div>
 
@@ -208,7 +208,7 @@ export default function Hero() {
           {/* Визуал — круг целостности */}
           <div className="lg:col-span-5">
             <div
-              className="relative mx-auto aspect-square max-w-[460px] transition-transform duration-500 ease-out"
+              className="relative mx-auto aspect-square max-w-[360px] sm:max-w-[460px] transition-transform duration-500 ease-out"
               style={{ transform: "translate(calc(var(--px, 0) * 16px), calc(var(--py, 0) * 16px))" }}
             >
               <div className="breathe absolute inset-[-7%] rounded-full bg-[radial-gradient(circle_at_38%_30%,#e9e4d9_0%,#ddd7ca_60%,#d3ccbd_100%)]" />
@@ -227,29 +227,16 @@ export default function Hero() {
 
               {/* инь-ян на границе круга */}
               <div className="floaty absolute -top-5 left-[6%]">
-                <YinYang className="h-12 w-12 drop-shadow-[0_12px_24px_rgba(35,33,29,0.25)]" />
+                <YinYang className="h-10 w-10 sm:h-12 sm:w-12 drop-shadow-[0_12px_24px_rgba(35,33,29,0.25)]" />
               </div>
 
               {/* подписи */}
-              <div className="floaty absolute -right-2 top-[30%] rounded-full border border-line bg-card/90 px-4 py-2 text-[11.5px] font-bold tracking-[0.08em] uppercase text-ink-soft shadow-sm backdrop-blur" style={{ animationDelay: "1.4s" }}>
+              <div className="floaty absolute -right-2 top-[30%] rounded-full border border-line bg-card/90 px-3 py-1.5 text-[10px] sm:text-[11.5px] font-bold tracking-[0.08em] uppercase text-ink-soft shadow-sm backdrop-blur" style={{ animationDelay: "1.4s" }}>
                 кундалини-йога
               </div>
-              <div className="floaty absolute -left-6 top-[58%] rounded-full border border-line bg-card/90 px-4 py-2 text-[11.5px] font-bold tracking-[0.08em] uppercase text-ink-soft shadow-sm backdrop-blur" style={{ animationDelay: "0.7s" }}>
+              <div className="floaty absolute -left-3 sm:-left-6 top-[58%] rounded-full border border-line bg-card/90 px-3 py-1.5 text-[10px] sm:text-[11.5px] font-bold tracking-[0.08em] uppercase text-ink-soft shadow-sm backdrop-blur" style={{ animationDelay: "0.7s" }}>
                 ДАО-практики
               </div>
-
-              {/* мини-оффер */}
-              <a
-                href="#contact"
-                className="group absolute -bottom-5 left-1/2 flex w-[86%] -translate-x-1/2 items-center gap-3.5 rounded-full border border-line bg-card/95 py-3 pl-4 pr-5 shadow-[0_28px_56px_-24px_rgba(35,33,29,0.5)] backdrop-blur transition-all duration-300 hover:border-gold"
-              >
-                <span className="ink-pulse h-2 w-2 shrink-0 rounded-full bg-moss" />
-                <span className="leading-tight">
-                  <span className="block text-[12.5px] font-extrabold">Первая встреча — знакомство</span>
-                  <span className="block text-[11px] font-medium text-ink-soft">провожу сквозь лабиринты — бережно и без спешки</span>
-                </span>
-                <IconArrow className="ml-auto h-4 w-4 shrink-0 text-ink-faint transition-all duration-300 group-hover:translate-x-1 group-hover:text-gold-deep" />
-              </a>
             </div>
           </div>
         </div>
