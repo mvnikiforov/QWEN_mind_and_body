@@ -9,8 +9,8 @@ import { Enso, IconArrow, YinYang } from "./icons";
    (верх, право, низ, лево), не перекрывая основные. */
 const MAIN_WORDS = ["тело", "чувства", "разум", "дух"];
 const MAIN_ANGLES = [45, 135, 225, 315];
-const EXTRA_WORDS = ["Мультикультурный подход", "Гештальт-терапия", "Mindfulness"];
-const EXTRA_ANGLES = [0, 90, 180];
+const EXTRA_WORDS = ["Гештальт-терапия", "Mindfulness"];
+const EXTRA_ANGLES = [0, 180];
 
 function OrbitWord({
   angle,
@@ -79,7 +79,7 @@ function OrbitWords() {
           const rad = (a * Math.PI) / 180;
           return <circle key={a} cx={50 + 49.3 * Math.sin(rad)} cy={50 - 49.3 * Math.cos(rad)} r="0.5" fill="#a08149" fillOpacity="0.8" />;
         })}
-        {EXTRA_ANGLES.slice(0, 4).map((a) => {
+        {EXTRA_ANGLES.slice(0, 2).map((a) => {
           const rad = (a * Math.PI) / 180;
           return <circle key={`x-${a}`} cx={50 + 49.3 * Math.sin(rad)} cy={50 - 49.3 * Math.cos(rad)} r="0.3" fill="#a08149" fillOpacity="0.45" />;
         })}
@@ -102,7 +102,7 @@ function OrbitWords() {
       {/* дополнительные — два слова видны одновременно, сменяются каждые 1.5 сек */}
       {EXTRA_WORDS.map((w, i) => {
         // Показываем текущее и следующее слово (циклически)
-        const isVisible = staticAll ? i < 4 : i === extraPair || i === (extraPair + 1) % EXTRA_WORDS.length;
+        const isVisible = staticAll ? i < 2 : i === extraPair || i === (extraPair + 1) % EXTRA_WORDS.length;
         return (
           <OrbitWord key={w} angle={EXTRA_ANGLES[i]} on={isVisible}>
             {w}
