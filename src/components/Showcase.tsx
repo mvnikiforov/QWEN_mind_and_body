@@ -182,27 +182,27 @@ export default function Showcase() {
           sub="Выберите формат, который откликается. Цены переключаются — для подписчиков моей группы действует особая цена на индивидуальные консультации."
         />
 
-        {/* Горизонтальный скролл на мобильных: видно 1 карточку, стрелка-указатель */}
+        {/* Горизонтальный скролл: на десктопе видно 2 карточки, остальные по прокрутке */}
         <div className="relative mt-10">
-          {/* Мерцающая стрелка-указатель */}
-          <div className="mb-3 flex items-center justify-center md:hidden">
+          {/* Мерцающая стрелка-указатель для мобильных и планшетов */}
+          <div className="mb-3 flex items-center justify-center lg:hidden">
             <svg className="h-8 w-8 animate-pulse text-gold" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
               <path d="M5 12h14M12 5l7 7-7 7" />
             </svg>
             <span className="ml-2 text-[11px] font-bold uppercase tracking-[0.2em] text-gold">листайте →</span>
           </div>
 
-          <div className="no-scrollbar flex snap-x snap-mandatory items-stretch gap-3 overflow-x-auto pb-4 sm:gap-5 md:snap-none md:overflow-visible md:pb-0">
+          <div className="no-scrollbar flex snap-x snap-mandatory items-stretch gap-3 overflow-x-auto pb-4 sm:gap-5 lg:snap-none lg:grid lg:grid-cols-2 lg:overflow-visible lg:pb-0">
             {db.services.map((s, i) => (
               <ServiceCard
                 key={s.id}
                 s={s}
                 delay={i * 140}
-                className="w-full shrink-0 snap-start md:w-auto md:basis-0 md:flex-1"
+                className="w-full shrink-0 snap-start lg:w-auto lg:basis-0 lg:flex-1"
               />
             ))}
           </div>
-          <p className="mt-2 text-center text-[10px] font-semibold tracking-wide text-ink-faint md:hidden">
+          <p className="mt-2 text-center text-[10px] font-semibold tracking-wide text-ink-faint lg:hidden">
             свайпните, чтобы увидеть все карточки
           </p>
         </div>
