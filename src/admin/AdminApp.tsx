@@ -3,6 +3,7 @@ import { useStore } from "../lib/store";
 import {
   addEvent,
   addPost,
+  addService,
   deleteEvent,
   deleteOrder,
   deletePost,
@@ -326,8 +327,15 @@ function ServicesTab() {
   const { db } = useStore();
   return (
     <div>
-      <h2 className="font-display text-[24px] font-semibold">Карточки витрины</h2>
-      <p className="mt-1 text-[12.5px] font-semibold text-ink-soft">Каждая карточка содержит два формата — «Индивидуальная» и «Групповая». Цена, фото, описание и выгода редактируются для каждого формата отдельно.</p>
+      <div className="flex flex-wrap items-center justify-between gap-4">
+        <div>
+          <h2 className="font-display text-[24px] font-semibold">Карточки витрины</h2>
+          <p className="mt-1 text-[12.5px] font-semibold text-ink-soft">Каждая карточка содержит два формата — «Индивидуальная» и «Групповая». Цена, фото, описание и выгода редактируются для каждого формата отдельно.</p>
+        </div>
+        <button onClick={addService} className="inline-flex items-center gap-2 rounded-full bg-ink px-5 py-3 text-[13px] font-bold uppercase tracking-[0.1em] text-card transition-colors hover:bg-gold-deep">
+          + Добавить карточку
+        </button>
+      </div>
       <div className="mt-6 space-y-5">
         {db.services.map((s) => <ServiceEditor key={s.id} s={s} />)}
       </div>

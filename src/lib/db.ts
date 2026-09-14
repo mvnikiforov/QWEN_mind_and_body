@@ -437,6 +437,36 @@ export function updateService(id: string, patch: Partial<Service>) {
   });
 }
 
+export function addService() {
+  mutate((db) => {
+    db.services.push({
+      id: uid(),
+      title: "Новая услуга",
+      subtitle: "Краткое описание услуги",
+      variants: [
+        {
+          id: uid(),
+          mode: "individual",
+          image: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 800 600'%3E%3Crect fill='%23e8e4dc' width='800' height='600'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' font-family='sans-serif' font-size='48' fill='%23a89f91'%3EФото%3C/text%3E%3C/svg%3E",
+          duration: "50 минут",
+          price: 5000,
+          priceUnit: "разовая сессия",
+          description: "Описание индивидуального формата...",
+        },
+        {
+          id: uid(),
+          mode: "group",
+          image: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 800 600'%3E%3Crect fill='%23e8e4dc' width='800' height='600'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' font-family='sans-serif' font-size='48' fill='%23a89f91'%3EФото%3C/text%3E%3C/svg%3E",
+          duration: "90 минут",
+          price: 2500,
+          priceUnit: "групповая встреча",
+          description: "Описание группового формата...",
+        },
+      ],
+    });
+  });
+}
+
 /* ---------- events (афиша) ---------- */
 
 export function updateEvent(id: string, patch: Partial<EventItem>) {
