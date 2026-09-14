@@ -2,8 +2,6 @@ import { useEffect, useRef, useState, type ReactNode } from "react";
 import { IMG } from "../lib/db";
 import { Enso, IconArrow, YinYang } from "./icons";
 
-const STRIP = "тело • чувства • разум • дух • тишина • опора • ясность • ";
-
 /* Медитативное кольцо вокруг фото: тонкие концентрические линии
    вращаются с разной скоростью. Основные слова (тело, чувства,
    разум, дух) поочерёдно всплывают по диагоналям примерно каждые
@@ -242,18 +240,6 @@ export default function Hero() {
         </div>
       </div>
 
-      {/* медленная строка-мантра */}
-      <div className="relative mt-20 border-t border-line py-5 sm:mt-24" aria-hidden>
-        <div className="flex overflow-hidden">
-          <div className="marquee-track-l flex shrink-0 whitespace-nowrap">
-            {[0, 1].map((k) => (
-              <span key={k} className="pr-8 font-display text-[clamp(30px,5vw,60px)] font-medium uppercase tracking-[0.14em] text-gold-deep/80">
-                {STRIP.repeat(3)}
-              </span>
-            ))}
-          </div>
-        </div>
-      </div>
     </section>
   );
 }
