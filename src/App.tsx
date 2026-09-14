@@ -6,6 +6,7 @@ import Showcase from "./components/Showcase";
 import HotBanners from "./components/HotBanners";
 import Approach from "./components/Approach";
 import About from "./components/About";
+import Education from "./components/Education";
 import Schedule from "./components/Schedule";
 import Journey from "./components/Journey";
 import ChannelFeed from "./components/ChannelFeed";
@@ -34,6 +35,7 @@ function Site() {
         <HotBanners />
         <Approach />
         <About />
+        <Education />
         <Schedule />
         <Journey />
         <ChannelFeed />
