@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { IMG } from "../lib/db";
-import { Enso, IconArrow, YinYang } from "./icons";
+import { Enso, IconArrow } from "./icons";
 
 /* Медитативное кольцо вокруг фото: тонкие концентрические линии
    вращаются с разной скоростью. Основные слова (тело, чувства,
@@ -222,11 +222,6 @@ export default function Hero() {
 
               {/* вращающееся кольцо со словами */}
               <OrbitWords />
-
-              {/* инь-ян на границе круга */}
-              <div className="floaty absolute -top-5 left-[6%]">
-                <YinYang className="h-10 w-10 sm:h-12 sm:w-12 drop-shadow-[0_12px_24px_rgba(35,33,29,0.25)]" />
-              </div>
 
               {/* подписи */}
               <div className="floaty absolute -right-2 top-[30%] rounded-full border border-line bg-card/90 px-3 py-1.5 text-[10px] sm:text-[11.5px] font-bold tracking-[0.08em] uppercase text-ink-soft shadow-sm backdrop-blur" style={{ animationDelay: "1.4s" }}>
