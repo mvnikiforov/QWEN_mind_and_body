@@ -116,11 +116,11 @@ export default function Approach() {
             <Enso className="absolute -right-14 -top-14 h-64 w-64 text-card/12" strokeWidth={2} />
             <div className="relative grid gap-10 lg:grid-cols-12 lg:items-center">
               <div className="lg:col-span-5">
-                <p className="text-[11px] font-bold tracking-[0.32em] uppercase text-gold">Важно</p>
-                <h3 className="mt-4 font-display text-[clamp(28px,3.2vw,42px)] font-medium leading-tight">
+                <p className="text-[11px] font-bold tracking-[0.32em] uppercase text-white/95">Важно</p>
+                <h3 className="mt-4 font-display text-[clamp(28px,3.2vw,42px)] font-medium leading-tight text-white">
                   Мультикультурный подход
                 </h3>
-                <p className="mt-3 text-[16px] font-semibold leading-relaxed text-gold/90">
+                <p className="mt-3 text-[16px] font-semibold leading-relaxed text-white/95">
                   Бережность к вашему культурному коду и ценностям
                 </p>
               </div>
