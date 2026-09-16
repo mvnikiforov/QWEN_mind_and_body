@@ -3,7 +3,7 @@ import react from "@vitejs/plugin-react";
 import tailwindcss from "@tailwindcss/vite";
 
 export default defineConfig({
-  base: "/QWEN_mind_and_body/",
+  base: "/", //"/QWEN_mind_and_body/",
   plugins: [react(), tailwindcss()],
   server: {
     host: "0.0.0.0",
