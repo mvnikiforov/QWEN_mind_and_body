@@ -9,8 +9,8 @@ import { Enso, IconArrow } from "./icons";
    (верх, право, низ, лево), не перекрывая основные. */
 const MAIN_WORDS = ["тело", "чувства", "разум", "дух"];
 const MAIN_ANGLES = [45, 135, 225, 315];
-const EXTRA_WORDS = ["ДАО-практики", "Кундалини-йога", "Мультикультурный подход", "Гештальт-терапия", "Mindfulness"];
-const EXTRA_ANGLES = [0, 90, 180, 270, 0];
+const EXTRA_WORDS = ["Мультикультурный подход", "Гештальт-терапия", "Mindfulness"];
+const EXTRA_ANGLES = [0, 90, 180];
 
 function OrbitWord({
   angle,
@@ -222,14 +222,6 @@ export default function Hero() {
 
               {/* вращающееся кольцо со словами */}
               <OrbitWords />
-
-              {/* подписи */}
-              <div className="floaty absolute -right-2 top-[30%] rounded-full border border-line bg-card/90 px-3 py-1.5 text-[10px] sm:text-[11.5px] font-bold tracking-[0.08em] uppercase text-ink-soft shadow-sm backdrop-blur" style={{ animationDelay: "1.4s" }}>
-                кундалини-йога
-              </div>
-              <div className="floaty absolute -left-3 sm:-left-6 top-[58%] rounded-full border border-line bg-card/90 px-3 py-1.5 text-[10px] sm:text-[11.5px] font-bold tracking-[0.08em] uppercase text-ink-soft shadow-sm backdrop-blur" style={{ animationDelay: "0.7s" }}>
-                ДАО-практики
-              </div>
             </div>
           </div>
         </div>
