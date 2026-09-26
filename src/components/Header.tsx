@@ -33,8 +33,15 @@ export default function Header() {
             <span className="font-display text-[26px] font-semibold tracking-tight">Валерия</span>
             <span className="text-[11px] font-extrabold tracking-[0.18em] text-gold-deep uppercase">Про|Баланс</span>
           </span>
-          <span className="mt-0.5 block text-[9.5px] font-semibold tracking-[0.34em] text-ink-faint uppercase opacity-80 transition-opacity group-hover:opacity-100">
-            тело • чувства • разум • дух
+          <span className="mt-0.5 flex items-center gap-2 text-[9.5px] font-semibold tracking-[0.34em] text-ink-faint uppercase opacity-80 transition-opacity group-hover:opacity-100">
+            {/* разделители — CSS-точки вместо глифа «•» (на мобильных он может
+                отображаться чёрным квадратом) */}
+            {["тело", "чувства", "разум", "дух"].map((w, i) => (
+              <span key={w} className="flex items-center gap-2">
+                {i > 0 && <span aria-hidden="true" className="h-[3px] w-[3px] rounded-full bg-current opacity-60" />}
+                {w}
+              </span>
+            ))}
           </span>
         </a>
 

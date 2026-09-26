@@ -13,7 +13,7 @@ export default function Footer() {
       <div className="relative mx-auto max-w-7xl px-5 pb-10 pt-16 sm:px-8">
         {/* Слоган — деликатно, полупрозрачно */}
         <p className="mt-3 font-display text-[clamp(18px,2.4vw,26px)] italic text-card/60 mx-auto w-fit">
-        ТЕЛО • ЧУВСТВА • РАЗУМ • ДУХ — к балансу и ясности
+        ТЕЛО / ЧУВСТВА / РАЗУМ / ДУХ — к балансу и ясности
         </p>
 
         <div className="mt-11 flex justify-center">

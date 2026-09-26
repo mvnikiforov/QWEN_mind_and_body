@@ -25,6 +25,9 @@ import {
 import { IconCart, IconLock, IconSend, IconTrash, IconUpload, YinYang } from "../components/icons";
 import { compressImage } from "../lib/image";
 import { A, AdminSelect, ADMIN_FIELD as FIELD } from "./shared";
+
+/* Компактная метка поля (используется с <label className="block">) */
+const LABEL = "mb-1 block text-[11px] font-extrabold uppercase tracking-wide text-ink-soft";
 import DocsTab from "./DocsTab";
 
 type Tab = "orders" | "services" | "events" | "content" | "channel" | "docs";

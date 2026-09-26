@@ -141,11 +141,17 @@ export default function Hero() {
         <div className="grid items-center gap-16 lg:grid-cols-12">
           {/* Текст */}
           <div className="lg:col-span-7">
-            {/* Плашка-статус: статичная, без анимации */}
-            <div className="flex flex-wrap items-baseline gap-y-2 text-[12.5px] font-bold uppercase leading-relaxed tracking-[0.12em] text-ink-soft md:text-[14.5px] md:tracking-[0.14em]">
-              <span>Онлайн и очно</span>
-              <span aria-hidden="true" className="mx-3 text-gold">·</span>
-              <span>Пространство баланса</span>
+            {/* Плашка-статус в виде чипа с подложкой цвета бумаги:
+                даже если верх страницы частично перекрывается шапкой или
+                системной панелью мобильного браузера, текст остаётся читаемым.
+                Разделитель — ASCII «/»: редкие юникод-глифы (·, •) на части
+                мобильных прошивок рисуются «тофу» — чёрным квадратом. */}
+            <div className="-mx-5 flex flex-wrap items-baseline gap-y-2 px-5 sm:-mx-8 sm:px-8">
+              <p className="fadeup inline-flex flex-wrap items-baseline rounded-full bg-card/90 px-4 py-1.5 text-[12.5px] font-bold uppercase leading-relaxed tracking-[0.12em] text-ink-soft shadow-sm ring-1 ring-line backdrop-blur-sm md:text-[14.5px] md:tracking-[0.14em]" style={{ animationDelay: "40ms" }}>
+                <span>Онлайн и очно</span>
+                <span aria-hidden="true" className="mx-2.5 font-extrabold text-gold md:mx-3">/</span>
+                <span>Пространство баланса</span>
+              </p>
             </div>
 
             <h1
@@ -165,7 +171,9 @@ export default function Hero() {
               <p className="flex flex-wrap items-baseline gap-y-1 font-display text-[clamp(17px,2.2vw,24px)] font-semibold uppercase tracking-[0.22em] text-ink/90">
                 {["Тело", "Чувства", "Разум", "Дух"].map((w, i) => (
                   <span key={w} className="flex items-baseline">
-                    {i > 0 && <span className="mx-4 text-[0.55em] leading-none text-ink/35">•</span>}
+                    {/* разделитель — CSS-точка, а не глиф «•»: на части мобильных
+                        прошивок такие символы рисуются чёрным квадратом («тофу») */}
+                    {i > 0 && <span aria-hidden="true" className="mx-4 inline-block h-1 w-1 shrink-0 self-center rounded-full bg-ink/35" />}
                     {w}
                   </span>
                 ))}
