@@ -1,84 +1,29 @@
-import { useEffect, useRef, useState, type CSSProperties, type ReactNode } from "react";
+import { useEffect, useRef, type CSSProperties } from "react";
 import { IMG } from "../lib/db";
 import { IconArrow } from "./icons";
 
 /* Медитативное кольцо вокруг фото: тонкие концентрические линии
-   вращаются с разной скоростью. Основные слова (тело, чувства,
-   разум, дух) поочерёдно всплывают по диагоналям примерно каждые
-   2 секунды; дополнительные — реже, в свободных точках окружности
-   (верх, право, низ, лево), не перекрывая основные. */
-const MAIN_WORDS = ["тело", "чувства", "разум", "дух"];
-const MAIN_ANGLES = [45, 135, 225, 315];
-const EXTRA_WORDS = ["Мультикультурный подход", "Гештальт-терапия", "Mindfulness"];
-const EXTRA_ANGLES = [0, 90, 180];
+   вращаются с разной скоростью. Золотые точки-маркеры на кольце
+   расставлены по диагоналям (бывшие основные слова) и в свободных
+   точках окружности (верх, право, низ). Слов-надписей на орбите нет. */
+const MARKER_ANGLES = [45, 135, 225, 315];
+const DOT_ANGLES = [0, 90, 180];
 
-function OrbitWord({
-  angle,
-  on,
-  big,
-  children,
-}: {
-  angle: number;
-  on: boolean;
-  big?: boolean;
-  children: ReactNode;
-}) {
-  return (
-    <div className="orbit-slot absolute inset-0" style={{ transform: `rotate(${angle}deg)` }} aria-hidden>
-      <span
-        className={`absolute left-1/2 top-0 flex items-center gap-1.5 sm:gap-2 whitespace-nowrap transition-all ease-[cubic-bezier(0.22,1,0.36,1)] ${
-          big
-            ? "duration-700 font-display text-[13.5px] italic tracking-[0.08em] text-ink/90 md:text-[16.5px]"
-            : "duration-[1200ms] text-[9.5px] font-bold uppercase tracking-[0.22em] text-ink-soft/90 md:text-[11px]"
-        } ${on ? "opacity-100 [text-shadow:0_1px_14px_rgba(244,241,234,0.95)]" : "opacity-0"}`}
-        style={{ transform: `translate(-50%, calc(-50% + ${on ? "var(--orbit-lift-on, -7px)" : "var(--orbit-lift-off, 9px)"})) rotate(${-angle}deg)` }}
-      >
-        <i
-          className={`rounded-full bg-gold transition-transform duration-700 ${
-            big ? "h-1 w-1 sm:h-1.5 sm:w-1.5" : "h-0.5 w-0.5 sm:h-1 sm:w-1 opacity-70"
-          } ${on ? "scale-100" : "scale-0"}`}
-        />
-        {children}
-      </span>
-    </div>
-  );
-}
-
-function OrbitWords() {
-  const [main, setMain] = useState(0);
-  const [extraPair, setExtraPair] = useState(0);
-  const [staticAll, setStaticAll] = useState(false);
-
-  useEffect(() => {
-    /* Только prefers-reduced-motion — статичное кольцо.
-       Вращение и смена слов работают и на мобильных, как в десктопной версии */
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
-      setStaticAll(true);
-      return;
-    }
-    const t1 = window.setInterval(() => setMain((m) => (m + 1) % MAIN_WORDS.length), 2000);
-    // Пара слов сменяется каждые 1.5 секунды
-    const t2 = window.setInterval(() => setExtraPair((p) => (p + 1) % EXTRA_WORDS.length), 1500);
-    return () => {
-      window.clearInterval(t1);
-      window.clearInterval(t2);
-    };
-  }, []);
-
+function OrbitRing() {
   return (
     <div
       className="pointer-events-none absolute -inset-[8%]"
       role="img"
-      aria-label="Тело, чувства, разум, дух. ДАО-практики, Кундалини-йога, Мультикультурный подход, Гештальт-терапия, Mindfulness"
+      aria-label="ДАО-практики, Кундалини-йога, Мультикультурный подход, Гештальт-терапия, Mindfulness"
     >
       {/* пунктирное кольцо — полный оборот за 28 секунд */}
       <svg className="orbit-spin absolute inset-0 h-full w-full text-ink/40" viewBox="0 0 100 100" fill="none" aria-hidden>
         <circle cx="50" cy="50" r="49.3" stroke="currentColor" strokeWidth="0.28" strokeDasharray="0.1 2.2" strokeLinecap="round" />
-        {MAIN_ANGLES.map((a) => {
+        {MARKER_ANGLES.map((a) => {
           const rad = (a * Math.PI) / 180;
           return <circle key={a} cx={50 + 49.3 * Math.sin(rad)} cy={50 - 49.3 * Math.cos(rad)} r="0.5" fill="#a08149" fillOpacity="0.8" />;
         })}
-        {EXTRA_ANGLES.slice(0, 4).map((a) => {
+        {DOT_ANGLES.slice(0, 4).map((a) => {
           const rad = (a * Math.PI) / 180;
           return <circle key={`x-${a}`} cx={50 + 49.3 * Math.sin(rad)} cy={50 - 49.3 * Math.cos(rad)} r="0.3" fill="#a08149" fillOpacity="0.45" />;
         })}
@@ -90,39 +35,20 @@ function OrbitWords() {
           <circle cx="50" cy="50" r="48.6" stroke="#a08149" strokeOpacity="0.5" strokeWidth="0.55" strokeLinecap="round" strokeDasharray="24 281" />
         </svg>
       </div>
-
-      {/* основные слова — по диагоналям, каждые 2 секунды */}
-      {MAIN_WORDS.map((w, i) => (
-        <OrbitWord key={w} angle={MAIN_ANGLES[i]} on={staticAll || main === i} big>
-          {w}
-        </OrbitWord>
-      ))}
-
-      {/* дополнительные — два слова видны одновременно, сменяются каждые 1.5 сек */}
-      {EXTRA_WORDS.map((w, i) => {
-        // Показываем текущее и следующее слово (циклически)
-        const isVisible = staticAll ? i < 4 : i === extraPair || i === (extraPair + 1) % EXTRA_WORDS.length;
-        return (
-          <OrbitWord key={w} angle={EXTRA_ANGLES[i]} on={isVisible}>
-            {w}
-          </OrbitWord>
-        );
-      })}
     </div>
   );
 }
 
-/* Визуал — круг целостности: дышащий градиент, фото и орбита слов.
+/* Визуал — круг целостности: дышащий градиент, фото и вращающиеся кольца.
    Вынесен в отдельный компонент, чтобы его можно было разместить в двух местах:
    на мобильных — сразу после заголовка hero,
    на десктопе — в правой колонке сетки hero.
    scale — дополнительный масштаб (на мобильных чуть уменьшен, чтобы все
    выступающие круговые элементы гарантированно помещались в границы экрана).
    Точная геометрия выступающих частей (в долях ширины круга W):
-   - орбита слов:  inset -8%, пунктир r=49.3/50 → край кольца ≈ 49.73%·W;
-     слова поднимаются над этим краем ещё на ~lift + донышко глифа (~1px);
+   - кольцо-орбита: inset -8%, пунктир r=49.3/50 → край кольца ≈ 49.73%·W;
    - «дышащий» фон: inset -7% + scale(1.05) → 2.5% сверху и снизу.
-   Отступы ниже подобраны так, чтобы весь элемент (кольца + всплывающие слова)
+   Отступы ниже подобраны так, чтобы весь элемент (кольца)
    целиком оставался внутри границ сайта, а все круги имели общий центр. */
 function HeroVisual({
   className,
@@ -136,7 +62,7 @@ function HeroVisual({
   return (
     <div
       className="relative mx-auto w-full"
-      style={{ "--orbit-lift-on": "-7px", "--orbit-lift-off": "9px", ...wrapperStyle } as CSSProperties}
+      style={{ ...wrapperStyle } as CSSProperties}
     >
       {/* вертикальный резерв: только для мобильной копии (scale < 1);
           на десктопе отступы не нужны — там достаточно места в колонке */}
@@ -155,8 +81,8 @@ function HeroVisual({
           />
         </div>
 
-        {/* вращающееся кольцо со словами */}
-        <OrbitWords />
+        {/* вращающееся пунктирное кольцо с золотыми точками и дугой */}
+        <OrbitRing />
       </div>
       {scale !== 1 && <div aria-hidden className="pb-[12%]" />}
     </div>
@@ -214,13 +140,10 @@ export default function Hero() {
             {/* Мобильная версия: круговые эффекты сразу после заголовка
                 «Провожу сквозь лабиринты ума и тела — к тишине, опоре и созидательной силе».
                 Полностью идентичны десктопной версии: общий центр всех колец,
-                вращение (пунктирное кольцо точек, золотая дуга) и эффект
-                появляющихся/исчезающих слов. Горизонталь: width = 100% − 2·gutter,
-                где gutter = max(выступ колец 0.0973·W, половина ширины самого
-                длинного слова «Мультикультурный подход» ≈ 0.18·W); при scale 0.9
-                выступ надписей (0.18·W) с запасом помещается в боковые поля px-5,
-                поэтому весь элемент с надписями («Гештальт-терапия» и др.)
-                целиком остаётся внутри границ сайта слева и справа.
+                вращение (пунктирное кольцо с точками, золотая дуга).
+                Горизонталь: width = 100% − 2·gutter; при scale 0.9 выступ
+                колец с запасом помещается в боковые поля px-5, поэтому весь
+                элемент целиком остаётся внутри границ сайта слева и справа.
                 На десктопе скрыт (визуал — в правой колонке сетки ниже) */}
             <div className="fadeup lg:hidden" style={{ animationDelay: "160ms" }}>
               <HeroVisual
