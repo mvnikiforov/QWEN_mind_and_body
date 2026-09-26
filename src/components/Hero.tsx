@@ -51,10 +51,10 @@ function PhraseCycle() {
       {/* нулевой по высоте контейнер — обе фразы занимают одно место,
           видимость переключает анимация */}
       <div className="relative h-0 w-0">
-        <span className="phrase-cycle absolute bottom-0 left-1/2 -translate-x-1/2 whitespace-nowrap font-display text-[clamp(13px,1.6vw,17px)] font-medium uppercase tracking-[0.28em] text-gold-deep">
+        <span className="phrase-cycle absolute bottom-0 left-1/2 -translate-x-1/2 whitespace-nowrap font-body text-[clamp(11px,1.4vw,15px)] font-medium uppercase tracking-[0.28em] text-gold-deep">
           {PHRASES[0]}
         </span>
-        <span className="phrase-cycle-delayed absolute bottom-0 left-1/2 -translate-x-1/2 whitespace-nowrap font-display text-[clamp(13px,1.6vw,17px)] font-medium uppercase tracking-[0.28em] text-gold-deep">
+        <span className="phrase-cycle-delayed absolute bottom-0 left-1/2 -translate-x-1/2 whitespace-nowrap font-body text-[clamp(11px,1.4vw,15px)] font-medium uppercase tracking-[0.28em] text-gold-deep">
           {PHRASES[1]}
         </span>
       </div>
