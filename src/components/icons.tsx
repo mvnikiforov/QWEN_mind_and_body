@@ -88,7 +88,7 @@ export function IconDoc(props: P) {
 /* Энсо — открытый круг, символ целостности */
 export function Enso({ strokeWidth = 1.6, ...props }: P & { strokeWidth?: number }) {
   return (
-    <svg viewBox="0 0 100 100" fill="none" {...props}>
+    <svg viewBox="0 0 100 100" fill="none" preserveAspectRatio="xMidYMid meet" {...props}>
       <circle
         cx="50"
         cy="50"
