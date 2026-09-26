@@ -142,7 +142,7 @@ export default function Hero() {
           {/* Текст */}
           <div className="lg:col-span-7">
             {/* Плашка-статус: статичная, без анимации */}
-            <div className="flex flex-wrap items-baseline gap-y-2 text-[12.5px] font-bold uppercase leading-relaxed tracking-[0.12em] text-ink-soft md:text-[14.5px] md:tracking-[0.14em]">
+            <div className="flex flex-wrap items-baseline gap-y-2 text-[12.5px] font-bold uppercase leading-relaxed tracking-[0.12em] text-ink-soft md:text-[14.5px] md:tracking-[0.14em] [text-shadow:0_1px_10px_rgba(244,241,234,0.9)]">
               <span>Онлайн и очно</span>
               <span aria-hidden="true" className="mx-3 text-gold">·</span>
               <span>Пространство баланса</span>

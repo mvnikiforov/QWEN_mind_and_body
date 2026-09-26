@@ -22,7 +22,7 @@ export default function Header() {
 
   return (
     <header
-      className={`fixed inset-x-0 top-0 z-40 transition-all duration-500 ${
+      className={`site-header fixed inset-x-0 top-0 z-40 transition-all duration-500 ${
         scrolled ? "bg-paper/85 shadow-[0_1px_0_0_var(--color-line)] backdrop-blur-md" : "bg-transparent"
       }`}
     >
