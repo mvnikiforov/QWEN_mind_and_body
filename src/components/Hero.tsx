@@ -132,15 +132,20 @@ export default function Hero() {
   }, []);
 
   return (
-    <section id="top" ref={ref} className="relative overflow-hidden pt-32 sm:pt-36">
-      {/* фоновые тона */}
-      <div className="pointer-events-none absolute -top-32 right-[-10%] h-[560px] w-[560px] rounded-full bg-stone blur-3xl" />
-      <div className="pointer-events-none absolute top-1/2 -left-40 h-[420px] w-[420px] rounded-full bg-[#e7e3d8] blur-3xl" />
+    /* overflow-hidden убран: на мобильных он обрезал круговые эффекты
+       визуала, которые выступают за границы блока (см. отступы ниже) */
+    <section id="top" ref={ref} className="relative pt-32 sm:pt-36">
+      {/* фоновые тона — с изоляцией, чтобы блюр не лез в другие секции;
+          снизу смещаем их вверх, чтобы они не выходили за блок hero */}
+      <div className="pointer-events-none absolute inset-x-0 top-0 bottom-24 isolate -z-10 overflow-hidden">
+        <div className="absolute -top-32 right-[-10%] h-[560px] w-[560px] rounded-full bg-stone blur-3xl" />
+        <div className="absolute top-1/2 -left-40 h-[420px] w-[420px] rounded-full bg-[#e7e3d8] blur-3xl" />
+      </div>
 
       <div className="relative mx-auto max-w-7xl px-5 sm:px-8">
         <div className="grid items-center gap-16 lg:grid-cols-12">
           {/* Текст */}
-          <div className="lg:col-span-7">
+          <div className="order-2 lg:col-span-7 lg:order-none">
             {/* Плашка-статус: статичная, без анимации */}
             <div className="flex flex-wrap items-baseline gap-y-2 text-[12.5px] font-bold uppercase leading-relaxed tracking-[0.12em] text-ink-soft md:text-[14.5px] md:tracking-[0.14em] [text-shadow:0_1px_10px_rgba(244,241,234,0.9)]">
               <span>Онлайн и очно</span>
@@ -203,10 +208,11 @@ export default function Hero() {
             </dl>
           </div>
 
-          {/* Визуал — круг целостности */}
-          <div className="lg:col-span-5">
+          {/* Визуал — круг целостности. На мобильных первым, с запасом
+              сверху и снизу: выступающие кольца (Enso inset[-13%]) целиком в кадре */}
+          <div className="order-1 pt-[15%] pb-[16%] lg:col-span-5 lg:order-none lg:pt-0 lg:pb-0">
             <div
-              className="relative mx-auto aspect-square max-w-[360px] sm:max-w-[460px] transition-transform duration-500 ease-out"
+              className="relative mx-auto aspect-square w-full max-w-[340px] sm:max-w-[460px] transition-transform duration-500 ease-out"
               style={{ transform: "translate(calc(var(--px, 0) * 16px), calc(var(--py, 0) * 16px))" }}
             >
               <div className="breathe absolute inset-[-7%] rounded-full bg-[radial-gradient(circle_at_38%_30%,#e9e4d9_0%,#ddd7ca_60%,#d3ccbd_100%)]" />

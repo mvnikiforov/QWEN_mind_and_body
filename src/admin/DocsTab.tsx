@@ -2,6 +2,7 @@ import { useRef, useState, type ChangeEvent, type ReactNode } from "react";
 import { useStore } from "../lib/store";
 import { changePassword, exportDB, importDB, resetDB } from "../lib/db";
 import { IconDoc, IconDownload, IconUpload } from "../components/icons";
+import { ADMIN_FIELD as FIELD } from "../lib/styles";
 
 function Block({ title, children }: { title: string; children: ReactNode }) {
   return (
@@ -47,16 +48,14 @@ function SettingsSection() {
     a.click();
   };
 
-  const field = "w-full rounded-[12px] border border-ink/15 bg-paper px-3.5 py-2.5 text-[14px] font-semibold outline-none focus:border-gold-deep focus:ring-4 focus:ring-gold/25";
-
   return (
     <Block title="Настройки базы и доступа">
       <div className="grid gap-8 lg:grid-cols-2">
         <div>
           <p className="text-[12px] font-extrabold uppercase tracking-[0.16em] text-gold-deep">Смена пароля администратора</p>
           <div className="mt-3 space-y-3">
-            <input type="password" placeholder="Новый пароль (мин. 6 символов)" value={p1} onChange={(e) => setP1(e.target.value)} className={field} />
-            <input type="password" placeholder="Повторите пароль" value={p2} onChange={(e) => setP2(e.target.value)} className={field} />
+            <input type="password" placeholder="Новый пароль (мин. 6 символов)" value={p1} onChange={(e) => setP1(e.target.value)} className={FIELD} />
+            <input type="password" placeholder="Повторите пароль" value={p2} onChange={(e) => setP2(e.target.value)} className={FIELD} />
             <button onClick={savePass} className="rounded-full bg-ink px-5 py-2.5 text-[12.5px] font-bold text-card transition-colors hover:bg-gold-deep">Сменить пароль</button>
           </div>
           <p className="mt-4 text-[12.5px] text-ink-faint">

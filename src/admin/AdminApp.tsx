@@ -23,6 +23,8 @@ import {
   type Variant,
 } from "../lib/db";
 import { IconCart, IconLock, IconSend, IconTrash, IconUpload, YinYang } from "../components/icons";
+import { compressImage } from "../lib/images";
+import { ADMIN_FIELD as FIELD, ADMIN_LABEL as LABEL } from "../lib/styles";
 import DocsTab from "./DocsTab";
 
 type Tab = "orders" | "services" | "events" | "content" | "channel" | "docs";
@@ -42,9 +44,6 @@ const STATUS_STYLE: Record<OrderStatus, string> = {
   done: "bg-[#e6dcc3] text-ink",
   closed: "bg-ink/12 text-ink-soft",
 };
-
-const FIELD = "w-full rounded-[12px] border border-ink/15 bg-card px-3.5 py-2.5 text-[14px] font-semibold outline-none focus:border-gold-deep focus:ring-4 focus:ring-gold/25";
-const LABEL = "mb-1 block text-[11px] font-extrabold uppercase tracking-wide text-ink-soft";
 
 /* ================= ЛОГИН ================= */
 
@@ -227,27 +226,6 @@ function OrdersTab() {
 }
 
 /* ================= ВИТРИНА ================= */
-
-function compressImage(file: File, maxSide = 1000): Promise<string> {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onload = () => {
-      const img = new Image();
-      img.onload = () => {
-        const k = Math.min(1, maxSide / Math.max(img.width, img.height));
-        const canvas = document.createElement("canvas");
-        canvas.width = Math.round(img.width * k);
-        canvas.height = Math.round(img.height * k);
-        canvas.getContext("2d")!.drawImage(img, 0, 0, canvas.width, canvas.height);
-        resolve(canvas.toDataURL("image/jpeg", 0.85));
-      };
-      img.onerror = reject;
-      img.src = String(reader.result);
-    };
-    reader.onerror = reject;
-    reader.readAsDataURL(file);
-  });
-}
 
 function ServiceEditor({ s }: { s: Service }) {
   const [d, setD] = useState(s);

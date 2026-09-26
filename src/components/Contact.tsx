@@ -3,6 +3,7 @@ import { useStore } from "../lib/store";
 import { createOrder, fmtPrice, type OrderForm } from "../lib/db";
 import { IconCheck, IconMax, IconPhone, IconSend, IconVk, YinYang } from "./icons";
 import { Reveal, SectionHead } from "./ui";
+import { AREA, FIELD, LABEL } from "../lib/styles";
 
 /* ================= ФОРМА ЗАПИСИ ================= */
 
@@ -19,11 +20,6 @@ const initialForm = {
   pregnancy: "",
   request: "",
 };
-
-const FIELD =
-  "w-full min-h-[52px] sm:min-h-[58px] rounded-[14px] border border-line bg-card px-4 sm:px-5 py-3.5 sm:py-4 text-[15px] sm:text-[16px] font-medium leading-snug outline-none transition-all placeholder:text-ink-faint placeholder:leading-snug focus:border-gold focus:ring-4 focus:ring-gold/20";
-const LABEL = "mb-2 block text-[10.5px] sm:text-[11.5px] font-extrabold uppercase tracking-[0.12em] leading-snug text-ink-soft";
-const AREA = `${FIELD} resize-y`;
 
 function Select({ value, onChange, options, label, placeholder }: {
   value: string;
