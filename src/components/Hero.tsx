@@ -119,7 +119,9 @@ function OrbitWords() {
    scale — дополнительный масштаб (на мобильных чуть уменьшен, чтобы все
    выступающие круговые элементы гарантированно помещались в границы экрана).
    Точная геометрия выступающих частей (в долях ширины круга W):
-   - кольцо Энсо:  inset -13%, viewBox 0..92 → внешний край r = 13% + 46/92·74% = 50%;
+   - кольцо Энсо:  inset -11.74%, viewBox 0..100, окружность r=46 (+штрих 0.5%)
+     → радиус внешнего края точно = 50%·W (совпадает с радиусом основного
+     круга фото), общий центр со всеми кольцами;
    - орбита слов:  inset -8%, пунктир r=49.3/50 → край кольца ≈ 49.73%·W;
      слова поднимаются над этим краем ещё на ~lift + донышко глифа (~1px);
    - «дышащий» фон: inset -7% + scale(1.05) → 2.5% сверху и снизу.
@@ -147,7 +149,10 @@ function HeroVisual({
         style={{ transform: `scale(${scale}) translate(calc(var(--px, 0) * 16px), calc(var(--py, 0) * 16px))` }}
       >
         <div className="breathe absolute inset-[-7%] rounded-full bg-[radial-gradient(circle_at_38%_30%,#e9e4d9_0%,#ddd7ca_60%,#d3ccbd_100%)]" />
-        <Enso className="spin-slow absolute inset-[-13%] text-ink/30" strokeWidth={1} />
+        {/* кольцо Энсо: viewBox 0..100, r=46 → inset -11.74% даёт радиус
+            внешнего края точно 50% ширины круга (совпадает с кругом фото),
+            transform-origin в .spin-slow — центр SVG, смещений нет */}
+        <Enso className="spin-slow absolute -inset-[11.74%] text-ink/30" strokeWidth={1} />
         <div className="absolute inset-0 overflow-hidden rounded-full border border-ink/15 shadow-[0_50px_90px_-40px_rgba(35,33,29,0.45)]">
           <img
             src={IMG.hero}
