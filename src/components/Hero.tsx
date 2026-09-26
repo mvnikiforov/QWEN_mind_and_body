@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, type ReactNode } from "react";
+import { useEffect, useRef, useState, type CSSProperties, type ReactNode } from "react";
 import { IMG } from "../lib/db";
 import { Enso, IconArrow } from "./icons";
 
@@ -24,14 +24,14 @@ function OrbitWord({
   children: ReactNode;
 }) {
   return (
-    <div className="absolute inset-0" style={{ transform: `rotate(${angle}deg)` }} aria-hidden>
+    <div className="orbit-slot absolute inset-0" style={{ transform: `rotate(${angle}deg)` }} aria-hidden>
       <span
         className={`absolute left-1/2 top-0 flex items-center gap-1.5 sm:gap-2 whitespace-nowrap transition-all ease-[cubic-bezier(0.22,1,0.36,1)] ${
           big
             ? "duration-700 font-display text-[13.5px] italic tracking-[0.08em] text-ink/90 md:text-[16.5px]"
             : "duration-[1200ms] text-[9.5px] font-bold uppercase tracking-[0.22em] text-ink-soft/90 md:text-[11px]"
         } ${on ? "opacity-100 [text-shadow:0_1px_14px_rgba(244,241,234,0.95)]" : "opacity-0"}`}
-        style={{ transform: `translate(-50%, calc(-50% + ${on ? "-7px" : "9px"})) rotate(${-angle}deg)` }}
+        style={{ transform: `translate(-50%, calc(-50% + ${on ? "var(--orbit-lift-on, -7px)" : "var(--orbit-lift-off, 9px)"})) rotate(${-angle}deg)` }}
       >
         <i
           className={`rounded-full bg-gold transition-transform duration-700 ${
@@ -67,7 +67,7 @@ function OrbitWords() {
 
   return (
     <div
-      className="pointer-events-none absolute -inset-[8%] sm:-inset-[7%]"
+      className="pointer-events-none absolute -inset-[8%]"
       role="img"
       aria-label="Тело, чувства, разум, дух. ДАО-практики, Кундалини-йога, Мультикультурный подход, Гештальт-терапия, Mindfulness"
     >
@@ -117,26 +117,55 @@ function OrbitWords() {
    на мобильных — сразу после заголовка hero,
    на десктопе — в правой колонке сетки hero.
    scale — дополнительный масштаб (на мобильных чуть уменьшен, чтобы все
-   выступающие круговые элементы гарантированно помещались в границы экрана). */
-function HeroVisual({ className, scale = 1 }: { className?: string; scale?: number }) {
+   выступающие круговые элементы гарантированно помещались в границы экрана).
+   Точная геометрия выступающих частей (в долях ширины круга W):
+   - кольцо Энсо:  inset -11.74%, viewBox 0..100, окружность r=46 (+штрих 0.5%)
+     → радиус внешнего края точно = 50%·W (совпадает с радиусом основного
+     круга фото), общий центр со всеми кольцами;
+   - орбита слов:  inset -8%, пунктир r=49.3/50 → край кольца ≈ 49.73%·W;
+     слова поднимаются над этим краем ещё на ~lift + донышко глифа (~1px);
+   - «дышащий» фон: inset -7% + scale(1.05) → 2.5% сверху и снизу.
+   Отступы ниже подобраны так, чтобы весь элемент (кольца + всплывающие слова)
+   целиком оставался внутри границ сайта, а все круги имели общий центр. */
+function HeroVisual({
+  className,
+  scale = 1,
+  wrapperStyle,
+}: {
+  className?: string;
+  scale?: number;
+  wrapperStyle?: CSSProperties;
+}) {
   return (
     <div
-      className={`relative mx-auto aspect-square w-full max-w-[460px] transition-transform duration-500 ease-out ${className ?? ""}`}
-      style={{ transform: `scale(${scale}) translate(calc(var(--px, 0) * 16px), calc(var(--py, 0) * 16px))` }}
+      className="relative mx-auto w-full"
+      style={{ "--orbit-lift-on": "-7px", "--orbit-lift-off": "9px", ...wrapperStyle } as CSSProperties}
     >
-      <div className="breathe absolute inset-[-7%] rounded-full bg-[radial-gradient(circle_at_38%_30%,#e9e4d9_0%,#ddd7ca_60%,#d3ccbd_100%)]" />
-      <Enso className="spin-slow absolute inset-[-13%] text-ink/30" strokeWidth={1} />
-      <div className="absolute inset-0 overflow-hidden rounded-full border border-ink/15 shadow-[0_50px_90px_-40px_rgba(35,33,29,0.45)]">
-        <img
-          src={IMG.hero}
-          alt="Инструктор в белом, видна со спины, волосы собраны в пучок — в светлой студии"
-          className="h-full w-full object-cover"
-          loading="eager"
-        />
-      </div>
+      {/* вертикальный резерв: только для мобильной копии (scale < 1);
+          на десктопе отступы не нужны — там достаточно места в колонке */}
+      {scale !== 1 && <div aria-hidden className="pt-[13%]" />}
+      <div
+        className={`aspect-square transition-transform duration-500 ease-out ${className ?? ""}`}
+        style={{ transform: `scale(${scale}) translate(calc(var(--px, 0) * 16px), calc(var(--py, 0) * 16px))` }}
+      >
+        <div className="breathe absolute inset-[-7%] rounded-full bg-[radial-gradient(circle_at_38%_30%,#e9e4d9_0%,#ddd7ca_60%,#d3ccbd_100%)]" />
+        {/* кольцо Энсо: viewBox 0..100, r=46 → inset -11.74% даёт радиус
+            внешнего края точно 50% ширины круга (совпадает с кругом фото),
+            transform-origin в .spin-slow — центр SVG, смещений нет */}
+        <Enso className="spin-slow absolute -inset-[11.74%] text-ink/30" strokeWidth={1} />
+        <div className="absolute inset-0 overflow-hidden rounded-full border border-ink/15 shadow-[0_50px_90px_-40px_rgba(35,33,29,0.45)]">
+          <img
+            src={IMG.hero}
+            alt="Инструктор в белом, видна со спины, волосы собраны в пучок — в светлой студии"
+            className="h-full w-full object-cover"
+            loading="eager"
+          />
+        </div>
 
-      {/* вращающееся кольцо со словами */}
-      <OrbitWords />
+        {/* вращающееся кольцо со словами */}
+        <OrbitWords />
+      </div>
+      {scale !== 1 && <div aria-hidden className="pb-[12%]" />}
     </div>
   );
 }
@@ -191,12 +220,20 @@ export default function Hero() {
 
             {/* Мобильная версия: круговые эффекты сразу после заголовка
                 «Провожу сквозь лабиринты ума и тела — к тишине, опоре и созидательной силе».
-                Полностью идентичны десктопной версии (общий центр колец, вращение,
-                появляющиеся/исчезающие слова). Небольшое уменьшение масштаба (0.92)
-                и запас по краям гарантируют, что весь элемент с надписями помещается
-                в границы экрана слева и справа. На десктопе скрыт (визуал — в правой колонке ниже) */}
-            <div className="fadeup py-[13%] lg:hidden" style={{ animationDelay: "160ms" }}>
-              <HeroVisual scale={0.92} />
+                Полностью идентичны десктопной версии: общий центр всех колец,
+                вращение (Энсо, пунктирное кольцо точек, золотая дуга) и эффект
+                появляющихся/исчезающих слов. Горизонталь: width = 100% − 2·gutter,
+                где gutter = max(выступ колец 0.0973·W, половина ширины самого
+                длинного слова «Мультикультурный подход» ≈ 0.18·W); при scale 0.9
+                выступ надписей (0.18·W) с запасом помещается в боковые поля px-5,
+                поэтому весь элемент с надписями («Гештальт-терапия» и др.)
+                целиком остаётся внутри границ сайта слева и справа.
+                На десктопе скрыт (визуал — в правой колонке сетки ниже) */}
+            <div className="fadeup lg:hidden" style={{ animationDelay: "160ms" }}>
+              <HeroVisual
+                scale={0.9}
+                wrapperStyle={{ width: "min(calc(100% - 2.5rem), calc(100vw - 4.5rem))" }}
+              />
             </div>
 
             <p className="fadeup mt-7 max-w-xl text-[16px] sm:text-[17px] font-medium leading-relaxed text-ink" style={{ animationDelay: "200ms" }}>

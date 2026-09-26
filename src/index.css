@@ -123,7 +123,7 @@ main, footer { padding-left: var(--safe-left); padding-right: var(--safe-right);
 .breathe { animation: breathe 8s ease-in-out infinite; }
 .marquee-track-l { animation: marquee-l 80s linear infinite; }
 .floaty { animation: floaty 9s ease-in-out infinite; }
-.spin-slow { animation: spin-slow 70s linear infinite; }
+.spin-slow { animation: spin-slow 70s linear infinite; transform-origin: 50% 50%; }
 .fadeup { animation: fadeup 0.7s cubic-bezier(0.22, 1, 0.36, 1) both; }
 .flash-ring { animation: flashring 1.2s ease-out 2; }
 .ink-pulse { animation: inkpulse 4s ease-in-out infinite; }
@@ -175,10 +175,12 @@ main, footer { padding-left: var(--safe-left); padding-right: var(--safe-right);
 
 /* ---------- сенсорные устройства: статичный, чёткий контент ----------
    На телефонах и планшетах отключаются все «плавающие» анимации:
-   парение чипов, «дыхание» фона, вращение колец, бегущая строка,
-   пульсации и свечения. Контент остаётся неподвижным при касании. */
+   парение чипов, «дыхание» фона, бегущая строка, пульсации и свечения.
+   ВАЖНО: круговые элементы hero-визуала (.orbit-spin, .orbit-spin-rev,
+   .spin-slow, .breathe) вращаются и на мобильных — графический элемент
+   должен быть полностью идентичен десктопной версии. */
 @media (pointer: coarse), (hover: none) {
-  .floaty, .floaty-slow, .breathe, .orbit-spin, .orbit-spin-rev, .spin-slow,
+  .floaty, .floaty-slow,
   .marquee-track-l, .ink-pulse, .sheen-sweep, .max-glow, .max-glow-strong,
   .animate-ping {
     animation: none !important;
