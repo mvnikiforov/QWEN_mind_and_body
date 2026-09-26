@@ -19,6 +19,9 @@
 html {
   scroll-behavior: smooth;
   scroll-padding-top: 96px;
+  /* страница жёстко в границах экрана: горизонтальный сдвиг запрещён */
+  overflow-x: hidden;
+  overscroll-behavior-x: none; /* отключаем «резиновый» боковой свайп (iOS) */
 }
 
 body {
@@ -27,6 +30,15 @@ body {
   font-family: var(--font-body);
   -webkit-font-smoothing: antialiased;
   overflow-x: hidden;
+  width: 100%;
+  max-width: 100vw;
+  overscroll-behavior-x: none;
+}
+
+/* страховка: ничего не должно вылезать за ширину вьюпорта */
+#root {
+  overflow-x: clip;
+  max-width: 100vw;
 }
 
 ::selection {
