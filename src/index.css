@@ -120,6 +120,17 @@ main, footer { padding-left: var(--safe-left); padding-right: var(--safe-right);
 .orbit-spin { animation: orbit-spin 28s linear infinite; transform-origin: 50% 50%; }
 .orbit-spin-rev { animation: orbit-spin-rev 46s linear infinite; transform-origin: 50% 50%; }
 
+/* смена фраз над hero-визуалом: цикл 10с = проявление (1.2с) →
+   стояние (2.8с) → растворение (1.2с) → пауза (4.8с, пока видна другая фраза);
+   вторая фраза запускается с задержкой в половину цикла */
+@keyframes phrase-cycle {
+  0%, 10% { opacity: 0; transform: translateY(7px); filter: blur(3px); }
+  24%, 76% { opacity: 1; transform: translateY(0); filter: blur(0); }
+  90%, 100% { opacity: 0; transform: translateY(-7px); filter: blur(3px); }
+}
+.phrase-cycle { animation: phrase-cycle 10s ease-in-out infinite both; }
+.phrase-cycle-delayed { animation: phrase-cycle 10s ease-in-out 5s infinite both; }
+
 .breathe { animation: breathe 8s ease-in-out infinite; }
 .marquee-track-l { animation: marquee-l 80s linear infinite; }
 .floaty { animation: floaty 9s ease-in-out infinite; }
@@ -192,9 +203,12 @@ main, footer { padding-left: var(--safe-left); padding-right: var(--safe-right);
   html { scroll-behavior: auto; }
   .reveal { opacity: 1 !important; transform: none !important; transition: none !important; }
   .breathe, .marquee-track-l, .floaty, .spin-slow, .fadeup, .flash-ring, .ink-pulse,
-  .orbit-spin, .orbit-spin-rev, .sheen-sweep, .max-glow, .max-glow-strong {
+  .orbit-spin, .orbit-spin-rev, .sheen-sweep, .max-glow, .max-glow-strong,
+  .phrase-cycle, .phrase-cycle-delayed {
     animation: none !important;
   }
+  /* без анимации показываем только первую фразу (иначе обе наложатся друг на друга) */
+  .phrase-cycle-delayed { display: none; }
   .animate-ping { animation: none !important; }
   * { transition-duration: 0.01ms !important; }
 }

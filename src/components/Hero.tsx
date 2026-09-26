@@ -39,16 +39,41 @@ function OrbitRing() {
   );
 }
 
+/* Над верхней границей круга — сменяющиеся фразы-подписи («гештальт-терапия»
+   и «мультикультурный подход»): появляются и исчезают по очереди, CSS-анимация
+   phrase-cycle (см. index.css). Блок центрирован по горизонтали относительно
+   круга; нижний край блока отстоит от верха орбитального кольца на ~3.5% ширины. */
+const PHRASES = ["гештальт-терапия", "мультикультурный подход"];
+
+function PhraseCycle() {
+  return (
+    <div className="pointer-events-none absolute inset-x-0 bottom-full z-10 mb-[3.5%] flex justify-center" aria-hidden>
+      {/* нулевой по высоте контейнер — обе фразы занимают одно место,
+          видимость переключает анимация */}
+      <div className="relative h-0 w-0">
+        <span className="phrase-cycle absolute bottom-0 left-1/2 -translate-x-1/2 whitespace-nowrap font-display text-[clamp(13px,1.6vw,17px)] font-medium uppercase tracking-[0.28em] text-gold-deep">
+          {PHRASES[0]}
+        </span>
+        <span className="phrase-cycle-delayed absolute bottom-0 left-1/2 -translate-x-1/2 whitespace-nowrap font-display text-[clamp(13px,1.6vw,17px)] font-medium uppercase tracking-[0.28em] text-gold-deep">
+          {PHRASES[1]}
+        </span>
+      </div>
+    </div>
+  );
+}
+
 /* Визуал — круг целостности: дышащий градиент, фото и вращающиеся кольца.
    Вынесен в отдельный компонент, чтобы его можно было разместить в двух местах:
    на мобильных — сразу после заголовка hero,
    на десктопе — в правой колонке сетки hero.
-   scale — дополнительный масштаб (на мобильных чуть уменьшен, чтобы все
-   выступающие круговые элементы гарантированно помещались в границы экрана).
+   scale — дополнительный масштаб (на мобильных уменьшен сильнее, чтобы вместе
+   с фразами над кругом весь элемент гарантированно помещался в границы экрана).
    Точная геометрия выступающих частей (в долях ширины круга W):
    - кольцо-орбита: inset -8%, пунктир r=49.3/50 → край кольца ≈ 49.73%·W;
-   - «дышащий» фон: inset -7% + scale(1.05) → 2.5% сверху и снизу.
-   Отступы ниже подобраны так, чтобы весь элемент (кольца)
+   - «дышащий» фон: inset -7% + scale(1.05) → 2.5% сверху и снизу;
+   - фразы над кругом: занимают полосу ≈ от -26% до -14% от верха круга
+     (отступ mb-[3.5%] от верхней границы орбиты + высота строки ~12%·W).
+   Отступы ниже подобраны так, чтобы весь элемент (кольца + фразы)
    целиком оставался внутри границ сайта, а все круги имели общий центр. */
 function HeroVisual({
   className,
@@ -65,8 +90,9 @@ function HeroVisual({
       style={{ ...wrapperStyle } as CSSProperties}
     >
       {/* вертикальный резерв: только для мобильной копии (scale < 1);
+          сверху — с запасом под фразы над кругом;
           на десктопе отступы не нужны — там достаточно места в колонке */}
-      {scale !== 1 && <div aria-hidden className="pt-[13%]" />}
+      {scale !== 1 && <div aria-hidden className="pt-[28%]" />}
       <div
         className={`aspect-square transition-transform duration-500 ease-out ${className ?? ""}`}
         style={{ transform: `scale(${scale}) translate(calc(var(--px, 0) * 16px), calc(var(--py, 0) * 16px))` }}
@@ -83,6 +109,9 @@ function HeroVisual({
 
         {/* вращающееся пунктирное кольцо с золотыми точками и дугой */}
         <OrbitRing />
+
+        {/* сменяющиеся фразы над верхней границей элемента */}
+        <PhraseCycle />
       </div>
       {scale !== 1 && <div aria-hidden className="pb-[12%]" />}
     </div>
@@ -118,7 +147,7 @@ export default function Hero() {
         <div className="absolute top-1/2 -left-40 h-[420px] w-[420px] rounded-full bg-[#e7e3d8] blur-3xl" />
       </div>
 
-      <div className="relative mx-auto max-w-7xl px-5 sm:px-8">
+      <div className="relative mx-auto max-w-7xl px-5 pt-10 sm:px-8">
         <div className="grid items-center gap-16 lg:grid-cols-12">
           {/* Текст */}
           <div className="lg:col-span-7">
@@ -140,14 +169,14 @@ export default function Hero() {
             {/* Мобильная версия: круговые эффекты сразу после заголовка
                 «Провожу сквозь лабиринты ума и тела — к тишине, опоре и созидательной силе».
                 Полностью идентичны десктопной версии: общий центр всех колец,
-                вращение (пунктирное кольцо с точками, золотая дуга).
-                Горизонталь: width = 100% − 2·gutter; при scale 0.9 выступ
+                вращение (пунктирное кольцо с точками, золотая дуга), фразы над кругом.
+                Горизонталь: width = 100% − 2·gutter; при scale 0.8 выступ
                 колец с запасом помещается в боковые поля px-5, поэтому весь
                 элемент целиком остаётся внутри границ сайта слева и справа.
                 На десктопе скрыт (визуал — в правой колонке сетки ниже) */}
             <div className="fadeup lg:hidden" style={{ animationDelay: "160ms" }}>
               <HeroVisual
-                scale={0.9}
+                scale={0.8}
                 wrapperStyle={{ width: "min(calc(100% - 2.5rem), calc(100vw - 4.5rem))" }}
               />
             </div>
