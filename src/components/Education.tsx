@@ -1,14 +1,7 @@
 import { IconCare } from "./icons";
 import { Reveal, SectionHead } from "./ui";
+import { EDUCATION } from "../content/education";
 
-const EDUCATION = [
-  { place: "МГППУ", title: "Магистрант-этнопсихолог — «Мультикультурное психологическое консультирование»", note: "обучаюсь сейчас" },
-  { place: "МИГИП", title: "Гештальт-практик", note: "текущее обучение" },
-  { place: "20+ лет", title: "Личная практика трансперсональных методов", note: "телесные, дыхательные, медитативные техники" },
-  { place: "Сертификат", title: "Инструктор интегративной кундалини-йоги", note: "" },
-  { place: "Сертификат", title: "Тренер ДАО-практик", note: "" },
-  { place: "Постоянно", title: "Супервизия и личная терапия", note: "гарантия этичности" },
-];
 
 export default function Education() {
   return (

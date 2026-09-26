@@ -88,3 +88,77 @@ export function prefillService(title: string, price: string) {
   window.dispatchEvent(new CustomEvent("prefill-service", { detail: { title, price } }));
   document.getElementById("contact")?.scrollIntoView({ behavior: "smooth" });
 }
+
+/* ---------- примитивы форм (общие для публичной формы и админ-панели) ---------- */
+
+export const CHEVRON_DOWN = "m6 9.5 6 6 6-6";
+
+/* Поле ввода с подписью; className позволяет подстроить размеры под контекст */
+export function Field({
+  label,
+  smallLabel,
+  className = "",
+  labelClassName = "",
+  children,
+}: {
+  label?: ReactNode;
+  smallLabel?: boolean;
+  className?: string;
+  labelClassName?: string;
+  children: ReactNode;
+}) {
+  return (
+    <label className={`block min-w-0 ${className}`}>
+      {label && (
+        <span
+          className={`${smallLabel ? "mb-1 block text-[11px] font-extrabold uppercase tracking-wide" : "mb-2 block text-[10.5px] sm:text-[11.5px] font-extrabold uppercase tracking-[0.12em] leading-snug"} text-ink-soft ${labelClassName}`}
+        >
+          {label}
+        </span>
+      )}
+      {children}
+    </label>
+  );
+}
+
+/* Нативный select со стилизованной стрелкой и плейсхолдером */
+export function Select({
+  value,
+  onChange,
+  options,
+  placeholder,
+  className = "",
+}: {
+  value: string;
+  onChange: (v: string) => void;
+  options: { value: string; label: string }[];
+  placeholder?: string;
+  className?: string;
+}) {
+  return (
+    <span className="relative block">
+      <select
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        className={`w-full cursor-pointer appearance-none pr-12 text-left ${value ? "text-ink" : "text-ink-faint"} ${className}`}
+      >
+        {placeholder !== undefined && <option value="">{placeholder}</option>}
+        {options.map((o) => (
+          <option key={o.value} value={o.value} className="bg-card text-ink">
+            {o.label}
+          </option>
+        ))}
+      </select>
+      <svg
+        className="pointer-events-none absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2 text-ink-faint"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2.2"
+        strokeLinecap="round"
+      >
+        <path d={CHEVRON_DOWN} />
+      </svg>
+    </span>
+  );
+}

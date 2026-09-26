@@ -2,7 +2,7 @@ import { useEffect, useState, type FormEvent, type ReactNode } from "react";
 import { useStore } from "../lib/store";
 import { createOrder, fmtPrice, type OrderForm } from "../lib/db";
 import { IconCheck, IconMax, IconPhone, IconSend, IconVk, YinYang } from "./icons";
-import { Reveal, SectionHead } from "./ui";
+import { Field, Reveal, Select as UiSelect, SectionHead } from "./ui";
 
 /* ================= ФОРМА ЗАПИСИ ================= */
 
@@ -22,35 +22,29 @@ const initialForm = {
 
 const FIELD =
   "w-full min-h-[52px] sm:min-h-[58px] rounded-[14px] border border-line bg-card px-4 sm:px-5 py-3.5 sm:py-4 text-[15px] sm:text-[16px] font-medium leading-snug outline-none transition-all placeholder:text-ink-faint placeholder:leading-snug focus:border-gold focus:ring-4 focus:ring-gold/20";
-const LABEL = "mb-2 block text-[10.5px] sm:text-[11.5px] font-extrabold uppercase tracking-[0.12em] leading-snug text-ink-soft";
 const AREA = `${FIELD} resize-y`;
 
-function Select({ value, onChange, options, label, placeholder }: {
+/* Строка «метка + поле» для публичной формы */
+function Q({ label, className = "", children }: { label: string; className?: string; children: ReactNode }) {
+  return (
+    <Field label={label} className={className}>
+      {children}
+    </Field>
+  );
+}
+
+/* Выбор из списка для анкеты (общий Ui.Select + метка) */
+function QuestionSelect({ label, value, onChange, options, placeholder }: {
+  label: string;
   value: string;
   onChange: (v: string) => void;
   options: string[];
-  label: string;
   placeholder: string;
 }) {
   return (
-    <label className="block min-w-0">
-      <span className={LABEL}>{label}</span>
-      <span className="relative block">
-        <select
-          value={value}
-          onChange={(e) => onChange(e.target.value)}
-          className={`${FIELD} w-full cursor-pointer appearance-none pr-12 text-left ${value ? "text-ink" : "text-ink-faint"}`}
-        >
-          <option value="">{placeholder}</option>
-          {options.map((o) => (
-            <option key={o} value={o} className="bg-card text-ink">
-              {o}
-            </option>
-          ))}
-        </select>
-        <svg className="pointer-events-none absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2 text-ink-faint" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round"><path d="m6 9.5 6 6 6-6" /></svg>
-      </span>
-    </label>
+    <Q label={label}>
+      <UiSelect value={value} onChange={onChange} options={options.map((o) => ({ value: o, label: o }))} placeholder={placeholder} className={FIELD} />
+    </Q>
   );
 }
 
@@ -163,30 +157,29 @@ function ContactForm() {
 
       {/* Основные поля */}
       <div className="mt-6 grid gap-4 sm:grid-cols-2">
-        <label className="block">
-          <span className={LABEL}>Имя *</span>
+        <Q label="Имя *">
           <input value={name} onChange={(e) => setName(e.target.value)} placeholder="Как к вам обращаться"
             className={`${FIELD} ${errors.name ? "!border-[#c06b4a] ring-4 ring-[#c06b4a]/15" : ""}`} />
-        </label>
-        <label className="block">
-          <span className={LABEL}>Контакт (телефон / email / мессенджер) *</span>
+        </Q>
+        <Q label="Контакт (телефон / email / мессенджер) *">
           <input value={contact} onChange={(e) => setContact(e.target.value)} placeholder="+7 …, @…"
             className={`${FIELD} ${errors.contact ? "!border-[#c06b4a] ring-4 ring-[#c06b4a]/15" : ""}`} />
-        </label>
-        <label className="block sm:col-span-2">
-          <span className={LABEL}>Услуга / мероприятие *</span>
-          <span className="relative block">
-            <select value={service} onChange={(e) => { const key = e.target.value; setService(key); const [sid, vid] = key.split(":"); const va = db.services.find((s) => s.id === sid)?.variants.find((x) => x.id === vid); setPrice(va ? fmtPrice(va.price) + (va.priceUnit ? " " + va.priceUnit : "") : ""); }}
-              className={`${FIELD} w-full cursor-pointer appearance-none pr-12 ${service ? "text-ink" : "text-ink-faint"} ${errors.service ? "!border-[#c06b4a] ring-4 ring-[#c06b4a]/15" : ""}`}>
-              <option value="">Выберите услугу или мероприятие</option>
-              {serviceOptions.map((o) => (
-                <option key={o.key} value={o.key} className="bg-card text-ink">{o.label}</option>
-              ))}
-            </select>
-            <svg className="pointer-events-none absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2 text-ink-faint" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round"><path d="m6 9.5 6 6 6-6" /></svg>
-          </span>
+        </Q>
+        <Q label="Услуга / мероприятие *" className="sm:col-span-2">
+          <UiSelect
+            value={service}
+            onChange={(key) => {
+              setService(key);
+              const [sid, vid] = key.split(":");
+              const va = db.services.find((s) => s.id === sid)?.variants.find((x) => x.id === vid);
+              setPrice(va ? fmtPrice(va.price) + (va.priceUnit ? " " + va.priceUnit : "") : "");
+            }}
+            options={serviceOptions.map((o) => ({ value: o.key, label: o.label }))}
+            placeholder="Выберите услугу или мероприятие"
+            className={`${FIELD} ${errors.service ? "!border-[#c06b4a] ring-4 ring-[#c06b4a]/15" : ""}`}
+          />
           {price && <span className="mt-1.5 inline-block rounded-full bg-gold/12 px-3 py-1 text-[11.5px] font-extrabold text-gold-deep">{price}</span>}
-        </label>
+        </Q>
       </div>
       {(errors.name || errors.contact || errors.service) && (
         <p className="fadeup mt-3 text-[12.5px] font-bold text-[#a8522f]">Пожалуйста, заполните поля, отмеченные *</p>
@@ -196,33 +189,39 @@ function ContactForm() {
       <div className="mt-8 border-t border-dashed border-line pt-7">
         <p className="text-[11px] font-extrabold tracking-[0.24em] uppercase text-gold-deep">Мини-анкета · необязательно</p>
         <div className="mt-5 grid gap-4 sm:grid-cols-3">
-          <label className="block"><span className={LABEL}>Город проживания</span>
-            <input value={form.city} onChange={(e) => set({ city: e.target.value })} placeholder="Город" className={FIELD} /></label>
-          <Select label="Пол" value={form.gender} onChange={(v) => set({ gender: v })} options={["Женский", "Мужской"]} placeholder="—" />
-          <label className="block"><span className={LABEL}>Возраст</span>
-            <input type="number" min={14} max={100} value={form.age} onChange={(e) => set({ age: e.target.value })} placeholder="—" className={FIELD} /></label>
+          <Q label="Город проживания">
+            <input value={form.city} onChange={(e) => set({ city: e.target.value })} placeholder="Город" className={FIELD} />
+          </Q>
+          <QuestionSelect label="Пол" value={form.gender} onChange={(v) => set({ gender: v })} options={["Женский", "Мужской"]} placeholder="—" />
+          <Q label="Возраст">
+            <input type="number" min={14} max={100} value={form.age} onChange={(e) => set({ age: e.target.value })} placeholder="—" className={FIELD} />
+          </Q>
         </div>
         <div className="mt-5 grid gap-5 sm:grid-cols-2">
-          <label className="block"><span className={LABEL}>Опыт терапевтической работы</span>
-            <textarea rows={2} value={form.therapyExp} onChange={(e) => set({ therapyExp: e.target.value })} placeholder="Проходили ли личную терапию? В каком подходе, как долго?" className={AREA} /></label>
-          <label className="block"><span className={LABEL}>Опыт телесных практик</span>
-            <textarea rows={2} value={form.bodyExp} onChange={(e) => set({ bodyExp: e.target.value })} placeholder="Йога, дыхание, медитация — как давно и регулярно?" className={AREA} /></label>
+          <Q label="Опыт терапевтической работы">
+            <textarea rows={2} value={form.therapyExp} onChange={(e) => set({ therapyExp: e.target.value })} placeholder="Проходили ли личную терапию? В каком подходе, как долго?" className={AREA} />
+          </Q>
+          <Q label="Опыт телесных практик">
+            <textarea rows={2} value={form.bodyExp} onChange={(e) => set({ bodyExp: e.target.value })} placeholder="Йога, дыхание, медитация — как давно и регулярно?" className={AREA} />
+          </Q>
         </div>
         <div className="mt-5 grid gap-5 sm:grid-cols-2">
-          <Select label="Психические заболевания" value={form.mental} onChange={(v) => set({ mental: v })} options={["Нет", "Да (укажите в комментарии)", "Не готов(а) отвечать"]} placeholder="Выберите ответ" />
-          <Select label="Эпилепсия / судорожные состояния" value={form.epilepsy} onChange={(v) => set({ epilepsy: v })} options={["Нет", "Да (укажите в комментарии)", "Не знаю"]} placeholder="Выберите ответ" />
-          <Select label="Операции за последние полгода" value={form.surgery} onChange={(v) => set({ surgery: v })} options={["Нет", "Да (укажите в комментарии)"]} placeholder="Выберите ответ" />
-          <Select label="Грыжи позвоночника, проблемы с ОДА" value={form.hernia} onChange={(v) => set({ hernia: v })} options={["Нет", "Да (укажите в комментарии)", "Не знаю"]} placeholder="Выберите ответ" />
+          <QuestionSelect label="Психические заболевания" value={form.mental} onChange={(v) => set({ mental: v })} options={["Нет", "Да (укажите в комментарии)", "Не готов(а) отвечать"]} placeholder="Выберите ответ" />
+          <QuestionSelect label="Эпилепсия / судорожные состояния" value={form.epilepsy} onChange={(v) => set({ epilepsy: v })} options={["Нет", "Да (укажите в комментарии)", "Не знаю"]} placeholder="Выберите ответ" />
+          <QuestionSelect label="Операции за последние полгода" value={form.surgery} onChange={(v) => set({ surgery: v })} options={["Нет", "Да (укажите в комментарии)"]} placeholder="Выберите ответ" />
+          <QuestionSelect label="Грыжи позвоночника, проблемы с ОДА" value={form.hernia} onChange={(v) => set({ hernia: v })} options={["Нет", "Да (укажите в комментарии)", "Не знаю"]} placeholder="Выберите ответ" />
         </div>
         {form.gender !== "Мужской" && (
           <div className="mt-5 sm:max-w-[calc(50%-10px)]">
-            <Select label="Беременность (для женщин)" value={form.pregnancy} onChange={(v) => set({ pregnancy: v })} options={["Нет", "Да"]} placeholder="Выберите ответ" />
+            <QuestionSelect label="Беременность (для женщин)" value={form.pregnancy} onChange={(v) => set({ pregnancy: v })} options={["Нет", "Да"]} placeholder="Выберите ответ" />
           </div>
         )}
-        <label className="mt-5 block"><span className={LABEL}>Что привело вас? Основной запрос</span>
-          <textarea rows={4} value={form.request} onChange={(e) => set({ request: e.target.value })} placeholder="Пара слов о том, что сейчас важно" className={AREA} /></label>
-        <label className="mt-5 block"><span className={LABEL}>Комментарий</span>
-          <textarea rows={3} value={comment} onChange={(e) => setComment(e.target.value)} placeholder="Дополнительная информация, которую считаете важной" className={AREA} /></label>
+        <Q label="Что привело вас? Основной запрос" className="mt-5">
+          <textarea rows={4} value={form.request} onChange={(e) => set({ request: e.target.value })} placeholder="Пара слов о том, что сейчас важно" className={AREA} />
+        </Q>
+        <Q label="Комментарий" className="mt-5">
+          <textarea rows={3} value={comment} onChange={(e) => setComment(e.target.value)} placeholder="Дополнительная информация, которую считаете важной" className={AREA} />
+        </Q>
         <p className="mt-4 text-[12px] leading-relaxed text-ink-faint">
           Эти вопросы помогают мне лучше понять вашу ситуацию, исключить противопоказания и подобрать
           наиболее безопасные и эффективные практики. Если какой-то вопрос вызывает дискомфорт, его
@@ -318,106 +317,6 @@ export function ContactSection() {
           <Reveal delay={160} className="lg:col-span-8">
             <ContactForm />
           </Reveal>
-        </div>
-      </div>
-    </section>
-  );
-}
-
-/* ================= FAQ ================= */
-
-const FAQS: { q: string; a: string }[] = [
-  {
-    q: "Как проходит первая терапевтическая сессия?",
-    a: "В классической гештальт-терапии первая встреча — это прежде всего знакомство. Мы не гонимся за «решением всех проблем» за один час. Я внимательно слушаю вас, помогаю сформулировать, что сейчас для вас важно, что привело ко мне. Мы исследуем, как вы чувствуете себя в моменте, что происходит между нами, какие чувства и телесные ощущения возникают. Это бережный, неторопливый процесс, в котором вы постепенно начинаете лучше понимать себя. Уже к концу первой сессии часто появляется больше ясности и ощущение, что вас услышали по-настоящему.",
-  },
-  {
-    q: "Конфиденциально ли?",
-    a: "Да, абсолютно. Всё, чем вы делитесь на сессиях, остаётся строго между нами. Я работаю в соответствии с этическими принципами психологического консультирования и дорожу вашим доверием. Исключения возможны только в крайних, предусмотренных законом случаях, когда есть реальная угроза жизни или безопасности — но даже тогда я буду действовать максимально бережно и открыто.",
-  },
-  {
-    q: "Какова разница работы в онлайне?",
-    a: "По сути, разница только в формате: мы встречаемся по видеосвязи. Глубина и качество работы не снижаются. Более того, многим клиентам онлайн-формат даже помогает: находясь дома, в привычной и безопасной обстановке, проще расслабиться и открыться. Не нужно тратить время на дорогу, можно выбрать удобное место, надеть уютную одежду и быть максимально собой. Из любой точки мира вы можете получить поддержку.",
-  },
-  {
-    q: "Сколько длится терапия?",
-    a: "Терапия — это мягкий и бережный процесс, и у каждого он идёт в своём темпе. Кому-то достаточно нескольких встреч, чтобы прояснить конкретную ситуацию и сбросить напряжение. А кто-то выбирает длительную работу, чтобы сформировать новые привычки, обрести устойчивость. В гештальт-подходе мы не гонимся за быстрыми результатами, а уважаем естественный ритм человека. Постепенно, шаг за шагом, вы начинаете лучше понимать себя, свои чувства и потребности. Завершение терапии — тоже важный этап, и мы обсуждаем его вместе.",
-  },
-  {
-    q: "Как часто нужны терапевтические сессии?",
-    a: "В гештальт-терапии оптимальный ритм — одна сессия в неделю. Это позволяет сохранять глубину и непрерывность процесса, не перегружая психику. Иногда, в периоды острого кризиса, возможны две встречи в неделю, но это обсуждается индивидуально. Сессии раз в две недели — поддерживающий формат встреч. Главное — регулярность: именно она создаёт безопасное пространство, в котором происходят устойчивые изменения.",
-  },
-  {
-    q: "Чем выгоден абонемент?",
-    a: "Абонемент — это не только экономия, хотя и она важна. Главное — регулярность. Психике нужна определённость и ритм: когда вы знаете, что каждую неделю (или по выбранному графику) у вас есть пространство для себя, это само по себе даёт опору. Регулярные встречи позволяют глубже продвигаться в работе, закреплять изменения и не «выпадать» из процесса. Финансово же абонемент на 10 терапевтических сессий стоит 25 000 ₽ вместо 30 000 ₽ — одна встреча выходит 2 500 ₽. На групповые практики ПРО|БАЛАНС — абонемент на 4 встречи: 1 700 ₽/практика вместо 2 000 ₽ разового посещения. На терапевтическую мини-группу — 4 встречи за 8 000 ₽ (2 000 ₽ вместо 2 500 ₽).",
-  },
-  {
-    q: "Что входит в пакет 10 сессий?",
-    a: "Это 10 индивидуальных терапевтических встреч, которые мы выстраиваем под ваш запрос и состояние. Работа всегда индивидуальна: где-то мы можем идти классическим путём гештальт-терапии — через разговор, осознавание чувств и контакт; где-то, если это уместно и бережно, добавляю более глубокую работу на уровне тела. Я использую интегративный подход, который учитывает все уровни: тело, чувства, разум и дух. Это помогает не просто «поговорить», а прожить и отпустить то, что застряло внутри.",
-  },
-  {
-    q: "Нужна ли подготовка для групповых практик ПРО|БАЛАНС?",
-    a: "Особой физической подготовки не требуется — приходите с тем, что есть. Одежда нужна удобная, как для йоги: чтобы ничего не сковывало движения. И обязательно возьмите с собой тёплую кофточку и носочки — во время медитаций и расслабления тело может остывать, а вам должно быть тепло и уютно. Всё остальное я подскажу на месте. Главное — ваше желание побыть в заботе о себе.",
-  },
-  {
-    q: "Учитываете ли вы мои религиозные или культурные особенности?",
-    a: "Да, обязательно. Я работаю в модальности мультикультурного психологического консультирования — для меня важно, чтобы вы чувствовали, что ваши ценности, традиции и убеждения уважаются. Я никогда не навязываю чуждые взгляды. Наоборот, помогаю вам найти опору внутри вашей собственной картины мира, бережно сопровождая в том, что для вас по-настоящему важно. Если вы живёте на стыке культур, состоите в межкультурных отношениях или переживаете конфликт ценностей, — вы получите поддержку, уважающую вашу идентичность.",
-  },
-  {
-    q: "Зачем нужна анкета?",
-    a: "Анкета позволяет мне заранее узнать о вашем опыте и состоянии здоровья, чтобы сделать практику безопасной и эффективной. Например, при эпилепсии, недавних операциях или грыжах некоторые техники могут быть противопоказаны, поэтому я подберу альтернативу. Это забота о вас: чем лучше я понимаю вашу ситуацию до встречи, тем бережнее и точнее смогу выстроить нашу работу.",
-  },
-  {
-    q: "Чем ваш подход отличается от других?",
-    a: "Мой подход — интегративный. Я смотрю на человека не как на «проблему», которую нужно починить, а как на целостную, многомерную систему. Мы постепенно, бережно раскрываем уровни тела, чувств, разума и духа. Это не быстрые техники «как избавиться от тревоги за один раз», а мягкий, глубокий процесс роста, в котором каждый шаг опирается на предыдущий. Цель — не просто убрать симптом, а помочь вам стать более осознанным, живым и целостным. Мой личный опыт трансперсональных практик и знание гештальта соединяются, чтобы создать пространство, где изменения происходят естественно и уважительно к вашему темпу.",
-  },
-];
-
-export function FaqSection() {
-  const [open, setOpen] = useState<number | null>(0);
-
-  return (
-    <section id="faq" className="relative py-20 sm:py-28">
-      <div className="mx-auto max-w-4xl px-5 sm:px-8">
-        <SectionHead
-          kicker="FAQ"
-          title={
-            <>
-              Частые <span className="italic text-gold-deep">вопросы</span>
-            </>
-          }
-          sub="Нажмите на вопрос — ответ раскроется. Если не нашли своего, просто спросите в мессенджере."
-        />
-
-        <div className="mt-12 space-y-3">
-          {FAQS.map((f, i) => {
-            const on = open === i;
-            return (
-              <Reveal key={f.q} delay={Math.min(i * 60, 300)}>
-                <div className={`overflow-hidden rounded-[22px] border transition-colors duration-500 ${on ? "border-ink/40" : "border-line"}`}>
-                  <button
-                    onClick={() => setOpen(on ? null : i)}
-                    aria-expanded={on}
-                    className="flex w-full items-center gap-5 bg-card px-6 py-5 text-left transition-colors hover:bg-stone/50 sm:px-8"
-                  >
-                    <span className={`font-display text-[17px] font-medium transition-colors sm:text-[19px] ${on ? "text-gold-deep" : ""}`}>
-                      {f.q}
-                    </span>
-                    <span className={`ml-auto grid h-9 w-9 shrink-0 place-items-center rounded-full border transition-all duration-500 ${on ? "rotate-45 border-ink bg-ink text-card" : "border-ink/20 text-ink"}`}>
-                      <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"><path d="M12 5v14M5 12h14" /></svg>
-                    </span>
-                  </button>
-                  <div className={`acc-body ${on ? "open" : ""}`}>
-                    <div className="acc-inner">
-                      <p className="mx-3 mb-3 rounded-[16px] bg-stone/80 px-6 py-5 text-[14.5px] leading-relaxed text-ink backdrop-blur-sm">
-                        {f.a}
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              </Reveal>
-            );
-          })}
         </div>
       </div>
     </section>

@@ -10,7 +10,8 @@ import Education from "./components/Education";
 import Schedule from "./components/Schedule";
 import Journey from "./components/Journey";
 import ChannelFeed from "./components/ChannelFeed";
-import { ContactSection, FaqSection } from "./components/Contact";
+import { ContactSection } from "./components/Contact";
+import { FaqSection } from "./components/Faq";
 import Footer from "./components/Footer";
 import AdminApp from "./admin/AdminApp";
 
