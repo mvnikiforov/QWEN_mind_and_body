@@ -120,16 +120,30 @@ main, footer { padding-left: var(--safe-left); padding-right: var(--safe-right);
 .orbit-spin { animation: orbit-spin 28s linear infinite; transform-origin: 50% 50%; }
 .orbit-spin-rev { animation: orbit-spin-rev 46s linear infinite; transform-origin: 50% 50%; }
 
-/* смена фраз над hero-визуалом: цикл 10с = проявление (1.2с) →
-   стояние (2.8с) → растворение (1.2с) → пауза (4.8с, пока видна другая фраза);
-   вторая фраза запускается с задержкой в половину цикла */
-@keyframes phrase-cycle {
-  0%, 10% { opacity: 0; transform: translateY(7px); filter: blur(3px); }
-  24%, 76% { opacity: 1; transform: translateY(0); filter: blur(0); }
-  90%, 100% { opacity: 0; transform: translateY(-7px); filter: blur(3px); }
+/* смена фраз над hero-визуалом: фразы появляются строго по очереди —
+   сначала «гештальт-терапия», затем «мультикультурный подход».
+   Полный цикл 6с, по 3с на каждую фразу.
+   Прежняя схема (3s + задержка 3s) давала наложение: в конце каждого
+   цикла браузер перезапускает анимации обеих фраз одновременно, и они
+   проявлялись вместе. Теперь у каждой фразы своя keyframes-дорожка
+   внутри одного общего 6-секундного цикла:
+   фраза 1 видима на интервале 0–3с (проявление → удержание → гаснение),
+   фраза 2 — на интервале 3–6с. Вне своего интервала opacity жёстко = 0,
+   поэтому пересечения во времени нет никогда. */
+@keyframes phrase-a {
+  0%        { opacity: 0; transform: translateY(7px); filter: blur(3px); }
+  25%       { opacity: 1; transform: translateY(0);   filter: blur(0); }
+  41.667%   { opacity: 1; transform: translateY(0);   filter: blur(0); }
+  50%,100%  { opacity: 0; transform: translateY(-7px); filter: blur(3px); }
 }
-.phrase-cycle { animation: phrase-cycle 10s ease-in-out infinite both; }
-.phrase-cycle-delayed { animation: phrase-cycle 10s ease-in-out 5s infinite both; }
+@keyframes phrase-b {
+  0%,50%    { opacity: 0; transform: translateY(7px); filter: blur(3px); }
+  75%       { opacity: 1; transform: translateY(0);   filter: blur(0); }
+  91.667%   { opacity: 1; transform: translateY(0);   filter: blur(0); }
+  100%      { opacity: 0; transform: translateY(-7px); filter: blur(3px); }
+}
+.phrase-cycle { animation: phrase-a 6s ease-in-out infinite both; }
+.phrase-cycle-delayed { animation: phrase-b 6s ease-in-out infinite both; }
 
 .breathe { animation: breathe 8s ease-in-out infinite; }
 .marquee-track-l { animation: marquee-l 80s linear infinite; }
