@@ -120,16 +120,20 @@ main, footer { padding-left: var(--safe-left); padding-right: var(--safe-right);
 .orbit-spin { animation: orbit-spin 28s linear infinite; transform-origin: 50% 50%; }
 .orbit-spin-rev { animation: orbit-spin-rev 46s linear infinite; transform-origin: 50% 50%; }
 
-/* смена фраз над hero-визуалом: цикл 10с = проявление (1.2с) →
-   стояние (2.8с) → растворение (1.2с) → пауза (4.8с, пока видна другая фраза);
-   вторая фраза запускается с задержкой в половину цикла */
+/* смена фраз над hero-визуалом: полный цикл 16с на две фразы, т.е. 8с на фразу:
+   проявление из невидимого состояния — ровно 3с (0–37.5%),
+   стояние полностью видимой — 2с (37.5–62.5%),
+   растворение до невидимости — 3с (62.5–100%).
+   Вторая фраза стартует с задержкой в половину цикла (8с): она начинает
+   проявляться только после того, как первая полностью погасла, —
+   наложения фраз друг на друга нет (в моменты стыка обе невидимы). */
 @keyframes phrase-cycle {
-  0%, 10% { opacity: 0; transform: translateY(7px); filter: blur(3px); }
-  24%, 76% { opacity: 1; transform: translateY(0); filter: blur(0); }
-  90%, 100% { opacity: 0; transform: translateY(-7px); filter: blur(3px); }
+  0%     { opacity: 0; transform: translateY(7px); filter: blur(3px); }
+  37.5%, 62.5% { opacity: 1; transform: translateY(0); filter: blur(0); }
+  100%   { opacity: 0; transform: translateY(-7px); filter: blur(3px); }
 }
-.phrase-cycle { animation: phrase-cycle 10s ease-in-out infinite both; }
-.phrase-cycle-delayed { animation: phrase-cycle 10s ease-in-out 5s infinite both; }
+.phrase-cycle { animation: phrase-cycle 8s ease-in-out infinite both; }
+.phrase-cycle-delayed { animation: phrase-cycle 8s ease-in-out 8s infinite both; }
 
 .breathe { animation: breathe 8s ease-in-out infinite; }
 .marquee-track-l { animation: marquee-l 80s linear infinite; }
