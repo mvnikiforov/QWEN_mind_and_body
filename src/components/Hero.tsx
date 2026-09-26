@@ -48,7 +48,7 @@ const PHRASES = ["гештальт-терапия", "мультикультур�
 
 function PhraseCycle() {
   return (
-    <div className="pointer-events-none absolute inset-x-0 bottom-full z-10 mb-[calc(3.5%+10px)] flex justify-center" aria-hidden>
+    <div className="pointer-events-none absolute inset-x-0 bottom-full z-10 mb-[calc(3.5%+30px)] flex justify-center" aria-hidden>
       {/* нулевой по высоте контейнер — обе фразы занимают одно место,
           видимость переключает анимация */}
       <div className="relative h-0 w-0">
