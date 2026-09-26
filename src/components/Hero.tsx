@@ -113,6 +113,33 @@ function OrbitWords() {
   );
 }
 
+/* Визуал — круг целостности: дышащий градиент, кольцо Энсо, фото и орбита слов.
+   Вынесен в отдельный компонент, чтобы его можно было разместить в двух местах:
+   на мобильных — сразу после плашки «Онлайн и очно · Пространство баланса»,
+   на десктопе — в правой колонке сетки hero. */
+function HeroVisual({ className }: { className?: string }) {
+  return (
+    <div
+      className={`relative mx-auto aspect-square w-full max-w-[340px] sm:max-w-[460px] transition-transform duration-500 ease-out ${className ?? ""}`}
+      style={{ transform: "translate(calc(var(--px, 0) * 16px), calc(var(--py, 0) * 16px))" }}
+    >
+      <div className="breathe absolute inset-[-7%] rounded-full bg-[radial-gradient(circle_at_38%_30%,#e9e4d9_0%,#ddd7ca_60%,#d3ccbd_100%)]" />
+      <Enso className="spin-slow absolute inset-[-13%] text-ink/30" strokeWidth={1} />
+      <div className="absolute inset-0 overflow-hidden rounded-full border border-ink/15 shadow-[0_50px_90px_-40px_rgba(35,33,29,0.45)]">
+        <img
+          src={IMG.hero}
+          alt="Инструктор в белом, видна со спины, волосы собраны в пучок — в светлой студии"
+          className="h-full w-full object-cover"
+          loading="eager"
+        />
+      </div>
+
+      {/* вращающееся кольцо со словами */}
+      <OrbitWords />
+    </div>
+  );
+}
+
 export default function Hero() {
   const ref = useRef<HTMLElement>(null);
 
@@ -145,7 +172,7 @@ export default function Hero() {
       <div className="relative mx-auto max-w-7xl px-5 sm:px-8">
         <div className="grid items-center gap-16 lg:grid-cols-12">
           {/* Текст */}
-          <div className="order-2 lg:col-span-7 lg:order-none">
+          <div className="lg:col-span-7">
             {/* Плашка-статус: статичная, без анимации */}
             <div className="flex flex-wrap items-baseline gap-y-2 text-[12.5px] font-bold uppercase leading-relaxed tracking-[0.12em] text-ink-soft md:text-[14.5px] md:tracking-[0.14em] [text-shadow:0_1px_10px_rgba(244,241,234,0.9)]">
               <span>Онлайн и очно</span>
@@ -153,8 +180,15 @@ export default function Hero() {
               <span>Пространство баланса</span>
             </div>
 
+            {/* Мобильная версия: круговые эффекты сразу после плашки статуса —
+                так весь графический элемент с кольцами попадает в первый экран.
+                На десктопе скрыт (визуал — в правой колонке ниже) */}
+            <div className="fadeup pt-[15%] pb-[16%] lg:hidden" style={{ animationDelay: "60ms" }}>
+              <HeroVisual />
+            </div>
+
             <h1
-              className="fadeup mt-8 font-display font-medium text-[clamp(34px,5vw,64px)] leading-[1.05] tracking-[-0.015em]"
+              className="fadeup mt-8 font-display font-medium text-[clamp(34px,5vw,64px)] leading-[1.05] tracking-[-0.015em] lg:mt-0"
               style={{ animationDelay: "100ms" }}
             >
               Провожу сквозь лабиринты ума&nbsp;и&nbsp;тела&nbsp;—{" "}
@@ -208,27 +242,10 @@ export default function Hero() {
             </dl>
           </div>
 
-          {/* Визуал — круг целостности. На мобильных первым, с запасом
-              сверху и снизу: выступающие кольца (Enso inset[-13%]) целиком в кадре */}
-          <div className="order-1 pt-[15%] pb-[16%] lg:col-span-5 lg:order-none lg:pt-0 lg:pb-0">
-            <div
-              className="relative mx-auto aspect-square w-full max-w-[340px] sm:max-w-[460px] transition-transform duration-500 ease-out"
-              style={{ transform: "translate(calc(var(--px, 0) * 16px), calc(var(--py, 0) * 16px))" }}
-            >
-              <div className="breathe absolute inset-[-7%] rounded-full bg-[radial-gradient(circle_at_38%_30%,#e9e4d9_0%,#ddd7ca_60%,#d3ccbd_100%)]" />
-              <Enso className="spin-slow absolute inset-[-13%] text-ink/30" strokeWidth={1} />
-              <div className="absolute inset-0 overflow-hidden rounded-full border border-ink/15 shadow-[0_50px_90px_-40px_rgba(35,33,29,0.45)]">
-                <img
-                  src={IMG.hero}
-                  alt="Инструктор в белом, видна со спины, волосы собраны в пучок — в светлой студии"
-                  className="h-full w-full object-cover"
-                  loading="eager"
-                />
-              </div>
-
-              {/* вращающееся кольцо со словами */}
-              <OrbitWords />
-            </div>
+          {/* Визуал — круг целостности (десктоп). На мобильных скрыт:
+              тот же элемент показан выше, сразу после плашки статуса */}
+          <div className="hidden lg:col-span-5 lg:block">
+            <HeroVisual />
           </div>
         </div>
       </div>
