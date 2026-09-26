@@ -115,7 +115,7 @@ function OrbitWords() {
 
 /* Визуал — круг целостности: дышащий градиент, кольцо Энсо, фото и орбита слов.
    Вынесен в отдельный компонент, чтобы его можно было разместить в двух местах:
-   на мобильных — сразу после плашки «Онлайн и очно · Пространство баланса»,
+   на мобильных — сразу после заголовка hero,
    на десктопе — в правой колонке сетки hero. */
 function HeroVisual({ className }: { className?: string }) {
   return (
@@ -180,13 +180,6 @@ export default function Hero() {
               <span>Пространство баланса</span>
             </div>
 
-            {/* Мобильная версия: круговые эффекты сразу после плашки статуса —
-                так весь графический элемент с кольцами попадает в первый экран.
-                На десктопе скрыт (визуал — в правой колонке ниже) */}
-            <div className="fadeup pt-[15%] pb-[16%] lg:hidden" style={{ animationDelay: "60ms" }}>
-              <HeroVisual />
-            </div>
-
             <h1
               className="fadeup mt-8 font-display font-medium text-[clamp(34px,5vw,64px)] leading-[1.05] tracking-[-0.015em] lg:mt-0"
               style={{ animationDelay: "100ms" }}
@@ -194,6 +187,13 @@ export default function Hero() {
               Провожу сквозь лабиринты ума&nbsp;и&nbsp;тела&nbsp;—{" "}
               <span className="italic text-gold-deep">к тишине, опоре</span> и&nbsp;созидательной силе
             </h1>
+
+            {/* Мобильная версия: круговые эффекты сразу после заголовка
+                «Провожу сквозь лабиринты ума и тела — к тишине, опоре и созидательной силе».
+                На десктопе скрыт (визуал — в правой колонке ниже) */}
+            <div className="fadeup pt-[15%] pb-[16%] lg:hidden" style={{ animationDelay: "160ms" }}>
+              <HeroVisual />
+            </div>
 
             <p className="fadeup mt-7 max-w-xl text-[16px] sm:text-[17px] font-medium leading-relaxed text-ink" style={{ animationDelay: "200ms" }}>
               Распаковка психо-эмоциональных зажимов. Раскрытие внутренних ресурсов — для полноты и яркости жизни.
@@ -243,7 +243,7 @@ export default function Hero() {
           </div>
 
           {/* Визуал — круг целостности (десктоп). На мобильных скрыт:
-              тот же элемент показан выше, сразу после плашки статуса */}
+              тот же элемент показан выше, после заголовка */}
           <div className="hidden lg:col-span-5 lg:block">
             <HeroVisual />
           </div>
