@@ -42,12 +42,13 @@ function OrbitRing() {
 /* Над верхней границей круга — сменяющиеся фразы-подписи («гештальт-терапия»
    и «мультикультурный подход»): появляются и исчезают по очереди, CSS-анимация
    phrase-cycle (см. index.css). Блок центрирован по горизонтали относительно
-   круга; нижний край блока отстоит от верха орбитального кольца на ~3.5% ширины. */
+   круга; нижний край блока отстоит от верха орбитального кольца на ~3.5% ширины
+   плюс фиксированные 10px (дополнительный подъём фраз). */
 const PHRASES = ["гештальт-терапия", "мультикультурный подход"];
 
 function PhraseCycle() {
   return (
-    <div className="pointer-events-none absolute inset-x-0 bottom-full z-10 mb-[3.5%] flex justify-center" aria-hidden>
+    <div className="pointer-events-none absolute inset-x-0 bottom-full z-10 mb-[calc(3.5%+10px)] flex justify-center" aria-hidden>
       {/* нулевой по высоте контейнер — обе фразы занимают одно место,
           видимость переключает анимация */}
       <div className="relative h-0 w-0">
