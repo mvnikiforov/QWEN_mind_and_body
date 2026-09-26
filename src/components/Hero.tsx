@@ -28,8 +28,8 @@ function OrbitWord({
       <span
         className={`absolute left-1/2 top-0 flex items-center gap-1.5 sm:gap-2 whitespace-nowrap transition-all ease-[cubic-bezier(0.22,1,0.36,1)] ${
           big
-            ? "duration-700 font-display text-[11px] italic tracking-[0.08em] text-ink/90 sm:text-[13.5px] md:text-[16.5px]"
-            : "duration-[1200ms] text-[8px] font-bold uppercase tracking-[0.22em] text-ink-soft/90 sm:text-[9.5px] md:text-[11px]"
+            ? "duration-700 font-display text-[13.5px] italic tracking-[0.08em] text-ink/90 md:text-[16.5px]"
+            : "duration-[1200ms] text-[9.5px] font-bold uppercase tracking-[0.22em] text-ink-soft/90 md:text-[11px]"
         } ${on ? "opacity-100 [text-shadow:0_1px_14px_rgba(244,241,234,0.95)]" : "opacity-0"}`}
         style={{ transform: `translate(-50%, calc(-50% + ${on ? "-7px" : "9px"})) rotate(${-angle}deg)` }}
       >
@@ -50,8 +50,9 @@ function OrbitWords() {
   const [staticAll, setStaticAll] = useState(false);
 
   useEffect(() => {
-    /* Сенсорные устройства и reduced motion — полностью статичное кольцо */
-    if (window.matchMedia("(prefers-reduced-motion: reduce), (pointer: coarse), (hover: none)").matches) {
+    /* Только prefers-reduced-motion — статичное кольцо.
+       Вращение и смена слов работают и на мобильных, как в десктопной версии */
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
       setStaticAll(true);
       return;
     }
@@ -114,12 +115,14 @@ function OrbitWords() {
 /* Визуал — круг целостности: дышащий градиент, кольцо Энсо, фото и орбита слов.
    Вынесен в отдельный компонент, чтобы его можно было разместить в двух местах:
    на мобильных — сразу после заголовка hero,
-   на десктопе — в правой колонке сетки hero. */
-function HeroVisual({ className }: { className?: string }) {
+   на десктопе — в правой колонке сетки hero.
+   scale — дополнительный масштаб (на мобильных чуть уменьшен, чтобы все
+   выступающие круговые элементы гарантированно помещались в границы экрана). */
+function HeroVisual({ className, scale = 1 }: { className?: string; scale?: number }) {
   return (
     <div
       className={`relative mx-auto aspect-square w-full max-w-[460px] transition-transform duration-500 ease-out ${className ?? ""}`}
-      style={{ transform: "translate(calc(var(--px, 0) * 16px), calc(var(--py, 0) * 16px))" }}
+      style={{ transform: `scale(${scale}) translate(calc(var(--px, 0) * 16px), calc(var(--py, 0) * 16px))` }}
     >
       <div className="breathe absolute inset-[-7%] rounded-full bg-[radial-gradient(circle_at_38%_30%,#e9e4d9_0%,#ddd7ca_60%,#d3ccbd_100%)]" />
       <Enso className="spin-slow absolute inset-[-13%] text-ink/30" strokeWidth={1} />
@@ -188,9 +191,12 @@ export default function Hero() {
 
             {/* Мобильная версия: круговые эффекты сразу после заголовка
                 «Провожу сквозь лабиринты ума и тела — к тишине, опоре и созидательной силе».
-                На десктопе скрыт (визуал — в правой колонке ниже) */}
-            <div className="fadeup pt-[15%] pb-[16%] lg:hidden" style={{ animationDelay: "160ms" }}>
-              <HeroVisual />
+                Полностью идентичны десктопной версии (общий центр колец, вращение,
+                появляющиеся/исчезающие слова). Небольшое уменьшение масштаба (0.92)
+                и запас по краям гарантируют, что весь элемент с надписями помещается
+                в границы экрана слева и справа. На десктопе скрыт (визуал — в правой колонке ниже) */}
+            <div className="fadeup py-[13%] lg:hidden" style={{ animationDelay: "160ms" }}>
+              <HeroVisual scale={0.92} />
             </div>
 
             <p className="fadeup mt-7 max-w-xl text-[16px] sm:text-[17px] font-medium leading-relaxed text-ink" style={{ animationDelay: "200ms" }}>
