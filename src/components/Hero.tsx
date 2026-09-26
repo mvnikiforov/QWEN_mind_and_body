@@ -23,10 +23,8 @@ function OrbitWord({
   big?: boolean;
   children: ReactNode;
 }) {
-  /* боковые точки скрываем на мобильных — длинные слова не вылезают за экран */
-  const side = angle === 90 || angle === 270;
   return (
-    <div className={`absolute inset-0 ${side ? "hidden md:block" : ""}`} style={{ transform: `rotate(${angle}deg)` }} aria-hidden>
+    <div className="absolute inset-0" style={{ transform: `rotate(${angle}deg)` }} aria-hidden>
       <span
         className={`absolute left-1/2 top-0 flex items-center gap-1.5 sm:gap-2 whitespace-nowrap transition-all ease-[cubic-bezier(0.22,1,0.36,1)] ${
           big
@@ -120,7 +118,7 @@ function OrbitWords() {
 function HeroVisual({ className }: { className?: string }) {
   return (
     <div
-      className={`relative mx-auto aspect-square w-full max-w-[340px] sm:max-w-[460px] transition-transform duration-500 ease-out ${className ?? ""}`}
+      className={`relative mx-auto aspect-square w-full max-w-[460px] transition-transform duration-500 ease-out ${className ?? ""}`}
       style={{ transform: "translate(calc(var(--px, 0) * 16px), calc(var(--py, 0) * 16px))" }}
     >
       <div className="breathe absolute inset-[-7%] rounded-full bg-[radial-gradient(circle_at_38%_30%,#e9e4d9_0%,#ddd7ca_60%,#d3ccbd_100%)]" />
