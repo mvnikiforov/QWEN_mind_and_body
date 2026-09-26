@@ -168,4 +168,4 @@ export function seed(): DB {
       feedUrl: "",
     },
   };
-}}
+}
