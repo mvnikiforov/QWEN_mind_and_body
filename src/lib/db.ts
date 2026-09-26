@@ -120,16 +120,18 @@ const KEY = "probalance-db-v4";
 const SESSION_KEY = "probalance-session";
 const listeners = new Set<() => void>();
 
-/* Сгенерированные фотографии (восточная эстетика: без лиц, со спины, полуразмыто) */
+/* Фотографии (восточная эстетика: без лиц, со спины, полуразмыто).
+   Хранятся локально в public/img — не зависят от внешних CDN и всегда
+   доступны на мобильных сетях. */
 export const IMG = {
-  hero: "https://image.qwenlm.ai/generated-images/ae4fa278-6772-4b16-bbd9-08e387d8687e/_result.png",
-  chairs: "https://image.qwenlm.ai/generated-images/4a80e071-e20e-4eac-9c48-a9d47eb17684/_result.png",
-  road: "https://image.qwenlm.ai/generated-images/a86075d8-7139-4d89-ab1e-3d72231ff7de/_result.png",
-  dao: "https://image.qwenlm.ai/generated-images/f0c4a1c6-05f0-47ba-8549-c9f4ad62a1a1/_result.png",
-  studio: "https://image.qwenlm.ai/generated-images/2035597f-4536-497a-ae3c-117c9ad9a0d1/_result.png",
-  circle: "https://image.qwenlm.ai/generated-images/8e79ee7d-eaab-4b0c-a25f-6d6978f04473/_result.png",
-  meditation: "https://image.qwenlm.ai/generated-images/36e33009-cea0-4093-955d-637de3274740/_result.png",
-  chairsCircle: "https://image.qwenlm.ai/generated-images/572b5fec-02f7-4ed1-9e4e-d57234de69bb/_result.png",
+  hero: "/img/hero.jpg",
+  chairs: "/img/chairs.jpg",
+  road: "/img/road.jpg",
+  dao: "/img/dao.jpg",
+  studio: "/img/studio.jpg",
+  circle: "/img/circle.jpg",
+  meditation: "/img/meditation.jpg",
+  chairsCircle: "/img/chairsCircle.jpg",
 };
 
 function uid(): string {
