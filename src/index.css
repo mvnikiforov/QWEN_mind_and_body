@@ -120,20 +120,21 @@ main, footer { padding-left: var(--safe-left); padding-right: var(--safe-right);
 .orbit-spin { animation: orbit-spin 28s linear infinite; transform-origin: 50% 50%; }
 .orbit-spin-rev { animation: orbit-spin-rev 46s linear infinite; transform-origin: 50% 50%; }
 
-/* смена фраз над hero-визуалом: полный цикл 16с на две фразы, т.е. 8с на фразу:
-   проявление из невидимого состояния — ровно 3с (0–37.5%),
-   стояние полностью видимой — 2с (37.5–62.5%),
-   растворение до невидимости — 3с (62.5–100%).
-   Вторая фраза стартует с задержкой в половину цикла (8с): она начинает
-   проявляться только после того, как первая полностью погасла, —
-   наложения фраз друг на друга нет (в моменты стыка обе невидимы). */
+/* смена фраз над hero-визуалом: фразы появляются строго по очереди —
+   сначала «гештальт-терапия», затем «мультикультурный подход».
+   Полный цикл 24с, по 12с на каждую фразу:
+   проявление из невидимого состояния — ровно 3с (0–25%),
+   стояние полностью видимой — 6с (25–75%),
+   растворение до невидимости — 3с (75–100%).
+   Вторая фраза стартует с задержкой 12с — ровно после полного гаснения
+   первой; наложения фраз друг на друга нет (в моменты стыка обе невидимы). */
 @keyframes phrase-cycle {
   0%     { opacity: 0; transform: translateY(7px); filter: blur(3px); }
-  37.5%, 62.5% { opacity: 1; transform: translateY(0); filter: blur(0); }
+  25%, 75% { opacity: 1; transform: translateY(0); filter: blur(0); }
   100%   { opacity: 0; transform: translateY(-7px); filter: blur(3px); }
 }
-.phrase-cycle { animation: phrase-cycle 8s ease-in-out infinite both; }
-.phrase-cycle-delayed { animation: phrase-cycle 8s ease-in-out 8s infinite both; }
+.phrase-cycle { animation: phrase-cycle 12s ease-in-out infinite both; }
+.phrase-cycle-delayed { animation: phrase-cycle 12s ease-in-out 12s infinite both; }
 
 .breathe { animation: breathe 8s ease-in-out infinite; }
 .marquee-track-l { animation: marquee-l 80s linear infinite; }
