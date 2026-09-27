@@ -1,1 +1,0 @@
-../../.qwen/commands/opsx-update.md
