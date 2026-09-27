@@ -48,12 +48,18 @@ function OrbitRing() {
    наложение фраз исключено.
    Блок центрирован по горизонтали относительно
    круга; нижний край блока отстоит от верха орбитального кольца на ~3.5% ширины
-   плюс фиксированные 10px (дополнительный подъём фраз). */
+   плюс фиксированные 10px (дополнительный подъём фраз).
+   shiftUpPx / shiftDownPx — дополнительный сдвиг фраз вверх/вниз в пикселях
+   (на мобильных увеличен, чтобы компенсировать масштабирование элемента). */
 const PHRASES = ["гештальт-терапия", "мультикультурный подход"];
 
-function PhraseCycle() {
+function PhraseCycle({ shiftUpPx = 20 }: { shiftUpPx?: number }) {
   return (
-    <div className="pointer-events-none absolute inset-x-0 bottom-full z-10 mb-[calc(3.5%+30px)] flex justify-center" aria-hidden>
+    <div
+      className="pointer-events-none absolute inset-x-0 bottom-full z-10 flex justify-center"
+      style={{ marginBottom: `calc(3.5% + ${shiftUpPx}px)` }}
+      aria-hidden
+    >
       {/* нулевой по высоте контейнер — обе фразы занимают одно место,
           видимость переключает анимация */}
       <div className="relative h-0 w-0">
@@ -75,15 +81,20 @@ function PhraseCycle() {
    пересекаются). Блок центрирован по горизонтали; верхний край блока отстоит
    от нижней границы орбитального кольца на ~3.5% ширины плюс фиксированные
    20px (базовые 10px симметрично верхнему PhraseCycle + дополнительный сдвиг
-   вниз на 10px по запросу). */
+   вниз на 10px по запросу). shiftDownPx — дополнительный сдвиг вниз в
+   пикселях (на мобильных увеличен, чтобы компенсировать масштабирование). */
 const BOTTOM_PHRASES = ["майндфулнес", "поддерживающие практики"];
 
-function PhraseCycleBottom() {
+function PhraseCycleBottom({ shiftDownPx = 20 }: { shiftDownPx?: number }) {
   return (
-    <div className="pointer-events-none absolute inset-x-0 top-full z-10 mt-[calc(3.5%+20px)] flex justify-center" aria-hidden>
+    <div
+      className="pointer-events-none absolute inset-x-0 top-full z-10 flex justify-center"
+      style={{ marginTop: `calc(3.5% + ${shiftDownPx}px)` }}
+      aria-hidden
+    >
       {/* нулевой по высоте контейнер — обе фразы занимают одно место,
           видимость переключает анимация */}
-      <div className="relative h-0 w-0 translate-y-[10px]">
+      <div className="relative h-0 w-0">
         <span className="phrase-cycle absolute top-0 left-1/2 -translate-x-1/2 whitespace-nowrap font-body text-[clamp(11px,1.4vw,15px)] font-medium uppercase tracking-[0.28em] text-gold-deep">
           {BOTTOM_PHRASES[0]}
         </span>
@@ -107,15 +118,23 @@ function PhraseCycleBottom() {
    - фразы над кругом: занимают полосу ≈ от -26% до -14% от верха круга
      (отступ mb-[3.5%] от верхней границы орбиты + высота строки ~12%·W).
    Отступы ниже подобраны так, чтобы весь элемент (кольца + фразы)
-   целиком оставался внутри границ сайта, а все круги имели общий центр. */
+   целиком оставался внутри границ сайта, а все круги имели общий центр.
+   shiftUpPx / shiftDownPx — дополнительный пиксельный сдвиг фраз над/под
+   кругом (на мобильных увеличены: масштаб 0.84 уменьшает и сами фразы,
+   поэтому фиксированные отступы умножаются на тот же коэффициент, чтобы
+   сохранить визуальную геометрию десктопной версии). */
 function HeroVisual({
   className,
   scale = 1,
   wrapperStyle,
+  shiftUpPx = 20,
+  shiftDownPx = 20,
 }: {
   className?: string;
   scale?: number;
   wrapperStyle?: CSSProperties;
+  shiftUpPx?: number;
+  shiftDownPx?: number;
 }) {
   return (
     <div
@@ -144,10 +163,10 @@ function HeroVisual({
         <OrbitRing />
 
         {/* сменяющиеся фразы над верхней границей элемента */}
-        <PhraseCycle />
+        <PhraseCycle shiftUpPx={shiftUpPx} />
 
         {/* сменяющиеся фразы под нижней границей элемента */}
-        <PhraseCycleBottom />
+        <PhraseCycleBottom shiftDownPx={shiftDownPx} />
       </div>
       {scale !== 1 && <div aria-hidden className="pb-[20%]" />}
     </div>
@@ -206,14 +225,19 @@ export default function Hero() {
                 «Провожу сквозь лабиринты ума и тела — к тишине, опоре и созидательной силе».
                 Полностью идентичны десктопной версии: общий центр всех колец,
                 вращение (пунктирное кольцо с точками, золотая дуга), фразы над кругом.
-                Горизонталь: width = 100% − 2·gutter; при scale 0.8 выступ
+                Горизонталь: width = 100% − 2·gutter; при scale 0.84 выступ
                 колец с запасом помещается в боковые поля px-5, поэтому весь
                 элемент целиком остаётся внутри границ сайта слева и справа.
+                Масштаб на мобильных увеличен на 5% (0.8 → 0.84); пиксельные
+                сдвиги фраз умножены на тот же коэффициент (20px → 21px),
+                чтобы сохранить прежнюю визуальную геометрию элемента.
                 На десктопе скрыт (визуал — в правой колонке сетки ниже) */}
             <div className="fadeup lg:hidden" style={{ animationDelay: "160ms" }}>
               <HeroVisual
-                scale={0.8}
+                scale={0.84}
                 wrapperStyle={{ width: "min(calc(100% - 2.5rem), calc(100vw - 4.5rem))" }}
+                shiftUpPx={21}
+                shiftDownPx={21}
               />
             </div>
 
