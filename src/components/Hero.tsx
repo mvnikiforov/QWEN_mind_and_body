@@ -14,7 +14,7 @@ function OrbitRing() {
     <div
       className="pointer-events-none absolute -inset-[8%]"
       role="img"
-      aria-label="ДАО-практики, Кундалини-йога, Мультикультурный подход, Гештальт-терапия, Mindfulness"
+      aria-label="ДАО-практики, Кундалини-йога, Мультикультурный подход, Гештальт-терапия, Mindfulness, Поддерживающие практики"
     >
       {/* пунктирное кольцо — полный оборот за 28 секунд */}
       <svg className="orbit-spin absolute inset-0 h-full w-full text-ink/40" viewBox="0 0 100 100" fill="none" aria-hidden>
@@ -62,6 +62,32 @@ function PhraseCycle() {
         </span>
         <span className="phrase-cycle-delayed absolute bottom-0 left-1/2 -translate-x-1/2 whitespace-nowrap font-body text-[clamp(11px,1.4vw,15px)] font-medium uppercase tracking-[0.28em] text-gold-deep">
           {PHRASES[1]}
+        </span>
+      </div>
+    </div>
+  );
+}
+
+/* Над нижней границей круга — вторая пара сменяющихся фраз
+   («майндфулнес» и «поддерживающие практики»). Эффект появления/исчезновения
+   идентичен верхним фразам: те же CSS-анимации phrase-a / phrase-b в общем
+   6-секундном цикле (проявление → удержание → гаснение, дорожки не
+   пересекаются). Блок центрирован по горизонтали; верхний край блока отстоит
+   от нижней границы орбитального кольца на ~3.5% ширины плюс фиксированные
+   10px (симметрично верхнему PhraseCycle). */
+const BOTTOM_PHRASES = ["майндфулнес", "поддерживающие практики"];
+
+function PhraseCycleBottom() {
+  return (
+    <div className="pointer-events-none absolute inset-x-0 top-full z-10 mt-[calc(3.5%+10px)] flex justify-center" aria-hidden>
+      {/* нулевой по высоте контейнер — обе фразы занимают одно место,
+          видимость переключает анимация */}
+      <div className="relative h-0 w-0">
+        <span className="phrase-cycle absolute top-0 left-1/2 -translate-x-1/2 whitespace-nowrap font-body text-[clamp(11px,1.4vw,15px)] font-medium uppercase tracking-[0.28em] text-gold-deep">
+          {BOTTOM_PHRASES[0]}
+        </span>
+        <span className="phrase-cycle-delayed absolute top-0 left-1/2 -translate-x-1/2 whitespace-nowrap font-body text-[clamp(11px,1.4vw,15px)] font-medium uppercase tracking-[0.28em] text-gold-deep">
+          {BOTTOM_PHRASES[1]}
         </span>
       </div>
     </div>
@@ -118,8 +144,11 @@ function HeroVisual({
 
         {/* сменяющиеся фразы над верхней границей элемента */}
         <PhraseCycle />
+
+        {/* сменяющиеся фразы под нижней границей элемента */}
+        <PhraseCycleBottom />
       </div>
-      {scale !== 1 && <div aria-hidden className="pb-[12%]" />}
+      {scale !== 1 && <div aria-hidden className="pb-[20%]" />}
     </div>
   );
 }
