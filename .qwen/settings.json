@@ -1,0 +1,15 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(ls *)",
+      "Bash(openspec *)",
+      "Bash(mkdir *)",
+      "Bash(test *)",
+      "Bash(mv *)",
+      "Bash(git add *)",
+      "Bash(git commit *)",
+      "Bash(git push)"
+    ]
+  },
+  "$version": 4
+}
