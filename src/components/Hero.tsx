@@ -74,15 +74,16 @@ function PhraseCycle() {
    6-секундном цикле (проявление → удержание → гаснение, дорожки не
    пересекаются). Блок центрирован по горизонтали; верхний край блока отстоит
    от нижней границы орбитального кольца на ~3.5% ширины плюс фиксированные
-   10px (симметрично верхнему PhraseCycle). */
+   20px (базовые 10px симметрично верхнему PhraseCycle + дополнительный сдвиг
+   вниз на 10px по запросу). */
 const BOTTOM_PHRASES = ["майндфулнес", "поддерживающие практики"];
 
 function PhraseCycleBottom() {
   return (
-    <div className="pointer-events-none absolute inset-x-0 top-full z-10 mt-[calc(3.5%+10px)] flex justify-center" aria-hidden>
+    <div className="pointer-events-none absolute inset-x-0 top-full z-10 mt-[calc(3.5%+20px)] flex justify-center" aria-hidden>
       {/* нулевой по высоте контейнер — обе фразы занимают одно место,
           видимость переключает анимация */}
-      <div className="relative h-0 w-0">
+      <div className="relative h-0 w-0 translate-y-[10px]">
         <span className="phrase-cycle absolute top-0 left-1/2 -translate-x-1/2 whitespace-nowrap font-body text-[clamp(11px,1.4vw,15px)] font-medium uppercase tracking-[0.28em] text-gold-deep">
           {BOTTOM_PHRASES[0]}
         </span>
