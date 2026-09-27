@@ -14,7 +14,7 @@ function OrbitRing() {
     <div
       className="pointer-events-none absolute -inset-[8%]"
       role="img"
-      aria-label="ДАО-практики, Кундалини-йога, Мультикультурный подход, Гештальт-терапия, Mindfulness"
+      aria-label="ДАО-практики, Кундалини-йога, Мультикультурный подход, Гештальт-терапия, Mindfulness, Поддерживающие практики"
     >
       {/* пунктирное кольцо — полный оборот за 28 секунд */}
       <svg className="orbit-spin absolute inset-0 h-full w-full text-ink/40" viewBox="0 0 100 100" fill="none" aria-hidden>
@@ -48,12 +48,18 @@ function OrbitRing() {
    наложение фраз исключено.
    Блок центрирован по горизонтали относительно
    круга; нижний край блока отстоит от верха орбитального кольца на ~3.5% ширины
-   плюс фиксированные 10px (дополнительный подъём фраз). */
+   плюс фиксированные 10px (дополнительный подъём фраз).
+   shiftUpPx / shiftDownPx — дополнительный сдвиг фраз вверх/вниз в пикселях
+   (на мобильных увеличен, чтобы компенсировать масштабирование элемента). */
 const PHRASES = ["гештальт-терапия", "мультикультурный подход"];
 
-function PhraseCycle() {
+function PhraseCycle({ shiftUpPx = 20 }: { shiftUpPx?: number }) {
   return (
-    <div className="pointer-events-none absolute inset-x-0 bottom-full z-10 mb-[calc(3.5%+30px)] flex justify-center" aria-hidden>
+    <div
+      className="pointer-events-none absolute inset-x-0 bottom-full z-10 flex justify-center"
+      style={{ marginBottom: `calc(3.5% + ${shiftUpPx}px)` }}
+      aria-hidden
+    >
       {/* нулевой по высоте контейнер — обе фразы занимают одно место,
           видимость переключает анимация */}
       <div className="relative h-0 w-0">
@@ -62,6 +68,38 @@ function PhraseCycle() {
         </span>
         <span className="phrase-cycle-delayed absolute bottom-0 left-1/2 -translate-x-1/2 whitespace-nowrap font-body text-[clamp(11px,1.4vw,15px)] font-medium uppercase tracking-[0.28em] text-gold-deep">
           {PHRASES[1]}
+        </span>
+      </div>
+    </div>
+  );
+}
+
+/* Над нижней границей круга — вторая пара сменяющихся фраз
+   («майндфулнес» и «поддерживающие практики»). Эффект появления/исчезновения
+   идентичен верхним фразам: те же CSS-анимации phrase-a / phrase-b в общем
+   6-секундном цикле (проявление → удержание → гаснение, дорожки не
+   пересекаются). Блок центрирован по горизонтали; верхний край блока отстоит
+   от нижней границы орбитального кольца на ~3.5% ширины плюс фиксированные
+   20px (базовые 10px симметрично верхнему PhraseCycle + дополнительный сдвиг
+   вниз на 10px по запросу). shiftDownPx — дополнительный сдвиг вниз в
+   пикселях (на мобильных увеличен, чтобы компенсировать масштабирование). */
+const BOTTOM_PHRASES = ["майндфулнес", "поддерживающие практики"];
+
+function PhraseCycleBottom({ shiftDownPx = 20 }: { shiftDownPx?: number }) {
+  return (
+    <div
+      className="pointer-events-none absolute inset-x-0 top-full z-10 flex justify-center"
+      style={{ marginTop: `calc(3.5% + ${shiftDownPx}px)` }}
+      aria-hidden
+    >
+      {/* нулевой по высоте контейнер — обе фразы занимают одно место,
+          видимость переключает анимация */}
+      <div className="relative h-0 w-0">
+        <span className="phrase-cycle absolute top-0 left-1/2 -translate-x-1/2 whitespace-nowrap font-body text-[clamp(11px,1.4vw,15px)] font-medium uppercase tracking-[0.28em] text-gold-deep">
+          {BOTTOM_PHRASES[0]}
+        </span>
+        <span className="phrase-cycle-delayed absolute top-0 left-1/2 -translate-x-1/2 whitespace-nowrap font-body text-[clamp(11px,1.4vw,15px)] font-medium uppercase tracking-[0.28em] text-gold-deep">
+          {BOTTOM_PHRASES[1]}
         </span>
       </div>
     </div>
@@ -80,15 +118,23 @@ function PhraseCycle() {
    - фразы над кругом: занимают полосу ≈ от -26% до -14% от верха круга
      (отступ mb-[3.5%] от верхней границы орбиты + высота строки ~12%·W).
    Отступы ниже подобраны так, чтобы весь элемент (кольца + фразы)
-   целиком оставался внутри границ сайта, а все круги имели общий центр. */
+   целиком оставался внутри границ сайта, а все круги имели общий центр.
+   shiftUpPx / shiftDownPx — дополнительный пиксельный сдвиг фраз над/под
+   кругом (на мобильных увеличены: масштаб 0.9 уменьшает и сами фразы,
+   поэтому фиксированные отступы умножаются на тот же коэффициент, чтобы
+   сохранить визуальную геометрию десктопной версии). */
 function HeroVisual({
   className,
   scale = 1,
   wrapperStyle,
+  shiftUpPx = 20,
+  shiftDownPx = 20,
 }: {
   className?: string;
   scale?: number;
   wrapperStyle?: CSSProperties;
+  shiftUpPx?: number;
+  shiftDownPx?: number;
 }) {
   return (
     <div
@@ -117,9 +163,12 @@ function HeroVisual({
         <OrbitRing />
 
         {/* сменяющиеся фразы над верхней границей элемента */}
-        <PhraseCycle />
+        <PhraseCycle shiftUpPx={shiftUpPx} />
+
+        {/* сменяющиеся фразы под нижней границей элемента */}
+        <PhraseCycleBottom shiftDownPx={shiftDownPx} />
       </div>
-      {scale !== 1 && <div aria-hidden className="pb-[12%]" />}
+      {scale !== 1 && <div aria-hidden className="pb-[20%]" />}
     </div>
   );
 }
@@ -176,14 +225,18 @@ export default function Hero() {
                 «Провожу сквозь лабиринты ума и тела — к тишине, опоре и созидательной силе».
                 Полностью идентичны десктопной версии: общий центр всех колец,
                 вращение (пунктирное кольцо с точками, золотая дуга), фразы над кругом.
-                Горизонталь: width = 100% − 2·gutter; при scale 0.8 выступ
+                Горизонталь: width = 100% − 2·gutter; при scale 0.9 выступ
                 колец с запасом помещается в боковые поля px-5, поэтому весь
                 элемент целиком остаётся внутри границ сайта слева и справа.
+                Масштаб на мобильных: 0.9; пиксельные сдвиги фраз 23px,
+                чтобы сохранить визуальную геометрию элемента.
                 На десктопе скрыт (визуал — в правой колонке сетки ниже) */}
             <div className="fadeup lg:hidden" style={{ animationDelay: "160ms" }}>
               <HeroVisual
-                scale={0.8}
+                scale={0.9}
                 wrapperStyle={{ width: "min(calc(100% - 2.5rem), calc(100vw - 4.5rem))" }}
+                shiftUpPx={23}
+                shiftDownPx={23}
               />
             </div>
 
