@@ -250,12 +250,22 @@ export default function Hero() {
               Распаковка психо-эмоциональных зажимов. Раскрытие внутренних ресурсов — для полноты и яркости жизни.
             </p>
 
-            {/* ТЕЛО • ЧУВСТВА • РАЗУМ • ДУХ — единый графитовый тон */}
+            {/* ТЕЛО • ЧУВСТВА • РАЗУМ • ДУХ — единый графитовый тон.
+                На мобильных строка умещается в одну строку: ради этого уменьшены
+                трекинг (0.16em вместо 0.22em) и боковые поля точек-разделителей
+                (mx-2 вместо mx-4), а нижняя граница кегля опущена до 16px —
+                17px в строке шириной 350px (390 − 2·px-5) не помещались.
+                Десктопные значения возвращаются через lg:, поэтому на lg и шире
+                оформление прежнее: 0.22em, mx-4, clamp(17px,2.2vw,24px).
+                Vw-член clamp одинаков в базе и на lg, поэтому на стыке 1023/1024px
+                кегль не «прыгает». flex-wrap сохранён намеренно: ниже 390px строка
+                переносится, а не выходит за границы экрана; разделитель лежит
+                внутри span-а со своим словом, поэтому переносится вместе с ним. */}
             <div className="fadeup mt-9 border-y border-line py-4" style={{ animationDelay: "280ms" }}>
-              <p className="flex flex-wrap items-baseline gap-y-1 font-display text-[clamp(17px,2.2vw,24px)] font-semibold uppercase tracking-[0.22em] text-ink/90">
+              <p className="flex flex-wrap items-baseline gap-y-1 font-display text-[clamp(16px,2.2vw,24px)] font-semibold uppercase tracking-[0.16em] text-ink/90 lg:text-[clamp(17px,2.2vw,24px)] lg:tracking-[0.22em]">
                 {["Тело", "Чувства", "Разум", "Дух"].map((w, i) => (
                   <span key={w} className="flex items-baseline">
-                    {i > 0 && <span className="mx-4 text-[0.55em] leading-none text-ink/35">•</span>}
+                    {i > 0 && <span className="mx-2 text-[0.55em] leading-none text-ink/35 lg:mx-4">•</span>}
                     {w}
                   </span>
                 ))}
