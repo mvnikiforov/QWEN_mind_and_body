@@ -193,8 +193,12 @@ export default function Hero() {
 
   return (
     /* overflow-hidden убран: на мобильных он обрезал круговые эффекты
-       визуала, которые выступают за границы блока (см. отступы ниже) */
-    <section id="top" ref={ref} className="relative pt-32 sm:pt-36">
+       визуала, которые выступают за границы блока (см. отступы ниже).
+       Верхний отступ на ширинах < lg берётся из --hero-top-pad
+       (высота шапки + 8px, см. index.css) — между шапкой и строкой
+       «Онлайн и очно» не остаётся пустой полосы. На lg действует
+       lg:pt-36 (144px), прежний десктопный воздух. */
+    <section id="top" ref={ref} className="relative pt-[var(--hero-top-pad)] lg:pt-36">
       {/* фоновые тона — с изоляцией, чтобы блюр не лез в другие секции;
           снизу смещаем их вверх, чтобы они не выходили за блок hero */}
       <div className="pointer-events-none absolute inset-x-0 top-0 bottom-24 isolate -z-10 overflow-hidden">
@@ -202,7 +206,9 @@ export default function Hero() {
         <div className="absolute top-1/2 -left-40 h-[420px] w-[420px] rounded-full bg-[#e7e3d8] blur-3xl" />
       </div>
 
-      <div className="relative mx-auto max-w-7xl px-5 pt-10 sm:px-8">
+      {/* внутренний верхний отступ только на десктопе (lg:pt-10): на мобильных
+          весь зазор до первой строки задан одним значением на секции выше */}
+      <div className="relative mx-auto max-w-7xl px-5 pt-0 sm:px-8 lg:pt-10">
         <div className="grid items-center gap-16 lg:grid-cols-12">
           {/* Текст */}
           <div className="lg:col-span-7">
