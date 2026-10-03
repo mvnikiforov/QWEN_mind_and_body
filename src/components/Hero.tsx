@@ -260,9 +260,15 @@ export default function Hero() {
                 Vw-член clamp одинаков в базе и на lg, поэтому на стыке 1023/1024px
                 кегль не «прыгает». flex-wrap сохранён намеренно: ниже 390px строка
                 переносится, а не выходит за границы экрана; разделитель лежит
-                внутри span-а со своим словом, поэтому переносится вместе с ним. */}
+                внутри span-а со своим словом, поэтому переносится вместе с ним.
+                max-lg:justify-center центрирует текст только на мобильных
+                (медиазапрос до lg): базовый justify-center действовал бы и на
+                десктопе, а max-lg: не добавляет на lg ничего, поэтому строка
+                остаётся по левому краю (значение flex-start по умолчанию).
+                Блок-обёртка блочный, поэтому линейки border-y остаются во всю
+                ширину колонки, независимо от ширины текста. */}
             <div className="fadeup mt-9 border-y border-line py-4" style={{ animationDelay: "280ms" }}>
-              <p className="flex flex-wrap items-baseline gap-y-1 font-display text-[clamp(16px,2.2vw,24px)] font-semibold uppercase tracking-[0.16em] text-ink/90 lg:text-[clamp(17px,2.2vw,24px)] lg:tracking-[0.22em]">
+              <p className="flex flex-wrap max-lg:justify-center items-baseline gap-y-1 font-display text-[clamp(16px,2.2vw,24px)] font-semibold uppercase tracking-[0.16em] text-ink/90 lg:text-[clamp(17px,2.2vw,24px)] lg:tracking-[0.22em]">
                 {["Тело", "Чувства", "Разум", "Дух"].map((w, i) => (
                   <span key={w} className="flex items-baseline">
                     {i > 0 && <span className="mx-2 text-[0.55em] leading-none text-ink/35 lg:mx-4">•</span>}
