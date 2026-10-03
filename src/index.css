@@ -18,7 +18,8 @@
 
 html {
   scroll-behavior: smooth;
-  scroll-padding-top: calc(96px + var(--safe-top, 0px));
+  /* якорь встаёт на 12px выше шапки: та же высота, что и у hero, плюс запас */
+  scroll-padding-top: calc(var(--header-h) + 12px);
   /* страница жёстко в границах экрана: горизонтальный сдвиг запрещён */
   overflow-x: hidden;
   overscroll-behavior-x: none; /* отключаем «резиновый» боковой свайп (iOS) */
@@ -51,6 +52,14 @@ body {
   --safe-top: env(safe-area-inset-top, 0px);
   --safe-left: env(safe-area-inset-left, 0px);
   --safe-right: env(safe-area-inset-right, 0px);
+
+  /* Шапка в непроскролленном состоянии: safe-area (padding-top у .site-header)
+     + py-5 (20px сверху и снизу) + строка высотой 44px (кнопка меню h-11) = 84px.
+     Отсюда берётся верхний отступ hero: зазор до первой строки «Онлайн и очно»
+     задаётся как --hero-top-pad, а не независимым числом, — чтобы правка шапки
+     не оставляла пустую полосу и не заводила контент под неё. */
+  --header-h: calc(var(--safe-top) + 84px);
+  --hero-top-pad: calc(var(--header-h) + 8px);
 }
 
 /* Шапка стартует ниже системной зоны статуса iPhone (чёлка/остров, safe-area),

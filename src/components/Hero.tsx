@@ -193,8 +193,12 @@ export default function Hero() {
 
   return (
     /* overflow-hidden убран: на мобильных он обрезал круговые эффекты
-       визуала, которые выступают за границы блока (см. отступы ниже) */
-    <section id="top" ref={ref} className="relative pt-32 sm:pt-36">
+       визуала, которые выступают за границы блока (см. отступы ниже).
+       Верхний отступ на ширинах < lg берётся из --hero-top-pad
+       (высота шапки + 8px, см. index.css) — между шапкой и строкой
+       «Онлайн и очно» не остаётся пустой полосы. На lg действует
+       lg:pt-36 (144px), прежний десктопный воздух. */
+    <section id="top" ref={ref} className="relative pt-[var(--hero-top-pad)] lg:pt-36">
       {/* фоновые тона — с изоляцией, чтобы блюр не лез в другие секции;
           снизу смещаем их вверх, чтобы они не выходили за блок hero */}
       <div className="pointer-events-none absolute inset-x-0 top-0 bottom-24 isolate -z-10 overflow-hidden">
@@ -202,7 +206,9 @@ export default function Hero() {
         <div className="absolute top-1/2 -left-40 h-[420px] w-[420px] rounded-full bg-[#e7e3d8] blur-3xl" />
       </div>
 
-      <div className="relative mx-auto max-w-7xl px-5 pt-10 sm:px-8">
+      {/* внутренний верхний отступ только на десктопе (lg:pt-10): на мобильных
+          весь зазор до первой строки задан одним значением на секции выше */}
+      <div className="relative mx-auto max-w-7xl px-5 pt-0 sm:px-8 lg:pt-10">
         <div className="grid items-center gap-16 lg:grid-cols-12">
           {/* Текст */}
           <div className="lg:col-span-7">
@@ -244,12 +250,28 @@ export default function Hero() {
               Распаковка психо-эмоциональных зажимов. Раскрытие внутренних ресурсов — для полноты и яркости жизни.
             </p>
 
-            {/* ТЕЛО • ЧУВСТВА • РАЗУМ • ДУХ — единый графитовый тон */}
+            {/* ТЕЛО • ЧУВСТВА • РАЗУМ • ДУХ — единый графитовый тон.
+                На мобильных строка умещается в одну строку: ради этого уменьшены
+                трекинг (0.16em вместо 0.22em) и боковые поля точек-разделителей
+                (mx-2 вместо mx-4), а нижняя граница кегля опущена до 16px —
+                17px в строке шириной 350px (390 − 2·px-5) не помещались.
+                Десктопные значения возвращаются через lg:, поэтому на lg и шире
+                оформление прежнее: 0.22em, mx-4, clamp(17px,2.2vw,24px).
+                Vw-член clamp одинаков в базе и на lg, поэтому на стыке 1023/1024px
+                кегль не «прыгает». flex-wrap сохранён намеренно: ниже 390px строка
+                переносится, а не выходит за границы экрана; разделитель лежит
+                внутри span-а со своим словом, поэтому переносится вместе с ним.
+                max-lg:justify-center центрирует текст только на мобильных
+                (медиазапрос до lg): базовый justify-center действовал бы и на
+                десктопе, а max-lg: не добавляет на lg ничего, поэтому строка
+                остаётся по левому краю (значение flex-start по умолчанию).
+                Блок-обёртка блочный, поэтому линейки border-y остаются во всю
+                ширину колонки, независимо от ширины текста. */}
             <div className="fadeup mt-9 border-y border-line py-4" style={{ animationDelay: "280ms" }}>
-              <p className="flex flex-wrap items-baseline gap-y-1 font-display text-[clamp(17px,2.2vw,24px)] font-semibold uppercase tracking-[0.22em] text-ink/90">
+              <p className="flex flex-wrap max-lg:justify-center items-baseline gap-y-1 font-display text-[clamp(16px,2.2vw,24px)] font-semibold uppercase tracking-[0.16em] text-ink/90 lg:text-[clamp(17px,2.2vw,24px)] lg:tracking-[0.22em]">
                 {["Тело", "Чувства", "Разум", "Дух"].map((w, i) => (
                   <span key={w} className="flex items-baseline">
-                    {i > 0 && <span className="mx-4 text-[0.55em] leading-none text-ink/35">•</span>}
+                    {i > 0 && <span className="mx-2 text-[0.55em] leading-none text-ink/35 lg:mx-4">•</span>}
                     {w}
                   </span>
                 ))}
